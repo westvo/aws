@@ -1880,6 +1880,20 @@
           "content": "✅ Với môi trường VMware, có thể triển khai Storage Gateway ở chế độ HA (High Availability) dùng VMware vSphere HA/FT — tự động failover sang instance gateway dự phòng nếu instance chính gặp sự cố, giảm downtime cho truy cập storage hybrid quan trọng.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "9b8a19821627",
+          "title": "STORAGE GATEWAY: SNAPSHOT SCHEDULE CHO VOLUME GATEWAY",
+          "content": "✅ Volume Gateway (Cached/Stored) hỗ trợ lên lịch snapshot ĐỊNH KỲ tự động lưu thành EBS Snapshot trên AWS — dùng để backup dữ liệu on-premises định kỳ lên cloud, và có thể tạo EBS Volume MỚI từ snapshot đó để phục hồi/dùng trực tiếp trên EC2 khi cần.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "035d4877224b",
+          "title": "STORAGE GATEWAY: LOCAL DISK REQUIREMENT",
+          "content": "✅ Gateway (dạng VM) cần khai báo RÕ ổ đĩa local dành cho Cache (lưu dữ liệu hay dùng) và Upload Buffer (đệm trước khi đẩy lên S3/EBS) — kích thước 2 vùng này ảnh hưởng trực tiếp hiệu năng: Buffer quá nhỏ khiến việc ghi bị chậm lại (throttle) khi upload không kịp.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
         }
       ]
     },
@@ -1960,6 +1974,20 @@
           "content": "✅ Port Override: cho phép Client kết nối vào Accelerator ở 1 PORT (vd 443) nhưng Global Accelerator FORWARD tới endpoint ở PORT KHÁC (vd 8443) — hữu ích khi backend đang chạy ở port không chuẩn nhưng vẫn muốn client dùng port chuẩn quen thuộc.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "3ad530e42fa9",
+          "title": "GLOBAL ACCELERATOR: DENY LIST & ALLOW LIST",
+          "content": "✅ Có thể cấu hình Client IP Preservation kết hợp Security Group ở endpoint để chỉ chấp nhận traffic ĐÃ ĐI QUA Global Accelerator (chặn truy cập trực tiếp bỏ qua Accelerator) — đảm bảo mọi traffic đều hưởng lợi tối ưu hóa & bảo vệ DDoS của Global Accelerator thay vì có đường tắt.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "a5ac5556cd3a",
+          "title": "GLOBAL ACCELERATOR: SUPPORTED ENDPOINT TYPES",
+          "content": "✅ Endpoint hỗ trợ: ALB, NLB, EC2 instance (trực tiếp), Elastic IP — KHÔNG hỗ trợ trực tiếp API Gateway/Lambda/S3 (khác CloudFront có thể dùng các origin này) — cần lưu ý phạm vi endpoint phù hợp khi thiết kế kiến trúc dùng Global Accelerator.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
         }
       ]
     },
@@ -2040,6 +2068,20 @@
           "content": "📌 Tình huống: Migrate database CÙNG ENGINE (vd RDS PostgreSQL → Aurora PostgreSQL) với hiệu năng CAO HƠN, dùng công cụ NATIVE của chính engine đó thay vì cơ chế DMS Task truyền thống.\n✅ Đáp án đúng: DMS Homogeneous Data Migrations — dùng NGAY công cụ migration gốc của engine (pg_dump/pg_restore cho PostgreSQL, mysqldump cho MySQL) được AWS quản lý & điều phối tự động, nhanh hơn và giữ được TRỌN VẸN tính năng engine (index, trigger, stored procedure) mà không cần convert schema như dùng DMS Task + SCT.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "3ebaadca1b24",
+          "title": "DMS: MULTI-AZ vs SERVERLESS REPLICATION",
+          "content": "✅ DMS Serverless: tự động PROVISION & SCALE replication capacity theo khối lượng migration thực tế, không cần tự chọn kích thước Replication Instance — dùng khi khối lượng migrate KHÓ DỰ ĐOÁN trước hoặc muốn đơn giản hóa vận hành.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "ecb48664d2b5",
+          "title": "DMS: LOB (LARGE OBJECT) HANDLING MODE",
+          "content": "✅ Khi migrate bảng có cột LOB (BLOB/CLOB/dữ liệu lớn), DMS hỗ trợ Limited LOB Mode (giới hạn kích thước tối đa, nhanh hơn) hoặc Full LOB Mode (migrate LOB với kích thước bất kỳ nhưng chậm hơn) — chọn đúng mode tùy đặc tính dữ liệu để cân bằng tốc độ và tính đầy đủ.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
         }
       ]
     },
@@ -2120,6 +2162,20 @@
           "content": "✅ AWS Managed Microsoft AD hỗ trợ tích hợp MFA qua giao thức RADIUS với hạ tầng MFA ĐÃ CÓ SẴN on-premises (vd RSA SecurID) — cho phép giữ nguyên quy trình MFA doanh nghiệp hiện có khi user xác thực vào tài nguyên AWS thay vì phải xây MFA riêng.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "1e9d1c3fb125",
+          "title": "DIRECTORY SERVICE: EDITION - STANDARD vs ENTERPRISE",
+          "content": "✅ AWS Managed Microsoft AD có 2 Edition: Standard (giới hạn dung lượng directory ~1GB, phù hợp <5000 user) và Enterprise (dung lượng lớn hơn ~17GB, phù hợp doanh nghiệp lớn hơn) — chọn đúng Edition dựa trên quy mô tổ chức.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "015e38c721ad",
+          "title": "DIRECTORY SERVICE: TÍCH HỢP WORKSPACES & AMAZON QUICKSIGHT",
+          "content": "✅ Ngoài EC2/RDS, Directory Service còn dùng làm nguồn xác thực cho Amazon WorkSpaces (desktop ảo) và Amazon QuickSight (Enterprise edition) — cho phép user dùng CHUNG 1 bộ credential AD cho nhiều dịch vụ AWS khác nhau, không cần tạo tài khoản riêng biệt từng nơi.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
         }
       ]
     },
@@ -2719,6 +2775,13 @@
           "content": "✅ DataSync hỗ trợ transfer từ/tới storage tương thích S3 API của bên thứ 3 (on-premises object storage như MinIO, hoặc cloud khác) — không giới hạn chỉ AWS-to-AWS, hữu ích khi migrate từ hạ tầng object storage khác lên AWS.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "94d5c00ec84e",
+          "title": "DATASYNC: SCHEDULE EXPRESSION & MANUAL START",
+          "content": "✅ Task có thể chạy theo Schedule Expression (cron) TỰ ĐỘNG định kỳ, hoặc Start Manually mỗi khi cần — với dữ liệu thay đổi liên tục nên dùng schedule tần suất phù hợp; với migration 1 lần chỉ cần chạy thủ công 1-2 lần (full load + verify) là đủ.",
+          "createdAt": "2026-09-14T06:48:01.624462Z",
+          "updatedAt": "2026-09-14T06:48:01.624462Z"
         }
       ]
     },
@@ -3168,6 +3231,20 @@
           "content": "✅ cfn-init: agent chạy trên EC2 lúc khởi động để đọc metadata (AWS::CloudFormation::Init) trong template và tự cài đặt package/config/chạy lệnh theo đúng thứ tự khai báo.\n✅ cfn-signal + CreationPolicy: EC2 gửi tín hiệu NGƯỢC LẠI CloudFormation báo \"tôi đã bootstrap xong\" — CloudFormation CHỜ tín hiệu này rồi mới coi resource là CREATE_COMPLETE, đảm bảo stack không báo thành công trước khi ứng dụng thực sự sẵn sàng.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "9dc2d108f183",
+          "title": "CLOUDFORMATION: EXPORT NAME UNIQUENESS & DEPENDENCY KHI XÓA",
+          "content": "⚠️ Export Name PHẢI DUY NHẤT trong TOÀN BỘ account + Region (không chỉ trong 1 stack) — không thể export 2 giá trị cùng tên dù ở 2 stack khác nhau.\n⚠️ KHÔNG THỂ xóa 1 stack nếu giá trị Export của nó ĐANG ĐƯỢC IMPORT bởi stack khác (CloudFormation chặn xóa để tránh phá vỡ dependency) — phải xóa/sửa stack đang import TRƯỚC, rồi mới xóa được stack gốc.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "7ebf4eff25c0",
+          "title": "CLOUDFORMATION: TEMPLATE SIZE LIMIT & S3 REFERENCE",
+          "content": "⚠️ Template có giới hạn kích thước khi upload trực tiếp (51,200 byte qua Console, 460,800 byte nếu qua S3 URL) — với template LỚN (nhiều resource phức tạp), cần upload template lên S3 trước rồi trỏ CloudFormation đọc từ đó, thay vì paste trực tiếp.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
         }
       ]
     },
@@ -3342,6 +3419,20 @@
           "content": "✅ Mỗi VPN Tunnel dùng 1 Pre-Shared Key (PSK) riêng để xác thực 2 đầu — AWS TỰ ĐỘNG SINH PSK khi tạo VPN Connection, nhưng có thể TỰ CUNG CẤP PSK riêng nếu cần khớp với chính sách bảo mật/thiết bị cụ thể phía on-premises, nên định kỳ XOAY VÒNG PSK theo best practice bảo mật.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "db53604cca55",
+          "title": "VPN: ECMP (EQUAL COST MULTI-PATH) VỚI TRANSIT GATEWAY",
+          "content": "📌 Tình huống: 1 kết nối VPN không đủ băng thông (mỗi tunnel VPN giới hạn ~1.25Gbps), cần TỔNG BĂNG THÔNG cao hơn qua nhiều VPN tunnel.\n✅ Đáp án đúng: Khi VPN gắn vào Transit Gateway (không phải Virtual Private Gateway), có thể bật ECMP — traffic được CHIA ĐỀU qua NHIỀU VPN connection/tunnel song song, cộng dồn băng thông tổng (vd 4 tunnel = ~5Gbps), điều mà VGW thông thường không hỗ trợ tốt bằng.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "e6f32d294b2b",
+          "title": "VPN: CLOUDWATCH METRICS CHO GIÁM SÁT TUNNEL",
+          "content": "✅ Metric quan trọng cần giám sát: TunnelState (0=down, 1=up), TunnelDataIn/Out (lượng traffic qua tunnel) — nên tạo Alarm khi TunnelState về 0 để phát hiện NGAY khi 1 trong 2 tunnel bị đứt, dù traffic vẫn chạy bình thường qua tunnel còn lại (dễ bị bỏ sót nếu không giám sát riêng).",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
         }
       ]
     },
@@ -3638,6 +3729,20 @@
           "content": "✅ Application Manager: gom nhóm resource AWS theo ỨNG DỤNG/DỰ ÁN (dựa trên tag hoặc CloudFormation stack) để xem tình trạng vận hành TỔNG QUAN (compliance, alarm, OpsItem) của cả 1 ứng dụng ở 1 nơi.\n✅ OpsCenter: nơi TẬP TRUNG các OpsItem (sự cố vận hành) được tạo tự động từ CloudWatch Alarm/Config/Trusted Advisor, giúp team vận hành xử lý sự cố theo quy trình ticket thống nhất ngay trong AWS Console.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "c67a020c0192",
+          "title": "SSM: CHANGE MANAGER",
+          "content": "📌 Tình huống: Công ty cần QUY TRÌNH PHÊ DUYỆT chính thức trước khi thực hiện thay đổi vận hành nguy hiểm (vd chạy Automation xóa resource hàng loạt) trên hệ thống production.\n✅ Đáp án đúng: SSM Change Manager — yêu cầu THAY ĐỔI phải qua bước PHÊ DUYỆT (approval workflow) trước khi Automation Document được thực thi, ghi lại đầy đủ lịch sử ai phê duyệt/từ chối, đảm bảo tuân thủ quy trình quản lý thay đổi (change management) chuẩn ITIL.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "6ac46ddad8c8",
+          "title": "SSM: PARAMETER STORE - HIERARCHY & PATH-BASED ACCESS",
+          "content": "✅ Parameter Store hỗ trợ đặt tên theo HIERARCHY (vd /myapp/prod/db-password, /myapp/dev/db-password) — cho phép viết IAM Policy giới hạn quyền theo PATH PREFIX (chỉ truy cập được /myapp/prod/*), và lấy CẢ NHÓM parameter cùng lúc bằng 1 API call (GetParametersByPath) thay vì gọi riêng từng cái.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
         }
       ]
     },
@@ -4174,6 +4279,20 @@
           "content": "✅ Mỗi Virtual Interface (VIF) trên Direct Connect gắn với 1 VLAN ID riêng (chuẩn 802.1Q) — cho phép 1 kết nối vật lý DUY NHẤT (hoặc LAG) chia sẻ được thành NHIỀU VIF logic độc lập (Private/Public/Transit) cùng lúc, mỗi VIF có route/cấu hình riêng.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "79c3cacc90f0",
+          "title": "DIRECT CONNECT: BƯỚC PROVISIONING & LEAD TIME",
+          "content": "⚠️ Thiết lập Dedicated Connection mất THỜI GIAN ĐÁNG KỂ (vài tuần) do cần AWS phối hợp với đối tác viễn thông kéo cáp vật lý — cần LÊN KẾ HOẠCH SỚM khi migration có deadline, không thể có ngay như các resource cloud thông thường; nếu cần nhanh hơn, cân nhắc Hosted Connection qua Partner.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "2a49192f4b1e",
+          "title": "DIRECT CONNECT: JUMBO FRAMES",
+          "content": "✅ Direct Connect hỗ trợ Jumbo Frame (MTU 9001 byte, thay vì 1500 byte chuẩn) cho Private/Transit VIF — giảm overhead đóng gói, TĂNG throughput hiệu quả cho truyền tải dữ liệu lớn, cần đảm bảo thiết bị 2 đầu đều hỗ trợ MTU lớn để tránh phân mảnh gói tin.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
         }
       ]
     },
@@ -4379,6 +4498,20 @@
           "content": "✅ Có thể gắn Resource Policy trên secret để NGĂN 1 số principal cụ thể (kể cả chính chủ sở hữu) XÓA secret đó — lớp bảo vệ bổ sung chống xóa nhầm secret quan trọng (production database credentials) ngoài Recovery Window mặc định (7-30 ngày, secret vẫn khôi phục được trong thời gian này trước khi xóa vĩnh viễn).",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "f53f98a670f2",
+          "title": "SECRETS MANAGER: JSON STRUCTURE CHO DATABASE CREDENTIALS",
+          "content": "✅ Khi lưu DB credentials, Secrets Manager khuyến nghị format JSON chuẩn (username, password, engine, host, port, dbname) — các Rotation Lambda Template có sẵn của AWS ĐỌC ĐÚNG theo cấu trúc này, giúp rotation hoạt động tự động mà không cần custom code parse lại định dạng riêng.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "1bf86f4569d4",
+          "title": "SECRETS MANAGER: TAGGING & ACCESS CONTROL THEO TAG",
+          "content": "✅ Có thể viết IAM Policy dùng Condition secretsmanager:ResourceTag để CHỈ CHO PHÉP truy cập secret có TAG cụ thể (vd Environment=Production) — kiểm soát truy cập linh hoạt theo tag thay vì liệt kê từng Secret ARN cụ thể trong policy, dễ mở rộng khi có nhiều secret mới.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
         }
       ]
     },
@@ -4640,6 +4773,13 @@
           "content": "⚠️ Phân biệt rõ: Event History (mặc định, không cần tạo trail) chỉ giữ 90 NGÀY và KHÔNG cấu hình được thời gian dài hơn; muốn lưu LÂU HƠN 90 ngày bắt buộc phải tạo Trail xuất log ra S3 (khi đó thời gian lưu do LIFECYCLE POLICY của chính bucket S3 quyết định, không phải cấu hình trong CloudTrail).",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "b1f863a7003d",
+          "title": "CLOUDTRAIL: SEE INSIGHTS EVENTS - API CALL RATE vs API ERROR RATE INSIGHTS",
+          "content": "✅ CloudTrail Insights có 2 loại: API Call Rate Insight (phát hiện tần suất gọi API bất thường) và API Error Rate Insight (phát hiện tỷ lệ LỖI API tăng đột biến, vd do policy sai làm hàng loạt request bị AccessDenied) — loại thứ 2 hữu ích để phát hiện SỚM lỗi cấu hình/outage trước khi user report.",
+          "createdAt": "2026-09-14T06:48:01.624462Z",
+          "updatedAt": "2026-09-14T06:48:01.624462Z"
         }
       ]
     },
@@ -4720,6 +4860,13 @@
           "content": "✅ Recording Group cho phép chọn CHỈ GHI LẠI 1 SỐ LOẠI resource cụ thể (thay vì ghi TẤT CẢ resource type hỗ trợ, mặc định) — giảm chi phí Config (tính theo số Configuration Item ghi nhận) khi chỉ cần theo dõi compliance cho 1 vài loại resource quan trọng (vd chỉ Security Group, S3, IAM) thay vì toàn bộ account.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "6a22ad71277f",
+          "title": "AWS CONFIG: ORGANIZATION CONFORMANCE PACK",
+          "content": "✅ Organization Conformance Pack: deploy 1 Conformance Pack (bộ Config Rule chuẩn compliance) đồng loạt cho TOÀN BỘ account trong Organization/OU chỉ với 1 thao tác, tự động áp dụng cho account MỚI thêm vào — tương tự StackSets Service-Managed nhưng dành riêng cho compliance rule.",
+          "createdAt": "2026-09-14T06:48:01.624462Z",
+          "updatedAt": "2026-09-14T06:48:01.624462Z"
         }
       ]
     },
@@ -4981,6 +5128,13 @@
           "content": "✅ Có thể xây dựng CA HIERARCHY nhiều tầng: Root CA (offline, ít dùng, chỉ ký cho Subordinate CA) + Subordinate CA (online, dùng hàng ngày để cấp chứng chỉ thực tế) — giảm rủi ro nếu Subordinate CA bị lộ (chỉ cần thu hồi CA đó, không ảnh hưởng Root CA gốc), theo đúng chuẩn PKI doanh nghiệp.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "463c0ef9ed7e",
+          "title": "ACM: SỐ LƯỢNG DOMAIN TỐI ĐA TRONG 1 CHỨNG CHỈ (SAN LIMIT)",
+          "content": "⚠️ 1 chứng chỉ ACM hỗ trợ tối đa 10 domain name (Subject Alternative Names) MẶC ĐỊNH, có thể xin tăng quota — nếu cần bảo vệ NHIỀU HƠN domain không liên quan, cân nhắc tách thành nhiều chứng chỉ riêng thay vì cố nhồi hết vào 1 chứng chỉ duy nhất.",
+          "createdAt": "2026-09-14T06:48:01.624462Z",
+          "updatedAt": "2026-09-14T06:48:01.624462Z"
         }
       ]
     },
@@ -5061,6 +5215,20 @@
           "content": "✅ Enhanced Health Reporting: cung cấp thông tin sức khỏe CHI TIẾT HƠN health check cơ bản của ELB — bao gồm cả nguyên nhân CỤ THỂ (vd CPU cao, deployment đang chạy, request 5xx tăng) hiển thị trực quan trên Health Dashboard theo màu (Green/Yellow/Red), giúp chẩn đoán nhanh vấn đề mà không cần tự đào sâu CloudWatch.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "59f543246867",
+          "title": "BEANSTALK: RESOURCE TAGGING & SERVICE ROLE",
+          "content": "✅ Beanstalk Service Role: IAM Role riêng cho CHÍNH Beanstalk (không phải cho EC2 instance) để nó có quyền tạo/quản lý resource hạ tầng (ALB, ASG, CloudWatch Alarm) thay bạn — khác EC2 Instance Profile Role (quyền cho ỨNG DỤNG chạy trên instance gọi API AWS).",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "0afcedb737e2",
+          "title": "BEANSTALK: ENVIRONMENT LINKS",
+          "content": "📌 Tình huống: Kiến trúc gồm nhiều Beanstalk Environment (vd frontend + backend API riêng), cần frontend biết địa chỉ backend mà không hardcode URL.\n✅ Đáp án đúng: Environment Links — liên kết 2 Environment lại với nhau, Beanstalk tự động inject biến môi trường chứa URL của environment liên kết vào environment kia, giúp giao tiếp linh hoạt hơn khi environment được deploy lại/đổi tên.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
         }
       ]
     },
@@ -5141,6 +5309,20 @@
           "content": "✅ Khi bật Delegated Admin cho Inspector, có thể theo dõi COVERAGE (% resource đang được Inspector quét) và tình trạng lỗ hổng TOÀN BỘ Organization trên 1 dashboard, xuất báo cáo CSV định kỳ phục vụ audit bảo mật tổng thể của công ty theo yêu cầu compliance.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "1c211c448804",
+          "title": "INSPECTOR: FINDING AGGREGATION THEO TITLE (GROUPED FINDINGS)",
+          "content": "✅ Inspector tự động GOM NHÓM các finding có CÙNG loại lỗ hổng (CVE) xuất hiện trên NHIỀU resource khác nhau thành 1 view tổng hợp — giúp thấy ngay \"CVE này đang ảnh hưởng bao nhiêu resource\" thay vì phải xem từng finding riêng lẻ, ưu tiên vá lỗ hổng ảnh hưởng DIỆN RỘNG trước.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "e25b02d47b5a",
+          "title": "INSPECTOR: SUPPRESSION RULE THEO PACKAGE/CVE CỤ THỂ",
+          "content": "📌 Tình huống: 1 lỗ hổng CVE đã BIẾT nhưng KHÔNG thể vá ngay (vd chưa có bản patch chính thức từ vendor) và đã có biện pháp GIẢM THIỂU khác (compensating control) áp dụng riêng.\n✅ Đáp án đúng: Tạo Suppression Rule theo đúng CVE/package đó — tạm ẩn finding này khỏi danh sách chính (không xóa hẳn dữ liệu, có thể xem lại khi cần) để team tập trung vào các finding CHƯA CÓ giải pháp thay vì bị nhiễu bởi finding đã biết và đã xử lý theo cách khác.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
         }
       ]
     },
@@ -5221,6 +5403,13 @@
           "content": "✅ Shield Advanced tính phí THEO ORGANIZATION (1 subscription phí cố định hàng tháng áp dụng cho TOÀN BỘ account trong Organization) chứ không phải theo từng account riêng lẻ — khuyến khích bật bảo vệ rộng khắp thay vì chỉ 1 vài account, vì chi phí không tăng thêm theo số account tham gia.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "2e7c7ae76da2",
+          "title": "SHIELD: LATENCY-BASED HEALTH CHECK KẾT HỢP ROUTE 53",
+          "content": "✅ Kết hợp Shield Advanced Health-Based Detection với Route 53 Health Check dựa trên CloudWatch Alarm tùy chỉnh (không chỉ ping đơn giản) — cho phép Shield hiểu ĐÚNG tình trạng SỨC KHỎE THỰC SỰ của ứng dụng (vd tỷ lệ lỗi 5xx, độ trễ transaction) để phân biệt chính xác hơn giữa traffic thật tăng cao và traffic tấn công.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
         }
       ]
     },
@@ -5301,6 +5490,13 @@
           "content": "✅ AWS Backup Gateway: mở rộng AWS Backup để sao lưu trực tiếp file server/VM on-premises (VMware, Hyper-V) thông qua 1 Gateway appliance đặt tại chỗ, quản lý & lên lịch tập trung ngay trong AWS Backup Console như mọi resource AWS khác.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "f57c267c745d",
+          "title": "AWS BACKUP: ON-DEMAND BACKUP vs SCHEDULED - CHI PHÍ & USE CASE",
+          "content": "✅ On-Demand Backup: chạy backup NGAY LẬP TỨC ngoài lịch (vd trước khi thực hiện thay đổi rủi ro cao) — vẫn tính vào cùng retention/lifecycle của Backup Plan nếu gắn kèm, hoặc độc lập nếu chạy thủ công không qua Plan.",
+          "createdAt": "2026-09-14T06:48:01.624462Z",
+          "updatedAt": "2026-09-14T06:48:01.624462Z"
         }
       ]
     },
@@ -5381,6 +5577,20 @@
           "content": "✅ X-Ray hỗ trợ CrossAccount observability — 1 account TRUNG TÂM có thể xem trace từ NHIỀU account khác trong Organization (qua Resource-based Policy cấp quyền), phục vụ kiến trúc microservices trải rộng nhiều account cần theo dõi tập trung 1 nơi.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "af564822161a",
+          "title": "X-RAY: SDK INTERCEPTOR CHO AWS SDK CALLS",
+          "content": "✅ X-Ray SDK tự động BỌC (intercept) các lời gọi AWS SDK (S3, DynamoDB...) để tự tạo Subsegment riêng cho từng lời gọi API AWS mà KHÔNG cần code thêm gì — giúp thấy rõ trong trace phần nào của độ trễ là do CHÍNH gọi tới AWS service khác, tách biệt với thời gian xử lý logic nghiệp vụ.",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "5c237b5aa93b",
+          "title": "X-RAY: ENCRYPTION CONFIG",
+          "content": "✅ Dữ liệu trace X-Ray được mã hóa MẶC ĐỊNH bằng key quản lý bởi X-Ray, có thể đổi sang dùng CMK riêng (KMS) nếu cần kiểm soát chặt hơn về quyền truy cập/audit key sử dụng để mã hóa dữ liệu trace (có thể chứa thông tin nhạy cảm trong request/response).",
+          "createdAt": "2026-09-14T06:49:29.551737Z",
+          "updatedAt": "2026-09-14T06:49:29.551737Z"
         }
       ]
     },
@@ -5642,6 +5852,13 @@
           "content": "✅ Resolver DynamoDB tích hợp SẴN các thao tác BATCH (BatchGetItem, BatchPutItem, TransactWriteItems) mà KHÔNG CẦN viết Lambda riêng — cho phép 1 GraphQL mutation thực hiện NHIỀU thay đổi DynamoDB có tính ATOMIC ngay trong VTL/JS resolver, giảm số lượng Lambda function cần duy trì.",
           "createdAt": "2026-09-14T06:39:10.017554Z",
           "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "9404ac473897",
+          "title": "APPSYNC: @aws_subscribe & PUB/SUB TỰ ĐỘNG QUA MUTATION",
+          "content": "✅ Dùng directive @aws_subscribe trong schema GraphQL để khai báo 1 Subscription TỰ ĐỘNG kích hoạt mỗi khi 1 Mutation cụ thể chạy thành công — client subscribe 1 lần, AppSync tự động push update real-time mà không cần code thêm logic publish thủ công như dùng WebSocket thuần.",
+          "createdAt": "2026-09-14T06:48:01.624462Z",
+          "updatedAt": "2026-09-14T06:48:01.624462Z"
         }
       ]
     },
@@ -5722,6 +5939,20 @@
           "content": "✅ Insight: 1 \"saved search\" theo tiêu chí nhóm nhất định (vd nhóm finding theo resource type, theo severity trend) — AWS cung cấp sẵn 1 số Managed Insight (vd \"S3 bucket có nhiều finding nhất\"), và cho phép TỰ TẠO Insight riêng theo nhu cầu theo dõi của team bảo mật.",
           "createdAt": "2026-09-14T06:36:33.204792Z",
           "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "66dd291c61fe",
+          "title": "SECURITY HUB: FINDING AGGREGATION XUYÊN REGION",
+          "content": "✅ Finding Aggregation: gộp finding từ NHIỀU REGION (không chỉ nhiều account) về 1 Region \"tổng hợp\" duy nhất — hữu ích khi tài nguyên trải nhiều Region nhưng team bảo mật chỉ muốn xem 1 dashboard duy nhất thay vì phải chuyển qua lại giữa các Region trong Console.",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "fcbe7982fc19",
+          "title": "FIREWALL MANAGER: SECURITY GROUP AUDIT & USAGE POLICY",
+          "content": "✅ Security Group Policy trong Firewall Manager có 2 loại: Common Security Group (áp dụng 1 SG chuẩn cho mọi resource được chỉ định) và Content Audit (chỉ AUDIT/CẢNH BÁO nếu Security Group vi phạm rule đã định, vd mở port nguy hiểm ra Internet, mà không tự động sửa) — cho phép chọn mức độ can thiệp phù hợp (bắt buộc vs chỉ cảnh báo).",
+          "createdAt": "2026-09-14T06:48:46.965472Z",
+          "updatedAt": "2026-09-14T06:48:46.965472Z"
         }
       ]
     }
