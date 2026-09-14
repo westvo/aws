@@ -42,6 +42,48 @@
           "content": "📌 Tình huống: Một startup mạng xã hội sử dụng AWS Cloud để quản lý hạ tầng IT. Engineering team muốn thực hiện weekly database rollovers cho một MySQL database server bằng một serverless cron job thường mất khoảng 5 phút để chạy script Python thực hiện rollover dữ liệu cũ sang kho lưu trữ. • Yêu cầu: Đề xuất giải pháp chạy tác vụ định kỳ hàng tuần không cần quản lý server . • Ràng buộc: Tối ưu chi phí tuyệt đối (pay-per-use) vì script chỉ chạy 5 phút mỗi tuần .\n\n✅ Đáp án đúng: Lên lịch một Amazon EventBridge event cron expression để invoke một AWS Lambda function chạy database rollover job.\n   ➜ ➜ [ ĐÚNG ]: Kết hợp giữa Amazon EventBridge (cung cấp bộ lập lịch cron expression mạnh mẽ, đáng tin cậy) và AWS Lambda (dịch vụ compute hoàn toàn serverless, chỉ tính phí theo mili-giây khi code thực thi) là giải pháp hoàn hảo, giúp tiết kiệm chi phí tối đa (chi phí bằng không khi không chạy) và loại bỏ hoàn toàn gánh nặng quản lý hạ tầng cho một tác vụ chạy ngắt quãng ngắn (5 phút/tuần), đáp ứng tuyệt đối tiêu chí cost-efficient và reliable .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Tạo một time-based schedule option trong AWS Glue job để tự invoke và chạy script.\n     ➜ ➜ [ SAI ]: AWS Glue là dịch vụ ETL chuyên dụng cho phân tích dữ liệu lớn dựa trên Apache Spark, việc dùng Glue cho một kịch bản đơn giản chạy script Python ngắn gọn hàng tuần là quá phức tạp và tốn kém chi phí khởi tạo (overkill) .\n   • Provision một Amazon EC2 spot instance để chạy script thông qua OS-based weekly cron expression.\n     ➜ ➜ [ SAI ]: Việc duy trì một EC2 instance (dù là spot) chỉ để chạy 5 phút mỗi tuần đi kèm với sự phức tạp trong việc quản lý hệ điều hành, cấu hình khởi động tự động và không tối ưu bằng kiến trúc hoàn toàn serverless .",
           "createdAt": "2026-09-07T16:40:39.829955Z",
           "updatedAt": "2026-09-07T16:40:39.829956Z"
+        },
+        {
+          "id": "981aaa0dcd5f",
+          "title": "COLD START & PROVISIONED CONCURRENCY",
+          "content": "📌 Tình huống: API backend bằng Lambda thỉnh thoảng phản hồi chậm bất thường (vài trăm ms - vài giây) với request đầu tiên sau 1 thời gian không có traffic.\n✅ Nguyên nhân: Cold Start — Lambda phải khởi tạo môi trường chạy mới (tải code, khởi động runtime) khi không có execution environment nào đang \"ấm\" sẵn.\n✅ Đáp án đúng: Bật Provisioned Concurrency — giữ sẵn 1 số lượng execution environment LUÔN Ở TRẠNG THÁI SẴN SÀNG (đã init xong), loại bỏ cold start cho số lượng request trong ngưỡng đó, tính phí ngay cả khi không có request.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "8d4927854c3a",
+          "title": "LAMBDA CONCURRENCY: RESERVED vs UNRESERVED",
+          "content": "✅ Account có giới hạn concurrency tổng (mặc định 1000 request đồng thời/Region).\n✅ Reserved Concurrency: dành riêng 1 phần concurrency CHO 1 function cụ thể — đảm bảo function đó LUÔN có đủ concurrency (không bị function khác giành mất), đồng thời cũng là GIỚI HẠN TRẦN cho chính function đó (chặn nó không dùng vượt quá, tránh gây quá tải DB phía sau).\n⚠️ Đặt Reserved Concurrency = 0 ➜ tạm thời VÔ HIỆU HÓA hoàn toàn function đó (dùng để \"tắt khẩn cấp\" 1 Lambda gây lỗi).",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "ed134534f8a4",
+          "title": "LAMBDA TRONG VPC: ENI & HYPERPLANE",
+          "content": "📌 Tình huống: Lambda cần truy cập RDS nằm trong private subnet của VPC.\n✅ Đáp án đúng: Cấu hình Lambda chạy trong VPC (chọn subnet + security group) — AWS tạo Elastic Network Interface (ENI) để Lambda giao tiếp với resource trong VPC.\n⚠️ Kiến trúc hiện đại (Hyperplane ENI) dùng chung ENI giữa nhiều function/execution environment nên KHÔNG còn tình trạng cold start chậm do tạo ENI mới như trước đây; Lambda trong VPC private (không có route ra Internet) muốn gọi API AWS khác (S3, DynamoDB...) vẫn cần NAT Gateway hoặc VPC Endpoint.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "fa57768375b4",
+          "title": "LAMBDA LAYERS",
+          "content": "✅ Layer: gói thư viện/dependency dùng chung, tách riêng khỏi code chính, có thể attach vào NHIỀU function khác nhau (tối đa 5 layer/function) — giúp giảm kích thước package code, tái sử dụng code chung (SDK riêng, dependency lớn) giữa nhiều Lambda mà không cần copy lại.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "c203f35399e9",
+          "title": "LAMBDA DESTINATIONS vs DLQ",
+          "content": "✅ Dead Letter Queue (DLQ - SQS/SNS): chỉ nhận EVENT bị lỗi sau khi Lambda thử lại hết số lần retry (chỉ áp dụng cho ASYNC invocation).\n✅ Destinations (mới hơn, khuyến nghị dùng): gửi được cả kết quả THÀNH CÔNG (on-success) lẫn THẤT BẠI (on-failure) tới SQS/SNS/EventBridge/Lambda khác, kèm nhiều thông tin ngữ cảnh hơn DLQ (request/response payload đầy đủ).",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "a9339d634439",
+          "title": "LAMBDA@EDGE vs CLOUDFRONT FUNCTIONS",
+          "content": "✅ CloudFront Functions: chạy JavaScript ĐƠN GIẢN, độ trễ cực thấp (sub-ms), dùng cho việc nhẹ như sửa header, redirect URL, kiểm tra cookie — chạy ở TẤT CẢ Edge Location.\n✅ Lambda@Edge: chạy Node.js/Python ĐẦY ĐỦ TÍNH NĂNG hơn (gọi API bên ngoài, xử lý logic phức tạp), độ trễ cao hơn CloudFront Functions, hỗ trợ can thiệp cả 4 điểm trong vòng đời request CloudFront (viewer/origin request/response).\n⚠️ Chọn CloudFront Functions khi logic đơn giản & cần tốc độ tối đa; chọn Lambda@Edge khi cần xử lý phức tạp hơn (gọi origin khác, xử lý body request lớn).",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
         }
       ]
     },
@@ -87,6 +129,41 @@
           "content": "📌 Tình huống: Một công ty e-commerce chạy web application trên các Amazon EC2 instances trong một **Auto Scaling group**, nhận các đơn hàng của khách hàng thông qua một **Amazon Simple Queue Service (Amazon SQS)** queue để xử lý downstream. DevOps team nhận thấy hiệu năng ứng dụng giảm sút khi có lượng đơn hàng tăng đột biến (sudden spike). • Yêu cầu: Đề xuất loại chính sách auto scaling tối ưu để scale EC2 instances dựa trên khối lượng công việc của SQS queue. • Ràng buộc: Tự động duy...\n\n✅ Đáp án đúng: Sử dụng một target tracking scaling policy dựa trên một custom Amazon SQS queue metric .\n   ➜ ➜ [ ĐÚNG ]: Target tracking scaling cho phép bạn cấu hình Auto Scaling group duy trì một chỉ số mục tiêu cụ thể (ví dụ: số lượng message trung bình trên mỗi EC2 instance trong **SQS queue** - chẳng hạn `ApproximateNumberOfMessagesVisiblePerInstance`). Khi số lượng đơn hàng tăng đột biến, Auto Scaling sẽ tự động tính toán và điều chỉnh số lượng **EC2 instances** tăng lên để giữ metric bám sát mục tiêu đã định sẵn, là giải pháp hiện đại, tự động và tối ưu nhất cho SQS-backed workloads.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Sử dụng một step scaling policy dựa trên custom Amazon SQS queue metric.\n     ➜ ➜ [ SAI ]: Step scaling yêu cầu bạn phải tự định nghĩa các khoảng bước nhảy (step adjustments) phức tạp dựa trên các ngưỡng giá trị khác nhau, đòi hỏi nhiều công sức tinh chỉnh thủ công hơn và không tự động tối ưu linh hoạt như target tracking.\n   • Sử dụng một simple scaling policy dựa trên custom Amazon SQS queue metric.\n     ➜ ➜ [ SAI ]: Simple scaling là phương pháp cũ, có thời gian chờ cooldown cố định giữa các lần scale, dễ dẫn đến hiện tượng quá tải hoặc phản ứng chậm chạp khi gặp các đợt tăng tải đột ngột liên tục (sudden spikes).",
           "createdAt": "2026-09-07T16:40:39.829704Z",
           "updatedAt": "2026-09-07T16:40:39.829704Z"
+        },
+        {
+          "id": "089fadd952d6",
+          "title": "STANDARD QUEUE vs FIFO QUEUE",
+          "content": "✅ Standard Queue: throughput GẦN NHƯ VÔ HẠN, đảm bảo AT-LEAST-ONCE delivery (có thể nhận trùng message), thứ tự KHÔNG đảm bảo (best-effort ordering).\n✅ FIFO Queue: đảm bảo đúng THỨ TỰ (first-in-first-out) và EXACTLY-ONCE processing (không trùng lặp nhờ deduplication), nhưng giới hạn throughput (300 msg/s không batch, 3000 msg/s với batching + high throughput mode) — tên queue phải có hậu tố .fifo.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "eeb045a27e35",
+          "title": "VISIBILITY TIMEOUT",
+          "content": "📌 Tình huống: 1 consumer đang xử lý message nhưng bị lỗi/crash giữa chừng trước khi kịp xóa message khỏi queue — cần message đó được xử lý lại bởi consumer khác, nhưng không muốn 2 consumer xử lý TRÙNG cùng lúc.\n✅ Đáp án đúng: Visibility Timeout — khi 1 consumer nhận (poll) message, message đó bị ẨN khỏi các consumer khác trong khoảng thời gian này; nếu consumer xử lý xong và gọi DeleteMessage trước khi hết timeout thì message bị xóa hẳn, nếu KHÔNG (crash/quá thời gian) thì message TỰ HIỆN LẠI để consumer khác lấy xử lý.\n⚠️ Nếu thời gian xử lý thực tế lâu hơn Visibility Timeout, dùng ChangeMessageVisibility để GIA HẠN thêm thời gian giữa chừng.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "f5b10610cdcf",
+          "title": "LONG POLLING vs SHORT POLLING",
+          "content": "✅ Short Polling (mặc định): consumer hỏi ngay lập tức, nếu queue rỗng trả về response RỖNG NGAY — có thể gây nhiều API call thừa, tốn chi phí, không kiểm tra hết mọi server backend của SQS.\n✅ Long Polling (khuyến nghị, đặt ReceiveMessageWaitTimeSeconds > 0, tối đa 20s): consumer CHỜ tới khi có message hoặc hết timeout mới trả response — giảm số lượng API call rỗng, giảm chi phí, giảm độ trễ nhận message mới so với việc phải polling liên tục.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "d4961ae0839b",
+          "title": "SQS DEAD LETTER QUEUE (DLQ) & REDRIVE POLICY",
+          "content": "📌 Tình huống: 1 message bị lỗi xử lý LẶP ĐI LẶP LẠI (poison message) khiến consumer cứ nhận đi nhận lại mãi mà không xử lý được, làm nghẽn queue chính.\n✅ Đáp án đúng: Cấu hình Redrive Policy trỏ tới 1 Dead Letter Queue (DLQ) + đặt maxReceiveCount (vd 5) — sau khi message bị nhận (nhưng không xóa) quá số lần này, SQS tự động chuyển nó sang DLQ để cách ly, không làm nghẽn queue chính, cho phép debug riêng sau.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "9fb90d64bcf1",
+          "title": "SQS: FANOUT PATTERN VỚI SNS",
+          "content": "📌 Tình huống: 1 sự kiện (vd đơn hàng mới) cần được xử lý ĐỒNG THỜI bởi NHIỀU hệ thống độc lập khác nhau (gửi email, cập nhật kho, tính điểm thưởng), mỗi hệ thống xử lý theo tốc độ riêng.\n✅ Đáp án đúng: Fanout Pattern — publish 1 message vào SNS Topic, gắn NHIỀU SQS Queue subscribe vào topic đó (mỗi hệ thống 1 queue riêng) — SNS tự động gửi bản sao message tới TẤT CẢ queue, mỗi consumer xử lý độc lập theo tốc độ riêng mà không ảnh hưởng nhau.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
         }
       ]
     },
@@ -170,6 +247,34 @@
           "content": "📌 Tình huống: Engineering team tại một social media company đã migrate sang AWS Cloud và đang đánh giá Amazon CloudFront làm CDN cho ứng dụng chủ lực. Team thuê bạn với tư cách là AWS Certified Solutions Architect – Associate để tư vấn về các tính năng định tuyến, bảo mật và độ sẵn sàng cao của CloudFront. • Yêu cầu: Chọn 3 phát biểu chính xác nhất về các tính năng của Amazon CloudFront . • Ràng buộc: Đánh giá đúng các cơ chế origin failover, field-level encryption và multi-origin routing...\n\n✅ Đáp án đúng 1: \n   ➜ ➜ [ ĐÚNG ]: Field-level encryption cho phép bạn mã hóa dữ liệu nhạy cảm (như thông tin thẻ tín dụng hoặc mật khẩu) ngay tại client trước khi dữ liệu được gửi đến origin, đảm bảo rằng chỉ các ứng dụng phía backend có khóa giải mã tương ứng mới đọc được dữ liệu đó.\n✅ Đáp án đúng 2: \n   ➜ ➜ [ ĐÚNG ]: Thông qua tính năng Path Patterns trong CloudFront Cache Behaviors, bạn có thể định cấu hình để CloudFront chuyển hướng các loại request khác nhau (ví dụ: hình ảnh, video, API động) đến các origins hoặc origin groups khác nhau một cách linh hoạt.\n✅ Đáp án đúng 3: \n   ➜ ➜ [ ĐÚNG ]: Bằng cách thiết lập CloudFront Origin Groups , bạn chỉ định một origin chính ( primary origin ) và một origin dự phòng ( secondary origin ). Nếu origin chính trả về mã lỗi HTTP cụ thể (như 5xx), CloudFront sẽ tự động failover sang origin thứ hai để đảm bảo high-availability.",
           "createdAt": "2026-09-07T16:40:39.830655Z",
           "updatedAt": "2026-09-07T16:40:39.830656Z"
+        },
+        {
+          "id": "2a664b4356c2",
+          "title": "CLOUDFRONT ORIGIN: S3 vs CUSTOM ORIGIN & OAC",
+          "content": "✅ S3 Origin: dùng Origin Access Control (OAC, thay thế OAI cũ) để CHỈ CloudFront mới đọc được bucket, chặn user truy cập trực tiếp URL S3 (bucket policy chỉ cho phép CloudFront service principal).\n✅ Custom Origin: bất kỳ HTTP server nào (ALB, EC2, on-premises server) — CloudFront đứng trước để cache & tăng tốc.\n⚠️ Đáp án sai thường gặp: để bucket S3 PUBLIC rồi mới gắn CloudFront ➜ vi phạm best practice bảo mật, đúng ra phải bucket PRIVATE + OAC để bắt buộc mọi truy cập đi qua CloudFront.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "b1021500c19b",
+          "title": "CACHE BEHAVIOR & CACHE POLICY",
+          "content": "✅ Cache Behavior: định nghĩa cách CloudFront xử lý theo PATH PATTERN cụ thể (vd /api/* forward hết tới origin không cache, /images/* cache lâu) — 1 distribution có thể có nhiều behavior.\n✅ Cache Policy: kiểm soát CÁI GÌ được dùng làm cache key (header/cookie/query string nào) và TTL — 2 request khác cache key thì được cache RIÊNG, request giống nhau ở phần cache key thì trả cùng 1 bản cache dù các phần khác khác nhau.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "13494fd96919",
+          "title": "SIGNED URL vs SIGNED COOKIE",
+          "content": "📌 Tình huống: Cần giới hạn quyền xem nội dung premium (video, tài liệu trả phí) qua CloudFront chỉ cho user đã đăng nhập/trả phí, có thời hạn truy cập.\n✅ Signed URL: ký riêng cho TỪNG FILE, dùng khi chỉ cần bảo vệ 1 vài file cụ thể, hoặc khi client không hỗ trợ cookie (mobile app).\n✅ Signed Cookie: ký 1 LẦN cho phép truy cập NHIỀU FILE cùng lúc (vd cả series video), phù hợp khi user cần xem nhiều tài nguyên trong session mà không muốn ký URL riêng từng cái.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "113d37577512",
+          "title": "CLOUDFRONT: CÁC PRICE CLASS",
+          "content": "✅ Price Class All: dùng TẤT CẢ Edge Location toàn cầu, hiệu năng tốt nhất mọi nơi, chi phí cao nhất.\n✅ Price Class 200 / 100: giới hạn chỉ dùng Edge Location ở 1 số khu vực RẺ HƠN (bỏ bớt Nam Mỹ, Úc, Ấn Độ...) — chọn khi biết trước phần lớn user chỉ ở 1 số khu vực nhất định, giúp tiết kiệm chi phí mà chấp nhận độ trễ cao hơn ở khu vực bị loại.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
         }
       ]
     },
@@ -215,6 +320,48 @@
           "content": "📌 Tình huống: Một ride-sharing company muốn sử dụng Amazon DynamoDB table để lưu trữ dữ liệu. Bảng này không được sử dụng vào ban đêm, trong khi lượng traffic đọc và ghi thường không thể dự đoán được (unpredictable) trong giờ ban ngày . Khi các đợt tăng đột biến traffic (traffic spikes) xảy ra, chúng diễn ra rất nhanh chóng . • Yêu cầu: Đề xuất giải pháp cấu hình DynamoDB phù hợp nhất cho đặc thù traffic không thể đoán trước và tăng vọt cực nhanh . • Ràng buộc: Không dùng ban đêm, traffic...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Chế độ On-Demand Capacity Mode của DynamoDB tự động thích ứng ngay lập tức với lưu lượng đọc và ghi của ứng dụng. Khi traffic tăng vọt đột ngột ( traffic spikes ) rất nhanh mà không thể dự báo trước, On-Demand lập tức xử lý các request đó mà không cần lên kế hoạch capacity trước hay lo bị throttle . Hơn nữa, vì bảng không có traffic vào ban đêm, bạn chỉ trả tiền cho những gì thực sự sử dụng (pay-per-request) , tối ưu chi phí hoàn toàn.",
           "createdAt": "2026-09-07T16:40:39.830519Z",
           "updatedAt": "2026-09-07T16:40:39.830520Z"
+        },
+        {
+          "id": "7785a0252a1d",
+          "title": "THIẾT KẾ PARTITION KEY & HOT PARTITION",
+          "content": "📌 Tình huống: Bảng DynamoDB dùng \"ngày hiện tại\" (vd 2026-09-14) làm Partition Key cho toàn bộ traffic ghi trong ngày, hiệu năng bị throttle dù chưa đạt tổng capacity của bảng.\n✅ Nguyên nhân: Hot Partition — DynamoDB phân phối throughput đều theo PARTITION, nếu 1 partition key nhận quá nhiều traffic (mọi request cùng 1 ngày = cùng 1 partition) thì bị giới hạn dù các partition khác đang rảnh.\n✅ Giải pháp: Thiết kế Partition Key có ĐỘ PHÂN TÁN CAO (high cardinality) — vd thêm random suffix hoặc dùng user ID/device ID làm 1 phần của key thay vì chỉ dùng ngày.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "b5cb8014ee82",
+          "title": "GLOBAL SECONDARY INDEX (GSI) vs LOCAL SECONDARY INDEX (LSI)",
+          "content": "✅ LSI: dùng CHUNG Partition Key với bảng gốc, chỉ khác Sort Key, PHẢI tạo cùng lúc tạo bảng (không thêm sau được), dùng chung read/write capacity với bảng gốc, hỗ trợ strongly consistent read.\n✅ GSI: Partition Key + Sort Key HOÀN TOÀN KHÁC bảng gốc, tạo được BẤT KỲ LÚC NÀO (kể cả sau khi bảng đã có data), có capacity RIÊNG, chỉ hỗ trợ eventually consistent read.\n⚠️ Đáp án sai thường gặp: cần thêm index truy vấn mới cho bảng ĐÃ CÓ SẴN dữ liệu ➜ phải dùng GSI (LSI không thêm được sau khi tạo bảng).",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "ce5ccffe53a0",
+          "title": "DYNAMODB STREAMS",
+          "content": "📌 Tình huống: Cần trigger 1 hành động (gửi email, đồng bộ sang hệ thống khác) MỖI KHI có item trong bảng DynamoDB bị thêm/sửa/xóa.\n✅ Đáp án đúng: Bật DynamoDB Streams — ghi lại thứ tự thay đổi (change log) của item trong 24h, kết hợp Lambda trigger tự động xử lý mỗi khi có thay đổi mới — dùng cho event-driven architecture, đồng bộ dữ liệu real-time sang hệ thống khác, hoặc dùng làm nguồn cho Global Tables.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "b4161661cba3",
+          "title": "DAX (DYNAMODB ACCELERATOR)",
+          "content": "✅ DAX: caching layer chuyên biệt CHỈ CHO DynamoDB, tương thích API sẵn có (gần như không cần sửa code), giảm độ trễ đọc từ mili-giây xuống MICRO-GIÂY cho read-heavy workload.\n⚠️ Khác ElastiCache (cache tổng quát cho nhiều loại DB, cần code thêm logic cache-aside) — DAX tích hợp SẴN vào DynamoDB, chỉ đổi endpoint là dùng được ngay.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "bd734fcab0b5",
+          "title": "ON-DEMAND vs PROVISIONED CAPACITY MODE",
+          "content": "✅ On-Demand: tự động scale theo traffic thực tế, KHÔNG cần dự đoán trước, tính phí theo request thực dùng (đắt hơn per-request) — phù hợp traffic khó dự đoán/spike bất thường, ứng dụng mới chưa biết pattern.\n✅ Provisioned: khai báo trước Read/Write Capacity Units (RCU/WCU) cố định, RẺ HƠN nếu traffic ổn định/dự đoán được, có thể kết hợp Auto Scaling để tự điều chỉnh capacity trong khoảng min-max đã đặt.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "9a31c4232395",
+          "title": "DYNAMODB GLOBAL TABLES",
+          "content": "📌 Tình huống: Ứng dụng cần đọc/ghi DynamoDB với độ trễ thấp từ nhiều Region trên thế giới, dữ liệu phải đồng bộ 2 chiều giữa các Region.\n✅ Đáp án đúng: DynamoDB Global Tables — multi-Region, multi-active (đọc/GHI được ở MỌI Region tham gia, không chỉ 1 chiều như read replica), tự động đồng bộ 2 chiều dùng DynamoDB Streams bên dưới, xử lý conflict bằng \"last writer wins\".",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
         }
       ]
     },
@@ -295,6 +442,41 @@
           "content": "📌 Tình huống: Bạn có một Amazon S3 bucket chứa các file ở hai folder khác nhau: s3://my-bucket/images và s3://my-bucket/thumbnails . Khi ảnh mới được upload, chúng được xem thường xuyên. Nhưng sau 45 ngày, phân tích cho thấy các file ảnh (images) hiếm khi được yêu cầu, nhưng các thumbnails thì vẫn được xem nhiều. Sau 180 ngày, bạn muốn archive cả file ảnh và thumbnails. Tổng thể giải pháp phải duy trì **high availability** để chống lại sự cố sập toàn bộ một Availability Zone (AZ). • Yêu...\n\n✅ Đáp án đúng 1: \n   ➜ ➜ [ ĐÚNG ]: Vì các file trong folder images ít được truy cập sau 45 ngày trong khi thumbnails vẫn được xem thường xuyên, việc áp dụng Lifecycle Policy với prefix (ví dụ: `images/`) giúp chỉ chuyển đổi riêng nhóm file ảnh sang S3 Standard-IA mà không làm ảnh hưởng đến thumbnails. S3 Standard-IA lưu trữ dữ liệu tối thiểu qua nhiều AZ nên đáp ứng hoàn hảo yêu cầu high availability.\n✅ Đáp án đúng 2: \n   ➜ ➜ [ ĐÚNG ]: Sau 180 ngày, toàn bộ cả file ảnh và thumbnails đều cần được archive để tiết kiệm chi phí tối đa. Việc thiết lập transition toàn bộ S3 bucket sang Amazon S3 Glacier sau mốc thời gian này là giải pháp chuẩn hóa đáp ứng đúng yêu cầu lưu trữ lâu dài (archive).",
           "createdAt": "2026-09-07T16:40:39.830393Z",
           "updatedAt": "2026-09-07T16:40:39.830393Z"
+        },
+        {
+          "id": "ed0c4a03db2e",
+          "title": "TỔNG HỢP S3 STORAGE CLASSES",
+          "content": "✅ S3 Standard: truy cập thường xuyên, độ bền 11 số 9, phân phối trên ≥3 AZ, giá cao nhất trong nhóm active-access.\n✅ S3 Intelligent-Tiering: TỰ ĐỘNG chuyển object giữa các tier truy cập (frequent/infrequent/archive) dựa trên pattern sử dụng THỰC TẾ, không cần tự quản lý lifecycle, không phạt phí truy cập sớm.\n✅ S3 Standard-IA / One Zone-IA: rẻ hơn Standard cho dữ liệu ÍT TRUY CẬP nhưng cần lấy nhanh khi cần, tính phí phụ trội khi truy cập (retrieval fee); One Zone chỉ lưu ở 1 AZ (rẻ hơn nhưng rủi ro mất nếu AZ đó sập).\n✅ S3 Glacier Instant Retrieval: archive nhưng truy xuất NGAY LẬP TỨC (mili-giây), phù hợp dữ liệu archive nhưng thỉnh thoảng vẫn cần truy cập tức thời.\n✅ S3 Glacier Flexible Retrieval: archive giá rẻ hơn, truy xuất mất phút-giờ (có tùy chọn expedited/standard/bulk).\n✅ S3 Glacier Deep Archive: RẺ NHẤT, truy xuất mất 12 GIỜ trở lên, dùng cho compliance lưu trữ dài hạn 7-10 năm hiếm khi động tới.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "80846bba74d0",
+          "title": "S3 LIFECYCLE RULES",
+          "content": "📌 Tình huống: Log ứng dụng cần giữ Standard 30 ngày đầu (hay truy cập), sau đó chuyển sang lưu trữ rẻ hơn, và tự động XÓA hẳn sau 1 năm để tiết kiệm chi phí không cần thao tác thủ công.\n✅ Đáp án đúng: Tạo S3 Lifecycle Rule — tự động transition storage class theo mốc thời gian (vd Standard → IA sau 30 ngày → Glacier sau 90 ngày) và Expiration (tự xoá) sau X ngày, áp dụng theo prefix/tag để chỉ target đúng nhóm object cần.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "8dca51026863",
+          "title": "S3 VERSIONING & MFA DELETE",
+          "content": "✅ Versioning: giữ lại MỌI phiên bản của 1 object khi bị ghi đè/xóa (xóa thực chất chỉ thêm \"delete marker\", có thể khôi phục lại) — bảo vệ chống ghi đè/xóa nhầm, kết hợp Lifecycle Rule để tự dọn version cũ.\n✅ MFA Delete: yêu cầu thêm mã MFA khi thực hiện XÓA VĨNH VIỄN 1 version hoặc TẮT versioning của bucket — lớp bảo vệ bổ sung chống xóa dữ liệu ác ý/nhầm lẫn nghiêm trọng, chỉ root account của bucket owner mới bật/tắt được.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "c1779c18c85b",
+          "title": "S3 REPLICATION: CRR vs SRR",
+          "content": "✅ Cross-Region Replication (CRR): tự động sao chép object sang bucket ở REGION KHÁC — dùng cho compliance yêu cầu lưu bản sao ở địa lý khác, giảm độ trễ đọc cho user ở xa, hoặc backup DR.\n✅ Same-Region Replication (SRR): sao chép sang bucket khác trong CÙNG Region — dùng để gộp log từ nhiều bucket vào 1 nơi, hoặc tuân thủ yêu cầu tách biệt dữ liệu giữa các account/môi trường.\n⚠️ Cả 2 đều yêu cầu bật Versioning ở CẢ bucket nguồn và đích; theo mặc định KHÔNG replicate ngược lại các object đã tồn tại TRƯỚC khi bật rule (phải dùng S3 Batch Replication để copy dữ liệu cũ).",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "819c9eb28eb3",
+          "title": "S3 OBJECT LOCK (WORM)",
+          "content": "📌 Tình huống: Yêu cầu compliance (tài chính, y tế) bắt buộc dữ liệu KHÔNG THỂ bị sửa/xóa trong 1 khoảng thời gian nhất định, kể cả bởi chính admin có full quyền.\n✅ Đáp án đúng: S3 Object Lock (Write Once Read Many - WORM) — khóa object không cho ghi đè/xóa trong khoảng thời gian đã đặt.\n   • Governance mode: user có quyền IAM đặc biệt (s3:BypassGovernanceRetention) vẫn có thể gỡ khóa.\n   • Compliance mode: KHÔNG AI (kể cả root account) có thể gỡ khóa hay rút ngắn thời gian trước khi hết hạn — dùng cho yêu cầu compliance nghiêm ngặt nhất.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
         }
       ]
     },
@@ -326,6 +508,55 @@
           "content": "📌 Tình huống: Một retail company quản lý hạ tầng trên AWS Cloud với web application chạy trên Amazon EC2-based web servers và database là Amazon RDS PostgreSQL đặt trong private subnet. Database đã được mã hóa dữ liệu tại chỗ ( encrypting data at rest ) dùng AWS KMS . • Yêu cầu: Đề xuất bước thiết lập để đảm bảo bảo mật đầu cuối cho dữ liệu đang truyền tải (data-in-transit) khi truy cập database . • Ràng buộc: Bảo vệ an toàn dữ liệu trên đường truyền mạng giữa EC2 instances và RDS...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Để bảo vệ dữ liệu trên đường truyền mạng giữa ứng dụng (EC2) và cơ sở dữ liệu ( Amazon RDS PostgreSQL ), giải pháp tiêu chuẩn là cấu hình mã hóa SSL/TLS (Secure Sockets Layer) trên RDS. Điều này đảm bảo rằng toàn bộ các câu lệnh SQL, dữ liệu nhạy cảm và thông tin xác thực được truyền qua mạng đều được mã hóa hoàn toàn, đáp ứng chuẩn bảo mật end-to-end cho data-in-transit .",
           "createdAt": "2026-09-07T16:40:39.831038Z",
           "updatedAt": "2026-09-07T16:40:39.831039Z"
+        },
+        {
+          "id": "2ca2d2d3ad15",
+          "title": "MULTI-AZ vs READ REPLICA",
+          "content": "✅ Multi-AZ: 1 standby đồng bộ (synchronous replication) ở AZ khác CHỈ ĐỂ FAILOVER khi primary chết — KHÔNG dùng để đọc, mục tiêu là HIGH AVAILABILITY.\n✅ Read Replica: bản sao ASYNCHRONOUS (có thể ở cùng/khác AZ/khác Region), DÙNG ĐỂ ĐỌC (giảm tải cho primary), mục tiêu là SCALABILITY/PERFORMANCE, có thể promote thành DB độc lập.\n⚠️ Đáp án sai thường gặp: dùng Multi-AZ standby để scale read traffic ➜ không được, standby Multi-AZ không nhận query đọc.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "cedbc61a7b48",
+          "title": "AMAZON RDS PROXY",
+          "content": "📌 Tình huống: Ứng dụng serverless (Lambda) tạo QUÁ NHIỀU kết nối đồng thời tới RDS khiến DB bị quá tải connection, mỗi lần Lambda cold start lại phải tạo connection mới tốn thời gian.\n✅ Đáp án đúng: Amazon RDS Proxy — connection pooling ở giữa ứng dụng và RDS, giữ pool connection sẵn sàng dùng lại, giảm tải connection cho DB, tăng tốc failover (RDS Proxy tự route sang instance mới nhanh hơn DNS failover thông thường).",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "add2e47ac810",
+          "title": "RDS BACKUP: AUTOMATED BACKUP vs MANUAL SNAPSHOT",
+          "content": "✅ Automated Backup: bật sẵn, backup hàng ngày + transaction log liên tục ➜ hỗ trợ Point-In-Time Recovery (khôi phục về BẤT KỲ giây nào trong retention period, tối đa 35 ngày), TỰ ĐỘNG XÓA khi xóa DB instance (trừ khi giữ final snapshot).\n✅ Manual Snapshot: do người dùng chủ động tạo, KHÔNG có giới hạn thời gian lưu, KHÔNG bị xóa khi xóa DB instance ➜ dùng cho backup dài hạn/trước khi thay đổi lớn.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "a50945710a69",
+          "title": "RDS ENCRYPTION: KHÔNG THỂ BẬT SAU KHI TẠO",
+          "content": "📌 Tình huống: DB instance RDS đã tạo từ trước KHÔNG bật mã hóa, giờ yêu cầu compliance bắt buộc phải mã hóa at-rest.\n✅ Đáp án đúng: Tạo snapshot từ DB hiện tại → Copy snapshot đó với tùy chọn Enable Encryption → Restore snapshot đã mã hóa thành DB instance MỚI → chuyển traffic ứng dụng sang DB mới.\n⚠️ RDS encryption (mã hóa storage, snapshot, replica, backup) chỉ có thể bật NGAY KHI TẠO DB, không thể bật/tắt trên instance đang chạy.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "6f85c91f746f",
+          "title": "PARAMETER GROUP vs OPTION GROUP",
+          "content": "✅ Parameter Group: cấu hình THAM SỐ ENGINE database (vd max_connections, character set) — áp dụng ngay hoặc cần reboot tùy loại tham số (dynamic vs static).\n✅ Option Group: bật thêm TÍNH NĂNG/PLUGIN bổ sung của engine (vd Oracle TDE, SQL Server Mirroring, MariaDB audit plugin) — không phải mọi engine đều có Option Group.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "0fbff063e823",
+          "title": "RDS BLUE/GREEN DEPLOYMENTS",
+          "content": "📌 Tình huống: Cần nâng cấp major version engine hoặc thay đổi schema lớn cho RDS production mà giảm tối đa downtime và rủi ro.\n✅ Đáp án đúng: RDS Blue/Green Deployment — tạo môi trường \"Green\" giống hệt \"Blue\" (production hiện tại) qua replication đồng bộ, test kỹ trên Green, rồi CUTOVER (chuyển đổi) sang Green chỉ trong vài giây, có thể rollback nhanh nếu lỗi.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "aaf06745b0c8",
+          "title": "RDS EVENT NOTIFICATIONS & MAINTENANCE WINDOW",
+          "content": "✅ RDS Event Notifications: gửi thông báo (qua SNS) khi có sự kiện quan trọng (failover, backup xong, low storage...).\n✅ Maintenance Window: khung giờ để AWS áp dụng patch/update engine tự động (nếu bật auto minor version upgrade) — nên đặt vào giờ traffic thấp nhất để giảm ảnh hưởng.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
         }
       ]
     },
@@ -371,6 +602,34 @@
           "content": "📌 Tình huống: Amazon Route 53 được cấu hình định tuyến traffic tới hai Network Load Balancer nodes thuộc hai Availability Zones (AZs) : AZ-A và AZ-B . Tính năng Cross-zone load balancing bị vô hiệu hóa (disabled) . AZ-A có 4 targets và AZ-B có 6 targets . • Yêu cầu: Xác định phát biểu chính xác về tỷ lệ phân phối traffic tới các target instances từ Route 53 và NLB . • Ràng buộc: Cross-zone load balancing disabled, phân chia đều ở tầng Route 53 giữa các AZ và chia đều trong từng AZ bởi NLB...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Khi tính năng cross-zone load balancing bị tắt , luồng đi của traffic diễn ra như sau: 1. Amazon Route 53 phân phối traffic đồng đều 50% cho mỗi AZ (50% sang NLB node ở AZ-A và 50% sang NLB node ở AZ-B). 2. NLB node tại mỗi AZ sẽ phân phối đều lượng traffic nhận được cho các targets nằm ngay trong chính AZ đó (không chuyển traffic sang AZ khác). 3. Do đó, 50% tổng traffic của AZ-A sẽ được chia đều cho 4 targets của AZ-A $\\rightarrow$ Mỗi target nhận được: $50\\% / 4 = 12.5\\%$. (Tương tự, 50% tổng traffic của AZ-B chia đều cho 6 targets $\\rightarrow$ mỗi target nhận được $50\\% / 6 \\approx 8.33\\%$).",
           "createdAt": "2026-09-07T16:40:39.831054Z",
           "updatedAt": "2026-09-07T16:40:39.831055Z"
+        },
+        {
+          "id": "d3b46dc1f5fa",
+          "title": "TỔNG HỢP CÁC ROUTING POLICY CỦA ROUTE 53",
+          "content": "✅ Simple: 1 record trỏ 1 (hoặc nhiều) giá trị, không có logic gì thêm.\n✅ Weighted: phân chia traffic theo TỶ LỆ % định sẵn giữa nhiều endpoint (vd A/B testing, canary deployment).\n✅ Latency-based: route user tới Region có ĐỘ TRỄ THẤP NHẤT (dựa trên đo lường mạng thực tế, không phải khoảng cách địa lý).\n✅ Geolocation: route theo VỊ TRÍ ĐỊA LÝ của người dùng (theo quốc gia/châu lục) — dùng cho compliance/nội dung bản địa hóa, có thể chặn hẳn 1 khu vực.\n✅ Geoproximity: giống Geolocation nhưng có thể \"bias\" (nới/thu hẹp) vùng phủ của 1 endpoint mà không cần đổi vị trí hạ tầng thật (cần Route 53 Traffic Flow).\n✅ Multi-Value Answer: trả về NHIỀU IP (tối đa 8) kèm health check cơ bản, giống DNS round-robin có kiểm tra sức khỏe — không thay thế hoàn toàn cho Load Balancer.\n✅ Failover: route tới PRIMARY, tự động chuyển sang SECONDARY khi primary bị đánh dấu unhealthy qua Health Check — dùng cho kiến trúc DR active-passive.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "9283de983c89",
+          "title": "ROUTE 53 HEALTH CHECKS",
+          "content": "✅ Health Check theo dõi endpoint (IP/domain) bằng cách gửi request định kỳ, đánh dấu healthy/unhealthy dựa trên response code/nội dung/latency — kết hợp với Failover routing hoặc loại bỏ record unhealthy khỏi Multi-Value Answer.\n⚠️ Có thể tạo Health Check dựa trên CloudWatch Alarm (thay vì tự Route 53 kiểm tra endpoint) — hữu ích khi muốn failover dựa trên chỉ số nội bộ (vd tỷ lệ lỗi ứng dụng) chứ không chỉ đơn thuần ping được hay không.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "6e91d751184a",
+          "title": "ALIAS RECORD vs CNAME",
+          "content": "📌 Tình huống: Cần trỏ APEX DOMAIN (vd example.com, không có www) tới 1 CloudFront distribution hoặc ALB — nhưng chuẩn DNS (RFC) không cho phép CNAME tại apex domain (root domain).\n✅ Đáp án đúng: Dùng Alias Record (tính năng riêng của Route 53) — hoạt động tương tự CNAME nhưng DÙNG ĐƯỢC Ở APEX DOMAIN, MIỄN PHÍ query (không tính phí như CNAME/A thường), tự động cập nhật IP khi target thay đổi (vd IP của ALB đổi), hỗ trợ trỏ tới CloudFront/ALB/NLB/S3 website/API Gateway.\n⚠️ CNAME chỉ dùng được cho SUBDOMAIN (vd www.example.com), không dùng được ở apex domain.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "7dbf3538a51f",
+          "title": "DOMAIN REGISTRATION vs HOSTED ZONE",
+          "content": "✅ Domain Registration: đăng ký QUYỀN SỞ HỮU tên miền (mua domain) — có thể đăng ký qua Route 53 hoặc nhà cung cấp khác (GoDaddy...).\n✅ Hosted Zone: nơi LƯU CÁC DNS RECORD (A, CNAME, MX...) cho 1 domain — hoàn toàn TÁCH BIỆT với việc đăng ký domain; có thể đăng ký domain ở nơi khác nhưng vẫn dùng Route 53 Hosted Zone để quản lý DNS record (chỉ cần trỏ Name Server của domain về Route 53).",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
         }
       ]
     },
@@ -769,6 +1028,34 @@
           "content": "📌 Tình huống: Amazon Route 53 được cấu hình định tuyến traffic tới hai Network Load Balancer nodes thuộc hai Availability Zones (AZs) : AZ-A và AZ-B . Tính năng Cross-zone load balancing bị vô hiệu hóa (disabled) . AZ-A có 4 targets và AZ-B có 6 targets . • Yêu cầu: Xác định phát biểu chính xác về tỷ lệ phân phối traffic tới các target instances từ Route 53 và NLB . • Ràng buộc: Cross-zone load balancing disabled, phân chia đều ở tầng Route 53 giữa các AZ và chia đều trong từng AZ bởi NLB...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Khi tính năng cross-zone load balancing bị tắt , luồng đi của traffic diễn ra như sau: 1. Amazon Route 53 phân phối traffic đồng đều 50% cho mỗi AZ (50% sang NLB node ở AZ-A và 50% sang NLB node ở AZ-B). 2. NLB node tại mỗi AZ sẽ phân phối đều lượng traffic nhận được cho các targets nằm ngay trong chính AZ đó (không chuyển traffic sang AZ khác). 3. Do đó, 50% tổng traffic của AZ-A sẽ được chia đều cho 4 targets của AZ-A $\\rightarrow$ Mỗi target nhận được: $50\\% / 4 = 12.5\\%$. (Tương tự, 50% tổng traffic của AZ-B chia đều cho 6 targets $\\rightarrow$ mỗi target nhận được $50\\% / 6 \\approx 8.33\\%$).",
           "createdAt": "2026-09-07T16:40:39.831056Z",
           "updatedAt": "2026-09-07T16:40:39.831057Z"
+        },
+        {
+          "id": "0d0f67c0cce1",
+          "title": "ALB vs NLB vs GWLB: BẢNG SO SÁNH NHANH",
+          "content": "✅ Application Load Balancer (ALB) - Layer 7: routing theo path/host/header/query string, hỗ trợ WebSocket, HTTP/2, tích hợp WAF, phù hợp microservices/container.\n✅ Network Load Balancer (NLB) - Layer 4: hiệu năng CỰC CAO, độ trễ cực thấp (triệu request/giây), hỗ trợ Static IP/Elastic IP cố định, giữ nguyên IP client (preserve source IP), phù hợp TCP/UDP thuần túy, gaming, IoT.\n✅ Gateway Load Balancer (GWLB) - Layer 3: dùng để chèn thiết bị bảo mật/inspection vào luồng traffic (đã có note riêng ở VPC).\n⚠️ Đáp án sai thường gặp: cần Static IP cho load balancer ➜ chỉ NLB hỗ trợ trực tiếp (ALB không gán Elastic IP trực tiếp được, phải qua Global Accelerator nếu cần IP tĩnh).",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "bdff704333ee",
+          "title": "STICKY SESSIONS (SESSION AFFINITY)",
+          "content": "📌 Tình huống: Ứng dụng lưu session state ngay trên bộ nhớ của từng EC2 instance (không dùng session store tập trung như ElastiCache/DynamoDB), cần đảm bảo user luôn được route về ĐÚNG instance đã tạo session cho họ.\n✅ Đáp án đúng: Bật Sticky Sessions trên Target Group — ALB dùng cookie (application-based hoặc duration-based) để ghim 1 client về đúng 1 target trong suốt phiên làm việc.\n⚠️ Best practice lâu dài vẫn là thiết kế ứng dụng STATELESS (lưu session ở ElastiCache/DynamoDB) thay vì phụ thuộc sticky session, để dễ scale và không mất session khi instance bị thay thế.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "78933874ac67",
+          "title": "CROSS-ZONE LOAD BALANCING",
+          "content": "✅ Khi BẬT: Load Balancer phân phối traffic ĐỀU cho TẤT CẢ target ở MỌI AZ (bất kể AZ nào request đi vào ban đầu).\n✅ Khi TẮT: traffic chỉ được phân phối đều giữa các target TRONG CÙNG AZ mà request đã đi vào ➜ nếu số lượng target không đều giữa các AZ, AZ có ít target sẽ bị quá tải hơn.\n⚠️ ALB: mặc định LUÔN BẬT cross-zone (miễn phí, không tắt được). NLB: mặc định TẮT, bật được nhưng khi bật sẽ tính phí data transfer giữa các AZ.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "ed7d7e4185c0",
+          "title": "DEREGISTRATION DELAY (CONNECTION DRAINING)",
+          "content": "📌 Tình huống: 1 instance trong Target Group sắp bị gỡ ra (do scale in hoặc unhealthy), nhưng đang xử lý dở 1 số request — cần đảm bảo không cắt ngang các request đang chạy.\n✅ Đáp án đúng: Deregistration Delay (mặc định 300s) — Load Balancer NGỪNG gửi request MỚI tới target đó ngay, nhưng vẫn cho phép các request ĐANG XỬ LÝ hoàn tất trong khoảng thời gian này trước khi target bị gỡ hẳn khỏi Target Group.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
         }
       ]
     },
@@ -856,6 +1143,167 @@
           "content": "📌 Tình huống: Một research organization đang chạy một high-performance computing (HPC) workload sử dụng Amazon EC2 instances được phân phối trên nhiều Availability Zones (AZs) trong một AWS Region. Workload yêu cầu truy cập shared file system với độ trễ thấp nhất có thể (lowest possible latency) cho frequent reads and writes. Team quyết định sử dụng Amazon EFS . • Yêu cầu: Thiết kế kiến trúc sao cho mỗi EC2 instance có thể truy cập file system với độ trễ thấp nhất giữa các AZs . • Ràng...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Để đạt được độ trễ thấp nhất (lowest possible latency) khi truy cập Amazon EFS từ các EC2 instances nằm ở nhiều AZs khác nhau, kiến trúc chuẩn là tạo một mount target trong subnet của từng AZ. Khi các instances mount EFS thông qua IP của mount target nằm ngay trong cùng AZ của chúng, lưu lượng truy cập mạng sẽ được định tuyến cục bộ trong AZ đó, giúp giảm thiểu độ trễ mạng và loại bỏ chi phí cũng như độ trễ cross-AZ data transfer .",
           "createdAt": "2026-09-07T16:40:39.830974Z",
           "updatedAt": "2026-09-07T16:40:39.830975Z"
+        },
+        {
+          "id": "ca14df60724b",
+          "title": "SO SÁNH CÁC PURCHASING OPTIONS CỦA EC2",
+          "content": "📌 Tình huống: Cần chọn đúng loại hình mua EC2 cho từng workload để tối ưu chi phí (Domain 4 hay khai thác dạng \"most cost-effective\").\n\n✅ Tổng hợp:\n   • On-Demand: trả theo giờ/giây, không cam kết, đắt nhất, phù hợp workload ngắn hạn/không dự đoán được hoặc mới bắt đầu.\n   • Reserved Instances (RI): cam kết 1 hoặc 3 năm, giảm giá đến ~72%, phù hợp workload chạy ỔN ĐỊNH LIÊN TỤC đã biết trước (steady-state).\n   • Savings Plans: cam kết mức chi tiêu (USD/giờ) trong 1-3 năm, linh hoạt hơn RI vì áp dụng được cho nhiều instance family/region (Compute Savings Plans) hoặc riêng theo family (EC2 Instance Savings Plans).\n   • Spot Instances: rẻ nhất (đến ~90%), có thể bị AWS thu hồi bất kỳ lúc nào (2 phút cảnh báo trước), phù hợp workload chịu được gián đoạn (batch job, CI/CD, rendering, stateless web tier có auto-scale bù).\n   • Dedicated Hosts: thuê nguyên 1 physical server, kiểm soát được vị trí instance/socket/core, dùng khi cần compliance hoặc Bring-Your-Own-License (BYOL) theo socket/core/VM.\n   • Dedicated Instances: instance chạy trên phần cứng dành riêng cho account bạn nhưng không kiểm soát được physical server cụ thể (khác Dedicated Host), phù hợp yêu cầu compliance đơn giản hơn.\n   • Capacity Reservations: đảm bảo LUÔN CÓ capacity sẵn sàng trong 1 AZ cụ thể (không giảm giá nếu đứng riêng, thường kết hợp RI/Savings Plan để vừa có giá tốt vừa chắc chắn có capacity).\n\n⚠️ Đáp án sai thường gặp: chọn Spot cho workload production cần độ sẵn sàng cao liên tục — Spot không đảm bảo capacity, có thể bị terminate bất kỳ lúc nào.",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "9b2cf2fd2c7b",
+          "title": "INSTANCE METADATA SERVICE (IMDS): IMDSv1 vs IMDSv2 & SSRF",
+          "content": "📌 Tình huống: Ứng dụng web chạy trên EC2 bị lỗ hổng SSRF (Server-Side Request Forgery), kẻ tấn công lợi dụng lỗ hổng này để gọi vào http://169.254.169.254 và lấy được IAM Role credentials tạm thời của instance.\n\n✅ Đáp án đúng: Bắt buộc dùng IMDSv2 (chặn IMDSv1) — IMDSv2 yêu cầu phải có 1 bước lấy SESSION TOKEN bằng HTTP PUT request trước khi gọi GET lấy metadata, và mặc định có PUT response hop limit = 1 (token không thể lấy được từ xa qua request proxy/SSRF đơn giản chỉ dùng GET như IMDSv1).\n   ➜ Cấu hình \"HttpTokens = required\" khi launch instance (hoặc modify instance metadata options) để bắt buộc toàn bộ truy vấn phải qua IMDSv2.\n\n⚠️ Lưu ý: IMDSv1 (chỉ cần GET request đơn giản, không cần token) dễ bị khai thác qua SSRF hơn nhiều vì không cần thêm bước xác thực nào ➜ đây là lý do IMDSv2 trở thành best practice bảo mật bắt buộc trên EC2 hiện đại.",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "b50e8560f7f0",
+          "title": "PLACEMENT GROUPS: CLUSTER, SPREAD & PARTITION",
+          "content": "📌 Tình huống: Cần kiểm soát CÁCH EC2 instance được đặt vật lý trong data center của AWS để tối ưu hiệu năng mạng hoặc tăng độ chịu lỗi.\n\n✅ 3 loại Placement Group:\n   • Cluster: đặt các instance GẦN NHAU trong CÙNG 1 rack/AZ, tối ưu băng thông mạng thấp độ trễ (low-latency, high-throughput) — dùng cho HPC, big data. Rủi ro: cả cụm cùng fail nếu rack đó gặp sự cố.\n   • Spread: đặt mỗi instance trên phần cứng vật lý RIÊNG BIỆT (tối đa 7 instance/AZ), tối đa hóa fault tolerance — dùng cho ứng dụng cần vài instance quan trọng không được cùng fail (vd core service nhỏ).\n   • Partition: chia instance thành nhiều PARTITION (mỗi partition = 1 nhóm rack riêng biệt), instance trong cùng partition có thể chung phần cứng nhưng khác partition thì tách biệt hoàn toàn — dùng cho ứng dụng phân tán lớn (HDFS, Cassandra, Kafka) cần biết rõ partition nào chứa data nào để tối ưu replication.\n\n⚠️ Lưu ý: Placement Group KHÔNG thể đổi loại sau khi tạo; di chuyển instance giữa các Placement Group cần stop instance trước (trừ 1 số trường hợp).",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "24b1aaa02b57",
+          "title": "EC2 INSTANCE STORE vs EBS: ROOT DEVICE TYPE",
+          "content": "📌 Tình huống: Ứng dụng cần lưu cache tạm thời với tốc độ đọc/ghi CỰC NHANH (NVMe SSD vật lý gắn liền server), chấp nhận mất dữ liệu khi instance stop/terminate; đồng thời cần phân biệt với ổ đĩa gốc dùng để boot OS.\n\n✅ Instance Store (Ephemeral Storage): ổ đĩa vật lý gắn trực tiếp vào host server, tốc độ I/O rất cao, HOÀN TOÀN MIỄN PHÍ (đã tính trong giá instance), nhưng dữ liệu MẤT VĨNH VIỄN khi Stop, Terminate, hoặc khi phần cứng host gặp sự cố (KHÔNG mất khi chỉ Reboot).\n   ➜ Chỉ dùng cho dữ liệu tạm thời (cache, buffer, temp processing files), không dùng cho dữ liệu cần persistent.\n\n⚠️ Phân biệt Root Device Type: EBS-backed AMI (phổ biến nhất hiện nay) cho phép Stop/Start, snapshot, resize; Instance Store-backed AMI (kiểu cũ) KHÔNG THỂ Stop (chỉ Reboot hoặc Terminate) vì root volume nằm trên instance store — mất dữ liệu vĩnh viễn nếu Terminate.",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "83d291d7e222",
+          "title": "LAUNCH TEMPLATE vs LAUNCH CONFIGURATION",
+          "content": "📌 Tình huống: Cần định nghĩa cấu hình chuẩn (AMI, instance type, security group, key pair...) để Auto Scaling Group hoặc EC2 Fleet dùng khi launch instance mới, và cần khả năng VERSIONING để cập nhật dần mà không ảnh hưởng instance đang chạy.\n\n✅ Đáp án đúng: Dùng Launch Template (khuyến nghị hiện tại của AWS) — hỗ trợ NHIỀU VERSION (v1, v2...), có thể đặt version mặc định, hỗ trợ Mixed Instances Policy (kết hợp On-Demand + Spot trong cùng ASG), hỗ trợ đầy đủ tính năng EC2 mới nhất (Placement Group, Capacity Reservation...).\n\n⚠️ Launch Configuration (kiểu CŨ, AWS khuyến nghị KHÔNG dùng cho thiết kế mới): KHÔNG hỗ trợ versioning (phải tạo mới hoàn toàn mỗi khi đổi cấu hình), KHÔNG hỗ trợ Mixed Instances Policy, mỗi Auto Scaling Group chỉ gắn được với 1 Launch Configuration tại 1 thời điểm.",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "561e5ea7efd7",
+          "title": "EC2 HIBERNATE: LƯU TRẠNG THÁI RAM",
+          "content": "📌 Tình huống: Ứng dụng có thời gian khởi động (boot + load ứng dụng vào RAM) rất lâu, muốn khi Start lại instance sau khi Stop, ứng dụng tiếp tục chạy ngay từ trạng thái cũ (in-memory state) thay vì phải khởi động lại từ đầu.\n\n✅ Đáp án đúng: Dùng tính năng Hibernate — khi Stop, toàn bộ nội dung RAM được lưu (dump) vào EBS root volume (đã mã hóa); khi Start lại, RAM được khôi phục lại y hệt trạng thái trước khi hibernate, OS và ứng dụng tiếp tục chạy ngay, không cần boot lại từ đầu.\n\n⚠️ Điều kiện: chỉ hỗ trợ 1 số instance family nhất định, RAM tối đa 150GB, root volume phải là EBS (không phải instance store) và đủ dung lượng trống để chứa RAM dump, phải bật hibernation ngay khi LAUNCH instance (không bật được sau khi đã chạy).",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "1a6dab0dcbf8",
+          "title": "STOP vs TERMINATE vs HIBERNATE & TERMINATION PROTECTION",
+          "content": "📌 Tình huống: Cần phân biệt rõ 3 hành động dừng instance và cách bảo vệ instance quan trọng khỏi bị xóa nhầm.\n\n✅ Phân biệt:\n   • Stop: tắt instance, giữ nguyên EBS volume (root + data), giữ private IP (trong VPC), giải phóng Auto-assigned Public IP (nhưng giữ Elastic IP nếu có gắn). Không tính phí compute khi Stop (vẫn tính phí EBS storage).\n   • Terminate: XÓA VĨNH VIỄN instance, mặc định XÓA LUÔN root EBS volume (trừ khi tick \"Delete on Termination = false\"), các EBS volume phụ (non-root) mặc định được GIỮ LẠI.\n   • Hibernate: như Stop nhưng lưu thêm RAM vào EBS để khôi phục nguyên trạng khi Start.\n\n⚠️ Termination Protection: bật \"Enable Termination Protection\" để chặn việc Terminate nhầm qua Console/API/CLI (phải tắt cờ này trước mới Terminate được) — nên bật cho mọi instance production quan trọng.",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "10ed176b11f9",
+          "title": "ENHANCED NETWORKING: ENA vs EFA",
+          "content": "📌 Tình huống: Ứng dụng HPC (tính toán khoa học, machine learning training phân tán nhiều node) cần băng thông mạng cực cao và độ trễ cực thấp giữa các node để chạy các phép tính song song (MPI).\n\n✅ Đáp án đúng:\n   • Elastic Network Adapter (ENA): cung cấp Enhanced Networking tiêu chuẩn, băng thông cao (lên tới 100 Gbps tùy instance type), độ trễ thấp hơn networking thông thường, mặc định có sẵn trên hầu hết instance type hiện đại.\n   • Elastic Fabric Adapter (EFA): là ENA được TRANG BỊ THÊM khả năng giao tiếp OS-bypass (bỏ qua kernel networking stack), tối ưu riêng cho HPC/ML dùng giao thức MPI hoặc NCCL — độ trễ THẤP HƠN & throughput ổn định hơn ENA thường khi giao tiếp giữa nhiều node cùng lúc.\n\n⚠️ Đáp án sai thường gặp: dùng ENA thường cho workload MPI đa node quy mô lớn ➜ vẫn hoạt động nhưng không tối ưu bằng EFA (EFA mới là lựa chọn đúng khi đề cập rõ \"tightly-coupled HPC workload\" hoặc \"MPI\").",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "954d8b166c43",
+          "title": "RESERVED INSTANCES: STANDARD vs CONVERTIBLE, REGIONAL vs ZONAL",
+          "content": "📌 Tình huống: Công ty cam kết dùng RI 3 năm để tiết kiệm chi phí nhưng lo ngại nhu cầu instance type có thể thay đổi trong tương lai (vd nâng cấp lên instance family mới hơn khi ra mắt).\n\n✅ 2 chiều phân loại Reserved Instance cần nhớ:\n   • Standard RI: giảm giá SÂU NHẤT (~72%), nhưng KHÔNG thể đổi instance family/OS/tenancy trong suốt thời gian cam kết (chỉ đổi được size trong cùng family ở 1 số trường hợp).\n   • Convertible RI: giảm giá ÍT HƠN Standard, nhưng CÓ THỂ đổi sang instance type/family/OS khác trong thời gian cam kết (miễn giá trị RI mới ≥ RI cũ) — phù hợp khi nhu cầu compute có thể thay đổi.\n   • Regional scope: áp dụng giảm giá cho MỌI AZ trong Region đó, linh hoạt hơn, không giữ chỗ capacity cụ thể.\n   • Zonal scope: chỉ áp dụng cho 1 AZ CỤ THỂ, đổi lại ĐẢM BẢO capacity luôn có sẵn tại AZ đó (giống Capacity Reservation kèm giảm giá).\n\n⚠️ Đáp án đúng cho tình huống trên: Convertible RI — đổi được instance family khi cần trong tương lai, đánh đổi mức giảm giá thấp hơn Standard RI.",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "e9569fffd81b",
+          "title": "DEDICATED HOST vs DEDICATED INSTANCE",
+          "content": "📌 Tình huống: Công ty có phần mềm license theo SOCKET/CORE vật lý (Bring Your Own License - BYOL, vd Windows Server, SQL Server, Oracle) và cần biết CHÍNH XÁC instance đang chạy trên socket/core nào để tuân thủ điều khoản license.\n\n✅ Đáp án đúng: Dedicated Host — thuê nguyên 1 physical server dành riêng cho account, cho phép xem/kiểm soát chi tiết số socket, số core, ID physical server ➜ đáp ứng yêu cầu BYOL cần biết rõ phần cứng vật lý.\n\n⚠️ Đáp án sai thường gặp: Dedicated Instance ➜ cũng chạy trên phần cứng dành riêng cho account (không share với account khác), NHƯNG KHÔNG cho phép biết/kiểm soát server vật lý cụ thể (do AWS tự động allocate) ➜ KHÔNG đủ đáp ứng yêu cầu BYOL theo socket/core cụ thể như Dedicated Host.\n   • Dedicated Host đắt hơn nhưng phù hợp compliance/license nghiêm ngặt; Dedicated Instance chỉ cần \"tenancy riêng\", không cần kiểm soát vật lý chi tiết.",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "5bc1a21cd4e7",
+          "title": "EC2 AUTO RECOVERY & CAPACITY RESERVATIONS",
+          "content": "📌 Tình huống A: EC2 instance chạy ứng dụng quan trọng, cần tự động phục hồi khi phần cứng vật lý bên dưới (underlying hardware) gặp sự cố (status check system thất bại), mà không cần đợi admin can thiệp thủ công.\n\n✅ Đáp án đúng: Tạo CloudWatch Alarm dựa trên Status Check (StatusCheckFailed_System) với action = Recover instance — AWS tự động di chuyển (migrate) instance sang phần cứng vật lý MỚI, giữ nguyên private IP, Elastic IP, metadata, instance ID.\n   ⚠️ Auto Recovery chỉ hoạt động khi lỗi ở tầng HỆ THỐNG/PHẦN CỨNG (System status check), KHÔNG hoạt động nếu lỗi do chính OS/ứng dụng bên trong instance (Instance status check) — trường hợp đó cần reboot/tự xử lý ở tầng OS.\n\n📌 Tình huống B: Cần đảm bảo LUÔN có sẵn capacity EC2 tại 1 AZ cụ thể cho sự kiện quan trọng sắp tới (ra mắt sản phẩm), tránh rủi ro \"InsufficientCapacityError\" khi cần scale gấp.\n\n✅ Đáp án đúng: Tạo On-Demand Capacity Reservation cho AZ và instance type cụ thể — giữ chỗ capacity chắc chắn có sẵn, tính phí như On-Demand dù có dùng hay không, có thể hủy bất kỳ lúc nào (không cam kết dài hạn như RI).",
+          "createdAt": "2026-09-14T03:12:36.738797Z",
+          "updatedAt": "2026-09-14T03:12:36.738797Z"
+        },
+        {
+          "id": "b20f8e0c1b19",
+          "title": "AMI LIFECYCLE: TẠO, COPY, DEPRECATE & DEREGISTER",
+          "content": "📌 Tình huống: Cần quản lý vòng đời của các AMI tự build trong công ty — từ lúc tạo, nhân bản sang Region khác, cho tới lúc AMI cũ không còn dùng nữa.\n\n✅ Các bước/khái niệm chính:\n   • Create AMI: có thể tạo từ EC2 instance đang chạy (chụp snapshot toàn bộ EBS volume gắn kèm) — nên Stop instance trước khi tạo để đảm bảo tính toàn vẹn dữ liệu (consistent), hoặc dùng flag \"no-reboot\" nếu chấp nhận rủi ro nhỏ.\n   • Copy AMI: nhân bản AMI sang Region khác hoặc account khác (phục vụ Disaster Recovery đa Region, hoặc chia sẻ giữa các môi trường dev/staging/prod).\n   • Deprecate AMI: đánh dấu AMI \"sắp hết hạn dùng\" tại 1 thời điểm trong tương lai — AMI vẫn dùng launch instance được nhưng hiện cảnh báo, không bị xóa.\n   • Deregister AMI: gỡ đăng ký AMI hoàn toàn — không thể dùng để launch instance mới nữa, nhưng các instance ĐANG CHẠY từ AMI đó không bị ảnh hưởng; snapshot EBS gốc vẫn còn trừ khi tự xóa riêng.\n\n⚠️ Lưu ý: Deregister AMI KHÔNG xóa snapshot liên quan — phải xóa snapshot thủ công riêng nếu muốn dọn sạch hoàn toàn, tránh vẫn bị tính phí lưu trữ snapshot.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "58d58403ddcb",
+          "title": "PHÂN LOẠI INSTANCE FAMILY: M, C, R, T, I, D, G/P...",
+          "content": "📌 Cách đọc tên Instance Type (vd m5.xlarge): chữ cái đầu = family (nhóm mục đích sử dụng), số = generation (thế hệ), chữ theo sau (a/g/n...) = biến thể phần cứng (a=AMD, g=Graviton/ARM, n=network-optimized), phần cuối = size.\n\n✅ Các family chính cần nhớ cho SAA:\n   • General Purpose (M, T): cân bằng CPU/RAM/network, phù hợp đa số ứng dụng web/app server thông thường.\n   • Compute Optimized (C): CPU mạnh, tỷ lệ CPU/RAM cao — batch processing, media encoding, gaming server, HPC nhẹ.\n   • Memory Optimized (R, X, z1d): RAM lớn — in-memory database (Redis/SAP HANA), big data real-time processing.\n   • Storage Optimized (I, D, H): tối ưu cho I/O đọc/ghi cực nhanh trên local NVMe (I) hoặc dung lượng lớn giá rẻ (D) — data warehouse, NoSQL database tự host, distributed file system.\n   • Accelerated Computing (G, P, Inf, Trn): có GPU/chip AI riêng — machine learning training/inference, đồ họa 3D, video transcoding.\n   • T-family (Burstable): riêng biệt, dùng cơ chế CPU Credit (xem note riêng).\n\n⚠️ Đáp án sai thường gặp: chọn family sai mục đích (vd chọn Compute Optimized cho database cần nhiều RAM) ➜ luôn map đúng: CPU-bound → C, Memory-bound → R, I/O-bound → I/D, GPU/ML → G/P.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "8e0565bcbd18",
+          "title": "BURSTABLE INSTANCES (T-FAMILY): CPU CREDITS & UNLIMITED MODE",
+          "content": "📌 Tình huống: Web server nhỏ traffic thấp phần lớn thời gian, nhưng thỉnh thoảng có đợt traffic tăng đột biến cần CPU cao hơn baseline trong thời gian ngắn.\n\n✅ Cơ chế T-family (t2/t3/t4g...): mỗi instance có baseline CPU performance cố định (vd 20% 1 vCPU) và tích lũy CPU Credit khi dùng ÍT HƠN baseline; khi cần burst (dùng NHIỀU HƠN baseline), instance tiêu credit đã tích lũy để tăng hiệu năng CPU tạm thời lên tới 100%.\n   • Standard mode: khi hết credit, CPU bị GIỚI HẠN CỨNG về đúng baseline (throttled), không vượt được dù ứng dụng cần thêm.\n   • Unlimited mode: khi hết credit, VẪN CHO PHÉP burst vượt baseline liên tục, tính thêm phí phụ trội (surcharge) theo mức sử dụng vượt — tránh bị throttle đột ngột nhưng phải theo dõi chi phí.\n\n⚠️ Đáp án sai thường gặp: dùng T-family Standard mode cho workload cần CPU cao ổn định liên tục dài hạn ➜ sẽ bị throttle liên tục khi hết credit; nên chuyển sang instance family khác (M/C) nếu nhu cầu CPU cao thường xuyên, chỉ dùng Unlimited mode cho spike ngắn hạn không thường xuyên.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "2919fd88045f",
+          "title": "EC2 FLEET vs SPOT FLEET: ALLOCATION STRATEGY & CAPACITY REBALANCING",
+          "content": "📌 Tình huống: Cần launch đồng thời hàng trăm instance với NHIỀU instance type/purchasing option khác nhau (mix On-Demand + Spot) để tối ưu vừa chi phí vừa độ sẵn sàng, quản lý như 1 nhóm duy nhất.\n\n✅ Đáp án đúng:\n   • EC2 Fleet: quản lý tập trung cả On-Demand, Spot, và Reserved/Capacity Reservation trong 1 request duy nhất, hỗ trợ 3 loại request (instant, request, maintain).\n   • Spot Fleet: phiên bản CŨ HƠN, chỉ tập trung vào Spot Instances (có thể kèm On-Demand làm base capacity), có Auto Scaling riêng cho Spot Fleet (target tracking, step, scheduled).\n   • Allocation Strategy (quyết định chọn Spot pool nào): lowest-price (rẻ nhất), diversified (trải đều nhiều pool giảm rủi ro bị thu hồi đồng loạt), capacity-optimized (chọn pool có capacity dồi dào nhất, giảm khả năng bị interrupt).\n   • Capacity Rebalancing: khi AWS phát hiện dấu hiệu 1 Spot Instance sắp bị thu hồi (rebalance recommendation), tự động launch instance thay thế TRƯỚC khi instance cũ bị terminate thật, giảm gián đoạn dịch vụ.\n\n⚠️ Lưu ý: AWS khuyến nghị dùng EC2 Fleet (mới hơn, đầy đủ tính năng hơn) cho thiết kế mới thay vì Spot Fleet.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "128419f8efab",
+          "title": "CÁC CÁCH KẾT NỐI VÀO EC2: SSH/RDP, EC2 INSTANCE CONNECT, SERIAL CONSOLE",
+          "content": "📌 Tình huống: Cần chọn đúng phương thức kết nối vào EC2 tùy tình huống cụ thể (có public IP hay không, còn SSH được hay không, key bị mất...).\n\n✅ Tổng hợp các cách kết nối:\n   • SSH (Linux) / RDP (Windows) truyền thống: cần key pair, cần mở port 22/3389, cần public IP hoặc VPN/Direct Connect nếu private.\n   • EC2 Instance Connect: đẩy tạm 1 SSH public key qua API (IAM-authenticated) rồi SSH bình thường, dùng cho instance có PUBLIC IP, không cần quản lý key pair lâu dài.\n   • EC2 Instance Connect Endpoint: mở rộng Instance Connect cho instance PRIVATE (không cần public IP/bastion/VPN), kết nối qua 1 endpoint đặt trong VPC.\n   • Systems Manager Session Manager: không cần key pair, không cần mở port, không cần public IP, audit đầy đủ qua CloudTrail (đã có note riêng ở AWS Systems Manager).\n   • EC2 Serial Console: kết nối vào cổng SERIAL (console vật lý ảo) của instance khi mạng bị lỗi hoàn toàn (misconfigured SSH/firewall/network) khiến không SSH/RDP được — dùng để debug OS-level trực tiếp, cần bật quyền qua IAM riêng.\n\n⚠️ Đáp án sai thường gặp: cố SSH vào instance khi network/SG bị cấu hình sai hoàn toàn (không còn đường nào vào) ➜ Serial Console là lối thoát duy nhất trong tình huống này.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "9f3931c0c276",
+          "title": "AWS NITRO ENCLAVES: XỬ LÝ DỮ LIỆU NHẠY CẢM CÔ LẬP",
+          "content": "📌 Tình huống: Công ty tài chính cần xử lý dữ liệu cực kỳ nhạy cảm (thông tin thẻ, khóa mã hóa) trên EC2, yêu cầu đảm bảo KHÔNG AI (kể cả chính admin vận hành EC2 instance đó, hay tiến trình khác trên cùng instance) có thể truy cập được vào bộ nhớ xử lý dữ liệu này, kể cả qua SSH.\n\n✅ Đáp án đúng: AWS Nitro Enclaves — tạo ra 1 môi trường compute HOÀN TOÀN CÔ LẬP (isolated), tách biệt CPU/RAM riêng khỏi EC2 instance cha, KHÔNG có kết nối mạng, KHÔNG có storage persistent, KHÔNG thể SSH vào enclave, chỉ giao tiếp với instance cha qua 1 kênh local an toàn (vsock). Hỗ trợ Cryptographic Attestation để chứng minh code chạy trong enclave chưa bị sửa đổi trước khi cấp quyền truy cập KMS key.\n\n⚠️ Khác với Dedicated Host (cô lập ở tầng PHẦN CỨNG vật lý giữa các account) — Nitro Enclaves cô lập ở tầng COMPUTE ngay TRONG 1 instance, giữa enclave và chính OS/user của instance đó.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "0aeed8e6cf98",
+          "title": "BASIC vs DETAILED MONITORING (CLOUDWATCH)",
+          "content": "📌 Tình huống: Cần theo dõi CPU/network của EC2 instance với độ chi tiết theo thời gian cao hơn để phát hiện sự cố nhanh hơn.\n\n✅ Đáp án đúng:\n   • Basic Monitoring: MIỄN PHÍ, mặc định bật sẵn, gửi metric mỗi 5 PHÚT.\n   • Detailed Monitoring: tính phí thêm, phải bật thủ công, gửi metric mỗi 1 PHÚT — phản ứng nhanh hơn với alarm/auto scaling (vd Auto Scaling phản ứng scale nhanh hơn khi traffic tăng đột biến).\n\n⚠️ Lưu ý: dù bật Detailed Monitoring, vẫn chỉ theo dõi được các metric HOST-LEVEL mà CloudWatch tự thu thập sẵn (CPU, network, disk I/O cấp EBS...) — muốn theo dõi metric BÊN TRONG OS (RAM usage, disk usage %, process...) phải cài thêm CloudWatch Agent.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "3c8be129be08",
+          "title": "STATUS CHECKS: SYSTEM STATUS vs INSTANCE STATUS",
+          "content": "📌 Tình huống: Instance bị lỗi, cần xác định lỗi nằm ở tầng hạ tầng AWS hay ở bên trong chính OS/ứng dụng để chọn hướng khắc phục đúng (reboot vs chờ AWS tự động phục hồi).\n\n✅ 2 loại Status Check của EC2:\n   • System Status Check: kiểm tra HẠ TẦNG VẬT LÝ bên dưới (network, power, hardware, hypervisor host) — nếu FAIL, nguyên nhân nằm ngoài tầm kiểm soát của bạn, giải pháp là Stop/Start (di chuyển sang host khác) hoặc dùng Auto Recovery.\n   • Instance Status Check: kiểm tra CHÍNH INSTANCE (OS-level: network config, file system, kernel, memory bị full...) — nếu FAIL, thường do cấu hình/lỗi bên trong OS, giải pháp là Reboot instance hoặc debug qua Serial Console/Rescue.\n\n⚠️ Lưu ý: CloudWatch Alarm dựa trên Auto Recovery action chỉ trigger khi SYSTEM status check fail — không hoạt động cho Instance status check fail (vì recovery sang host khác không giải quyết được lỗi bên trong OS).",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "e578b7cee612",
+          "title": "SCHEDULED EVENTS: RETIREMENT, REBOOT & MAINTENANCE",
+          "content": "📌 Tình huống: AWS thông báo trước rằng 1 EC2 instance sẽ bị ảnh hưởng bởi bảo trì phần cứng trong tương lai (vd cần reboot hoặc di chuyển sang host khác), cần chủ động xử lý trước khi việc này xảy ra ngoài ý muốn.\n\n✅ Scheduled Events (xem trong EC2 Console hoặc AWS Health Dashboard) báo trước các sự kiện:\n   • Reboot: AWS sẽ reboot instance vào thời điểm định sẵn (do cần patch hypervisor...).\n   • Stop/Start (system maintenance): instance sẽ được di chuyển sang phần cứng khác.\n   • Retirement: phần cứng vật lý hiện tại sắp ngừng hoạt động hẳn (end-of-life), instance PHẢI được Stop/Start (hoặc Terminate & launch lại) TRƯỚC ngày retire, nếu không AWS sẽ tự动 Stop instance vào đúng ngày đó.\n\n⚠️ Đáp án đúng khi gặp tình huống này: chủ động Stop/Start instance SỚM HƠN lịch retirement (tại thời điểm mình chọn, ít ảnh hưởng nhất) thay vì để AWS tự xử lý vào đúng ngày (có thể trùng giờ cao điểm).",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "80ba8ae14a0d",
+          "title": "BLOCK DEVICE MAPPING & DELETE ON TERMINATION",
+          "content": "📌 Tình huống: Instance có 1 root volume (chứa OS) và 1 data volume riêng (chứa dữ liệu quan trọng). Khi Terminate instance, cần đảm bảo dữ liệu KHÔNG bị mất, dù root volume có bị xóa theo instance.\n\n✅ Đáp án đúng: Kiểm tra & cấu hình \"Delete on Termination\" trong Block Device Mapping của từng volume:\n   • Root volume: mặc định Delete on Termination = TRUE (bị xóa khi Terminate) — nếu muốn giữ lại, phải tắt flag này TRƯỚC khi Terminate.\n   • Volume phụ (non-root/data volume) gắn thêm: mặc định Delete on Termination = FALSE (được GIỮ LẠI dù instance bị Terminate).\n\n⚠️ Block Device Mapping là bản khai báo (trong Launch Template/AMI) toàn bộ các volume sẽ gắn vào instance khi launch, gồm device name, kích thước, loại volume, và encryption — có thể sửa mapping này khi tạo Launch Template mới hoặc khi launch instance thủ công.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "91ae16aeac43",
+          "title": "KEY PAIRS: CƠ CHẾ HOẠT ĐỘNG & XỬ LÝ MẤT PRIVATE KEY",
+          "content": "📌 Tình huống: Admin làm mất file private key (.pem) dùng để SSH vào 1 EC2 instance Linux quan trọng, cần tìm cách truy cập lại instance mà không có key cũ.\n\n✅ Cơ chế Key Pair: AWS chỉ lưu PUBLIC KEY (ghi vào file ~/.ssh/authorized_keys trên instance lúc launch), PRIVATE KEY chỉ bạn giữ và KHÔNG THỂ tải lại từ AWS nếu mất (AWS không lưu bản sao).\n\n✅ Cách khôi phục truy cập khi mất private key (EBS-backed instance):\n   1. Tạo key pair MỚI.\n   2. Stop instance bị mất key, detach root EBS volume, attach volume đó sang 1 instance khác (đã có SSH access) làm volume phụ.\n   3. Mount volume, thêm public key MỚI vào file authorized_keys trong đó.\n   4. Detach, attach lại volume về đúng vị trí root trên instance gốc, Start lại — giờ SSH được bằng key mới.\n\n⚠️ Cách đơn giản hơn (nếu có cài sẵn): dùng EC2 Instance Connect hoặc Systems Manager Session Manager — không phụ thuộc key pair, truy cập được ngay mà không cần thao tác volume phức tạp trên.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "496c8069435f",
+          "title": "AMI BOOT MODE: UEFI vs LEGACY BIOS",
+          "content": "📌 Tình huống: Cần launch 1 instance dùng tính năng bảo mật boot hiện đại (vd UEFI Secure Boot để chống rootkit/bootkit tấn công vào quá trình khởi động OS), nhưng AMI/instance type phải tương thích.\n\n✅ Đáp án đúng: Chọn AMI có Boot Mode = UEFI (thay vì Legacy BIOS mặc định của AMI cũ), và instance type phải thuộc dòng hỗ trợ UEFI (đa số instance Nitro-based hiện đại). UEFI cho phép bật thêm UEFI Secure Boot — chỉ cho phép chạy bootloader/kernel/driver đã được ký số hợp lệ, chặn mã độc chèn vào quá trình boot.\n\n⚠️ Lưu ý: Boot Mode được xác định TỪ AMI (thuộc tính cố định khi tạo AMI), không thể đổi boot mode của 1 instance đang chạy — muốn đổi phải build lại AMI mới với boot mode mong muốn.",
+          "createdAt": "2026-09-14T03:15:49.874330Z",
+          "updatedAt": "2026-09-14T03:15:49.874330Z"
         }
       ]
     },
@@ -880,6 +1328,20 @@
           "content": "📌 Tình huống: Team muốn chạy container trên ECS nhưng không muốn quản lý, patch hay scale EC2 instance làm host. Chi phí cần tính chính xác theo tài nguyên (vCPU/RAM) mà task thực sự dùng.\n\n✅ Đáp án đúng: Dùng ECS Launch Type = Fargate.\n   ➜ Fargate là serverless compute engine cho container: AWS tự quản lý toàn bộ server bên dưới, tự động scale, tính phí theo vCPU/memory x thời gian chạy của từng task (per-second).\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Launch Type = EC2 ➜ phải tự tạo, patch, scale Auto Scaling Group các EC2 instance làm cluster host cho ECS, đổi lại kiểm soát được instance type (GPU, bare-metal...), có thể tận dụng Reserved/Spot Instances để giảm chi phí khi workload ổn định lâu dài.\n   • EC2 phù hợp khi cần tối ưu chi phí ở quy mô lớn/ổn định hoặc cần instance đặc biệt; Fargate phù hợp khi ưu tiên đơn giản hóa vận hành, workload biến động, không muốn quản lý server.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "aa4cc336d2ab",
+          "title": "ECS TASK DEFINITION & SERVICE",
+          "content": "✅ Task Definition: bản \"blueprint\" mô tả container (image, CPU/RAM, port, environment variable, IAM role) — giống Launch Template của EC2 nhưng cho container.\n✅ Task: 1 lần chạy THỰC TẾ của Task Definition (1 hoặc nhiều container cùng chạy chung).\n✅ Service: đảm bảo LUÔN CÓ đủ số lượng Task mong muốn đang chạy (tự khởi động lại nếu Task chết), tích hợp được với ALB/NLB để load balance giữa các Task, và Service Auto Scaling để scale theo tải.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "3fabf2b8bf27",
+          "title": "ECS TASK ROLE vs TASK EXECUTION ROLE",
+          "content": "📌 Tình huống: Container trong ECS Task cần gọi API S3/DynamoDB để xử lý nghiệp vụ, đồng thời ECS Agent cần quyền pull image từ ECR và ghi log ra CloudWatch — 2 nhu cầu quyền khác nhau dễ gây nhầm lẫn.\n✅ Đáp án đúng:\n   • Task Execution Role: quyền cho HẠ TẦNG ECS (pull image từ ECR, ghi log CloudWatch, lấy secret từ Secrets Manager để inject vào container) — KHÔNG liên quan code ứng dụng.\n   • Task Role: quyền cho CHÍNH ỨNG DỤNG bên trong container gọi API AWS khác (S3, DynamoDB...) — giống IAM Role gắn cho EC2 instance nhưng ở cấp Task.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
         }
       ]
     },
@@ -949,6 +1411,13 @@
           "content": "📌 Tình huống: Một healthcare provider đang gặp tình trạng tăng trưởng dữ liệu nhanh chóng tại các on-premises servers do nhu cầu lưu trữ hồ sơ và hình ảnh bệnh nhân tăng cao. Tổ chức muốn mở rộng storage capacity lên AWS sao cho vẫn duy trì quyền truy cập nhanh chóng vào các dữ liệu quan trọng ngay từ local file systems . Giải pháp phải tối ưu hóa băng thông migration , tránh mọi chi phí truy xuất dữ liệu (retrieval fees) hoặc độ trễ khi truy cập dữ liệu trên cloud với cấu hình ứng dụng...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: AWS Storage Gateway (Cached Volumes) giải quyết hoàn hảo bài toán cạn kiệt dung lượng on-premises bằng cách lưu trữ toàn bộ tập dữ liệu chính (primary dataset) trên Amazon S3 (với S3 Standard không có phí retrieval), trong khi chỉ lưu các dữ liệu truy cập thường xuyên (hot data) trong bộ nhớ cache tại chỗ để đảm bảo độ trễ thấp. Điều này giúp mở rộng storage capacity lên AWS , tiết kiệm không gian local, tối ưu băng thông và không phát sinh chi phí truy xuất dữ liệu như các tier lưu trữ lạnh.",
           "createdAt": "2026-09-07T16:40:39.830108Z",
           "updatedAt": "2026-09-07T16:40:39.830109Z"
+        },
+        {
+          "id": "ca5bfc46e747",
+          "title": "3 LOẠI STORAGE GATEWAY: FILE, VOLUME, TAPE",
+          "content": "✅ File Gateway: expose file share (NFS/SMB) cho on-premises server, lưu file dưới dạng OBJECT trên S3, cache file hay dùng ở local để truy cập nhanh.\n✅ Volume Gateway:\n   • Cached mode: dữ liệu CHÍNH lưu trên AWS (S3, backup thành EBS snapshot), chỉ cache 1 phần hay dùng ở local — phù hợp khi muốn giảm tối đa storage on-premises.\n   • Stored mode: dữ liệu CHÍNH lưu ở local (toàn bộ), CHỈ backup (snapshot) lên AWS định kỳ — phù hợp khi cần độ trễ truy cập thấp nhất tại chỗ, AWS chỉ đóng vai trò DR backup.\n✅ Tape Gateway: thay thế tape backup vật lý bằng Virtual Tape Library (VTL) lưu trên S3/Glacier, tương thích với phần mềm backup hiện có (Veeam, NetBackup...) không cần đổi quy trình backup cũ.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
         }
       ]
     },
@@ -1090,6 +1559,34 @@
           "content": "📌 Tình huống: Bạn làm việc cho một SaaS company với vai trò Solutions Architect. Một khách hàng là bank có yêu cầu phải whitelist một public IP khi truy cập các external services qua internet. Giải pháp nào đảm bảo high availability , hỗ trợ scaling-up lên tới 10 instances và đáp ứng yêu cầu của ngân hàng? • Yêu cầu: Cung cấp cố định public IP (static IP) để bên thứ ba whitelist khi outbound traffic ra internet . • Ràng buộc: Duy trì độ sẵn sàng cao và khả năng scale linh hoạt cho cụm...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Network Load Balancer (NLB) cho phép bạn gắn một Elastic IP (EIP) tĩnh cho mỗi Availability Zone mà nó hoạt động. Điều này cung cấp các địa chỉ IP cố định, ổn định để ngoại vi có thể whitelist. Khi kết hợp NLB phía trước một Auto Scaling Group (ASG) , hệ thống có thể tự động scale horizontal lên tới 10 instances (hoặc hơn) một cách trơn tru mà không làm thay đổi các điểm truy cập mạng công cộng bên ngoài.",
           "createdAt": "2026-09-07T16:40:39.830732Z",
           "updatedAt": "2026-09-07T16:40:39.830733Z"
+        },
+        {
+          "id": "a56fe8fda094",
+          "title": "SCALING POLICIES: TARGET TRACKING, STEP & SIMPLE",
+          "content": "✅ Target Tracking (khuyến nghị, dễ dùng nhất): chỉ cần đặt 1 metric mục tiêu (vd CPU trung bình = 50%), Auto Scaling TỰ TÍNH toán scale in/out để giữ metric quanh mức đó — giống cơ chế thermostat.\n✅ Step Scaling: định nghĩa nhiều NGƯỠNG (step) cụ thể ứng với mức tăng/giảm capacity khác nhau tùy độ lệch so với alarm (vd CPU>70% thêm 2 instance, CPU>90% thêm 5 instance) — linh hoạt hơn nhưng phức tạp hơn để cấu hình.\n✅ Simple Scaling: chỉ có 1 hành động cố định mỗi lần alarm trigger, phải chờ hết Cooldown mới scale tiếp — kiểu cũ, ít dùng trong thiết kế mới.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "4f61cf3a4e61",
+          "title": "LIFECYCLE HOOKS",
+          "content": "📌 Tình huống: Trước khi 1 instance mới trong ASG chính thức nhận traffic, cần chạy thêm bước cấu hình/cài đặt phần mềm tùy chỉnh mất vài phút; hoặc trước khi terminate 1 instance, cần lưu log/dữ liệu quan trọng ra ngoài trước.\n✅ Đáp án đúng: Lifecycle Hooks — tạm dừng instance ở trạng thái Pending:Wait (khi launch) hoặc Terminating:Wait (khi terminate) trong 1 khoảng thời gian (mặc định 1h, gia hạn được), cho phép chạy script/Lambda xử lý xong rồi mới cho instance tiếp tục vòng đời.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "57b2d9e983da",
+          "title": "WARM POOLS",
+          "content": "📌 Tình huống: Instance mới trong ASG mất nhiều thời gian để khởi động ứng dụng (bootstrap lâu), khi traffic tăng đột biến, scale out không kịp đáp ứng nhanh.\n✅ Đáp án đúng: Warm Pool — giữ sẵn 1 nhóm instance đã khởi động trước và ở trạng thái Stopped/Running nhưng CHƯA nhận traffic (đã qua bước bootstrap tốn thời gian), khi cần scale out, ASG lấy instance từ warm pool ra phục vụ ngay lập tức thay vì launch từ đầu — tiết kiệm chi phí hơn so với giữ instance chạy đầy đủ 24/7.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "a4b971ea357d",
+          "title": "COOLDOWN PERIOD",
+          "content": "✅ Cooldown: khoảng thời gian ASG \"nghỉ\", KHÔNG thực hiện thêm hành động scale nào sau 1 lần scale (mặc định 300s cho Simple/Step Scaling), tránh scale liên tục dồn dập trong khi metric mới vừa thay đổi chưa kịp phản ánh đúng tải thực tế.\n⚠️ Target Tracking Policy tự quản lý cooldown thông minh hơn (dùng warm-up time riêng), ít khi cần chỉnh tay so với Step/Simple Scaling.",
+          "createdAt": "2026-09-14T03:19:36.080749Z",
+          "updatedAt": "2026-09-14T03:19:36.080749Z"
         }
       ]
     },
@@ -1121,6 +1618,48 @@
           "content": "📌 Tình huống: Công ty muốn cho phép Dev team tự tạo IAM roles cho project riêng của họ, nhưng phải đảm bảo các role đó KHÔNG BAO GIỜ có quyền vượt quá một giới hạn nhất định (vd không thể tự cấp quyền admin toàn cục), dù dev có gán policy nào đi nữa.\n\n✅ Đáp án đúng: Gán Permissions Boundary lên IAM user/role của Dev.\n   ➜ Permissions Boundary là 1 managed policy đặt \"trần\" quyền tối đa mà entity đó (và các role nó tạo ra) có thể có. Quyền thực tế = giao (intersection) giữa Identity-based policy và Permissions Boundary — dù identity policy có allow rộng đến đâu cũng không vượt qua được boundary.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ dùng SCP (Service Control Policy) ➜ SCP áp dụng ở cấp AWS Organizations/OU, ảnh hưởng đến TOÀN BỘ account, không đủ linh hoạt để giới hạn riêng lẻ từng user/role trong 1 account.\n   • Nguyên tắc đánh giá policy IAM: mặc định DENY tất cả ➜ có Allow rõ ràng thì được phép ➜ nhưng nếu có BẤT KỲ Explicit Deny nào ở bất kỳ policy nào (identity, resource, SCP, permissions boundary...) thì luôn thắng, kết quả cuối cùng là DENY.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "73d56ec301f8",
+          "title": "IAM: USER, GROUP, ROLE - KHI NÀO DÙNG CÁI NÀO",
+          "content": "✅ User: đại diện 1 người/ứng dụng cụ thể, có credential lâu dài (password/access key).\n✅ Group: tập hợp User để gán policy chung, KHÔNG phải identity thật, không tự có credential, không gán role cho group.\n✅ Role: identity TẠM THỜI không gắn cố định với ai, được ASSUME bởi user/service/account khác, cấp credential tạm thời qua STS (hết hạn sau 1 khoảng thời gian) — dùng cho EC2/Lambda cần quyền, cross-account access, federation.\n⚠️ Best practice: không dùng IAM User lâu dài cho ứng dụng (access key dễ lộ) — luôn ưu tiên Role (EC2 Instance Profile, Lambda Execution Role).",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "999e6cc50f7e",
+          "title": "CROSS-ACCOUNT ACCESS: STS ASSUMEROLE & EXTERNAL ID",
+          "content": "📌 Tình huống: Công ty A (đối tác) cần truy cập 1 số tài nguyên trong account AWS của công ty B, không muốn tạo IAM user riêng trong account B.\n✅ Đáp án đúng: Công ty B tạo 1 IAM Role với Trust Policy cho phép account A assume, công ty A dùng STS AssumeRole để lấy credential tạm thời rồi thao tác trong account B theo đúng quyền role đó.\n⚠️ Khi bên thứ 3 (vendor SaaS) cần assume role vào account bạn, LUÔN thêm External ID (chuỗi bí mật do bạn cấp) vào điều kiện Trust Policy để chống \"confused deputy problem\" (vendor bị lừa dùng nhầm role của khách hàng khác).",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "22ba808c381d",
+          "title": "IAM IDENTITY CENTER (AWS SSO) vs IAM USERS",
+          "content": "✅ IAM Identity Center: quản lý đăng nhập tập trung (SSO) cho NHIỀU AWS account trong 1 Organization + các ứng dụng SaaS bên ngoài, tích hợp được Active Directory/Okta/Azure AD, người dùng login 1 lần rồi chọn account/role muốn vào.\n⚠️ IAM User chỉ tồn tại trong TỪNG account riêng lẻ, không có khái niệm SSO xuyên account ➜ khi công ty có nhiều account, IAM Identity Center là lựa chọn đúng thay vì tạo user trùng lặp ở từng account.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "168786a741fd",
+          "title": "MFA & BẢO VỆ ROOT ACCOUNT",
+          "content": "✅ Root account (tài khoản tạo AWS account) có quyền KHÔNG GIỚI HẠN, không thể bị hạn chế bởi IAM policy thông thường ➜ best practice: bật MFA ngay, không dùng cho việc thường ngày, chỉ dùng cho vài tác vụ đặc biệt (đổi support plan, đóng account, tạo CloudFront key...).\n⚠️ MFA type: Virtual MFA (Authenticator app), U2F/FIDO Security Key (khóa vật lý, chống phishing tốt nhất), Hardware MFA device.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "16147e35e1fb",
+          "title": "IAM ACCESS ANALYZER",
+          "content": "📌 Tình huống: Cần rà soát xem có resource nào (S3 bucket, IAM role, KMS key...) trong account đang bị chia sẻ ra NGOÀI account/Organization một cách không chủ đích.\n✅ Đáp án đúng: IAM Access Analyzer — tự động phân tích resource policy, phát hiện & liệt kê mọi truy cập từ bên ngoài zone tin cậy (account/Org) đã định nghĩa, còn có tính năng \"Unused Access\" tìm quyền không dùng tới để dọn dẹp theo least privilege.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "53a1be269b38",
+          "title": "SERVICE CONTROL POLICY (SCP) TRONG ORGANIZATIONS",
+          "content": "✅ SCP áp dụng ở cấp Organization/OU, đặt TRẦN quyền tối đa cho MỌI IAM user/role trong các account con (kể cả root user của account con) — SCP không tự cấp quyền, chỉ giới hạn, phải kết hợp với IAM policy trong account mới có quyền thực tế.\n⚠️ SCP KHÔNG áp dụng lên Management Account (account gốc của Organization) ➜ dễ bị hỏi bẫy trong đề thi.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
         }
       ]
     },
@@ -1152,6 +1691,34 @@
           "content": "📌 Tình huống: Ứng dụng cần mã hóa 1 file dung lượng 1GB trước khi lưu, dùng CMK (Customer Master Key) trong KMS. Tuy nhiên API Encrypt của KMS chỉ hỗ trợ mã hóa tối đa 4KB dữ liệu mỗi lần gọi.\n\n✅ Đáp án đúng: Envelope Encryption.\n   ➜ Gọi GenerateDataKey API để KMS trả về 1 cặp Data Key (bản Plaintext + bản đã mã hóa bằng CMK). Dùng bản Plaintext Data Key để mã hóa dữ liệu lớn ở phía client (thuật toán như AES-256), sau đó XÓA Plaintext Data Key khỏi memory ngay và chỉ lưu lại Encrypted Data Key kèm ciphertext của file.\n   ➜ Đây chính là cơ chế mà S3 SSE-KMS/EBS encryption dùng bên dưới để mã hóa object/volume lớn hơn giới hạn 4KB.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Gọi trực tiếp Encrypt API cho toàn bộ file 1GB ➜ lỗi vì vượt giới hạn 4KB của API này.\n   • Key Policy: là resource-based policy BẮT BUỘC phải có trên mọi CMK (khác với IAM policy là identity-based) — kiểm soát ai được quyền quản lý/sử dụng key; quyền thực tế = giao (intersection) giữa Key Policy và IAM policy của principal.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "e5af382bb069",
+          "title": "SYMMETRIC vs ASYMMETRIC CMK",
+          "content": "✅ Symmetric CMK (mặc định, phổ biến nhất): 1 key dùng cho cả encrypt & decrypt, không thể xuất key ra ngoài KMS, dùng cho hầu hết use case (S3, EBS, RDS encryption).\n✅ Asymmetric CMK: cặp public/private key, dùng khi bên ngoài cần tự encrypt bằng public key (không cần gọi KMS) rồi chỉ AWS mới decrypt được bằng private key, hoặc dùng để ký số (sign/verify).",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "4e087c262b96",
+          "title": "KEY ROTATION: AUTOMATIC vs MANUAL",
+          "content": "✅ Automatic rotation (chỉ áp dụng AWS-managed key và customer-managed symmetric key khi bật): KMS tự tạo cryptographic material mới mỗi năm, backing key cũ vẫn giữ để decrypt data cũ, hoàn toàn TRONG SUỐT với ứng dụng (không cần re-encrypt data cũ).\n⚠️ AWS-managed key (aws/s3, aws/ebs...) rotation mặc định BẮT BUỘC mỗi năm và KHÔNG tắt được; Customer-managed key thì TỰ CHỌN bật/tắt rotation.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "13af707085ff",
+          "title": "KMS MULTI-REGION KEYS",
+          "content": "📌 Tình huống: Ứng dụng DR chạy ở 2 Region, đã mã hóa data bằng KMS ở Region A, cần Region B (đích failover) giải mã được MÀ KHÔNG PHẢI decrypt rồi re-encrypt lại toàn bộ dữ liệu.\n✅ Đáp án đúng: Multi-Region KMS Keys — tạo 1 key gốc (primary) rồi replicate sang Region khác (replica key) CÙNG key material & key ID gốc, cho phép encrypt ở Region này và decrypt trực tiếp ở Region kia.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "71de80182136",
+          "title": "KMS KEY POLICY vs GRANTS",
+          "content": "✅ Key Policy: resource policy CHÍNH, bắt buộc có, kiểm soát toàn bộ quyền quản trị/sử dụng key lâu dài.\n✅ Grants: cấp quyền TẠM THỜI, LINH HOẠT cho 1 principal cụ thể thực hiện hành động cụ thể (vd cho phép Lambda function tạo ra tự động dùng key để encrypt), có thể revoke ngay lập tức, phù hợp cấp quyền động do chương trình tự tạo/hủy (không cần sửa key policy thủ công).",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
         }
       ]
     },
@@ -1190,6 +1757,27 @@
           "content": "📌 Tình huống: Bạn đã phát triển một REST API mới tận dụng các dịch vụ Amazon API Gateway , AWS Lambda và cơ sở dữ liệu Amazon Aurora . Phần lớn khối lượng công việc trên website là read-heavy . Dữ liệu rất ít khi thay đổi và chấp nhận phục vụ dữ liệu cũ trong khoảng 24 giờ . Gần đây, website gặp tải cao và chi phí phát sinh trên Aurora database rất cao. • Yêu cầu: Giảm chi phí đồng thời cải thiện hiệu năng với ít thay đổi mã nguồn nhất . • Ràng buộc: Khối lượng đọc lớn, dữ liệu ít thay...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Amazon API Gateway Caching cho phép bạn cache các phản hồi từ endpoint API của bạn. Khi bật caching, API Gateway sẽ phản hồi các yêu cầu từ bộ nhớ cache theo thời gian sống (TTL) đã cấu hình (có thể lên tới 24 giờ hoặc hơn) mà không cần gọi đến AWS Lambda hay cơ sở dữ liệu Amazon Aurora phía sau . Điều này triệt tiêu hoàn toàn tải dư thừa cho Aurora, giảm chi phí tối đa, cải thiện hiệu năng phản hồi và đòi hỏi tối thiểu sự thay đổi về code.",
           "createdAt": "2026-09-07T16:40:39.830453Z",
           "updatedAt": "2026-09-07T16:40:39.830454Z"
+        },
+        {
+          "id": "8ed0757a7467",
+          "title": "REST API vs HTTP API vs WEBSOCKET API",
+          "content": "✅ REST API: đầy đủ tính năng nhất (request/response transformation, caching, API key, usage plan, canary deployment, private endpoint qua VPC endpoint) — chi phí cao hơn.\n✅ HTTP API: phiên bản NHẸ, NHANH hơn, RẺ hơn tới ~70% so với REST API, phù hợp khi chỉ cần proxy đơn giản tới Lambda/HTTP backend, hỗ trợ JWT authorizer sẵn — nhưng THIẾU nhiều tính năng nâng cao (không có usage plan/API key, ít tùy biến transform).\n✅ WebSocket API: dùng cho ứng dụng cần kết nối 2 chiều LIÊN TỤC (chat real-time, dashboard live update, game) — quản lý theo route key (\\$connect, \\$disconnect, \\$default...).",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "098bf37446cf",
+          "title": "THROTTLING, USAGE PLANS & API KEYS",
+          "content": "📌 Tình huống: Cần giới hạn số request/giây cho từng khách hàng bên ngoài dùng API của mình theo từng gói dịch vụ (free tier vs paid tier).\n✅ Đáp án đúng: Tạo Usage Plan gắn với API Key riêng cho từng khách hàng — đặt Throttle limit (rate/burst) và Quota (số request tối đa/ngày-tuần-tháng) khác nhau cho từng plan.\n⚠️ Throttling ở cấp TÀI KHOẢN/API Gateway mặc định (10,000 req/s) là để bảo vệ hạ tầng chung, còn Usage Plan mới là công cụ đúng để phân biệt/giới hạn theo TỪNG KHÁCH HÀNG.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "7c156a936499",
+          "title": "API GATEWAY CACHING",
+          "content": "✅ Bật Cache ở cấp Stage — lưu lại response trong khoảng TTL định sẵn (mặc định 300s, tối đa 1h), giảm số lần gọi thật xuống backend (Lambda/HTTP) cho các request GIỐNG NHAU, giảm chi phí + tăng tốc độ phản hồi.\n⚠️ Có thể invalidate cache thủ công (client gửi header Cache-Control: max-age=0 kèm quyền IAM phù hợp) khi cần dữ liệu mới ngay lập tức mà không đợi hết TTL.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
         }
       ]
     },
@@ -1362,6 +1950,27 @@
           "content": "📌 Tình huống: Công ty có 50 AWS account con trong AWS Organizations, cần deploy đồng loạt cùng một baseline hạ tầng (vd bật sẵn CloudTrail, GuardDuty, cấu hình VPC chuẩn) cho TẤT CẢ account, quản lý tập trung từ management account, và cập nhật đồng bộ khi baseline thay đổi.\n\n✅ Đáp án đúng: CloudFormation StackSets.\n   ➜ Cho phép deploy 1 template ra NHIỀU account + NHIỀU Region cùng lúc từ 1 admin account trung tâm, cập nhật/xóa hàng loạt chỉ với 1 thao tác.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Deploy CloudFormation stack riêng lẻ ở từng account ➜ tốn công vận hành, dễ bị lệch version giữa các account khi có thay đổi.\n   • Drift Detection: tính năng phát hiện khi tài nguyên trong stack bị SỬA THỦ CÔNG (ngoài luồng CloudFormation, vd ai đó vào Console đổi trực tiếp) khiến trạng thái thực tế lệch so với template gốc — dùng để đảm bảo tuân thủ Infrastructure as Code.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "9fe171b953c7",
+          "title": "INTRINSIC FUNCTIONS & PSEUDO PARAMETERS THƯỜNG DÙNG",
+          "content": "✅ Ref: lấy giá trị của 1 resource/parameter (vd Ref EC2Instance trả về Instance ID).\n✅ Fn::GetAtt: lấy 1 THUỘC TÍNH cụ thể của resource (vd GetAtt EC2Instance.PublicIp).\n✅ Fn::Sub: thay thế biến vào chuỗi string 1 cách gọn hơn nối chuỗi thủ công.\n✅ Fn::ImportValue: import giá trị đã Export từ 1 STACK KHÁC — dùng để chia sẻ resource (vd VPC ID) giữa nhiều stack riêng biệt (cross-stack reference).\n✅ Pseudo Parameter phổ biến: AWS::Region, AWS::AccountId, AWS::StackName — lấy thông tin ngữ cảnh hiện tại mà không cần hardcode.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "8dc6b70a89c8",
+          "title": "NESTED STACKS vs CROSS-STACK REFERENCE",
+          "content": "✅ Nested Stack: 1 stack CHÍNH gọi tới các stack CON (qua resource type AWS::CloudFormation::Stack) — dùng khi muốn tái sử dụng template con nhiều lần trong CÙNG 1 lần deploy, quản lý như 1 khối thống nhất (xóa stack cha thì xóa luôn các stack con).\n✅ Cross-Stack Reference (Export/ImportValue): các stack ĐỘC LẬP, triển khai/xóa RIÊNG LẺ, chỉ chia sẻ giá trị qua Output Export — linh hoạt hơn khi các team quản lý stack khác nhau độc lập với nhau.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "dc99eca03f1d",
+          "title": "CHANGE SETS",
+          "content": "📌 Tình huống: Trước khi update 1 CloudFormation stack production, muốn biết CHÍNH XÁC những gì sẽ thay đổi (resource nào bị thay thế/xóa/sửa) TRƯỚC khi thực sự áp dụng, tránh rủi ro downtime bất ngờ do resource bị recreate.\n✅ Đáp án đúng: Tạo Change Set — CloudFormation tính toán trước sự khác biệt giữa template mới và trạng thái hiện tại, hiển thị preview (Add/Modify/Remove, và có gây REPLACEMENT resource hay không) mà CHƯA áp dụng gì — review xong mới Execute Change Set để thực thi thật.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
         }
       ]
     },
@@ -1393,6 +2002,27 @@
           "content": "📌 Tình huống: Một AWS Organization đang sử dụng Service Control Policies (SCPs) để kiểm soát tập trung các quyền tối đa có sẵn cho tất cả các tài khoản trong tổ chức. Điều này giúp đảm bảo tất cả các tài khoản tuân thủ hướng dẫn kiểm soát truy cập của tổ chức. • Yêu cầu: Xác định 3 phát biểu chính xác về phạm vi ảnh hưởng và cách hoạt động của quyền hạn SCP so với IAM policies. • Ràng buộc: Chọn đúng 3 đáp án phản ánh đúng bản chất bảo mật của SCPs .\n\n✅ Đáp án đúng 1: Service control policy (SCP) ảnh hưởng đến tất cả users và roles trong các member accounts, bao gồm cả root user của các member accounts.\n   ➜ ➜ [ ĐÚNG ]: SCPs thiết lập ranh giới quyền hạn tối đa (maximum available permissions) cho tất cả các thực thể bên trong tài khoản thành viên, và nó áp dụng cho cả tài khoản root (root user) của các tài khoản đó, đáp ứng tuyệt đối mô hình kiểm soát tập trung.\n✅ Đáp án đúng 2: Nếu một user hoặc role có IAM permission policy cấp quyền cho một action nhưng action đó bị từ chối hoặc không được cho phép bởi SCP, thì user hoặc role đó không thể thực hiện action đó .\n   ➜ ➜ [ ĐÚNG ]: SCP hoạt động như một rào chắn an ninh (guardrail). Ngay cả khi IAM policy cho phép, nếu SCP chặn (deny hoặc không cho phép) , kết quả cuối cùng vẫn là từ chối (Explicit/Implicit Deny), đảm bảo không ai có thể vượt quá giới hạn của tổ chức.\n✅ Đáp án đúng 3: Service control policy (SCP) không ảnh hưởng đến service-linked roles .\n   ➜ ➜ [ ĐÚNG ]: Service-linked roles là các role do AWS services tự tạo để quản lý tài nguyên thay mặt cho bạn (ví dụ: Auto Scaling, RDS). Để đảm bảo các dịch vụ AWS hoạt động bình thường mà không bị gián đoạn, SCPs không bao giờ áp dụng hoặc hạn chế service-linked roles .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Nếu user hoặc role có IAM permission policy cấp quyền nhưng bị chặn bởi SCP, user hoặc role đó vẫn có thể thực hiện action đó.\n     ➜ ➜ [ SAI ]: Phát biểu này sai hoàn toàn vì SCP có quyền lực tối cao trong việc giới hạn quyền trên phạm vi tổ chức; nếu bị SCP chặn, IAM policy thông thường không thể ghi đè được.\n   • Service control policy (SCP) ảnh hưởng đến tất cả users và roles trong member accounts, ngoại trừ root user của các member accounts.\n     ➜ ➜ [ SAI ]: Phát biểu này sai vì root user của member accounts vẫn chịu sự chi phối của SCP (ngoại trừ tài khoản Management/Master account có một số đặc quyền riêng biệt đối với một số thao tác quản lý organization).",
           "createdAt": "2026-09-07T16:40:39.829479Z",
           "updatedAt": "2026-09-07T16:40:39.829479Z"
+        },
+        {
+          "id": "8b059c031ff7",
+          "title": "QUY TẮC KẾ THỪA SCP TRONG ORGANIZATION",
+          "content": "✅ SCP áp dụng theo cây phân cấp: Management Account → OU cha → OU con → Account — quyền cuối cùng của 1 account là GIAO (intersection) của TẤT CẢ SCP dọc theo đường đi từ root xuống tới account đó.\n⚠️ SCP mặc định \"FullAWSAccess\" ở root cho phép tất cả — nếu attach thêm 1 SCP DENY cụ thể ở OU con, nó CHỈ giới hạn thêm (không mở rộng quyền), và Management Account (root) LUÔN không bị ảnh hưởng bởi bất kỳ SCP nào.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "f4397a7b28c5",
+          "title": "CONSOLIDATED BILLING & RESERVED INSTANCE SHARING",
+          "content": "✅ Consolidated Billing: tất cả account con dồn hóa đơn về 1 Management Account, được hưởng chung mức giá VOLUME DISCOUNT (giảm giá theo tổng khối lượng sử dụng của CẢ Organization, không tính riêng từng account).\n✅ Reserved Instance / Savings Plans Sharing: RI mua ở 1 account có thể tự động áp dụng giảm giá cho instance phù hợp Ở BẤT KỲ account nào khác trong cùng Organization (mặc định bật, có thể tắt riêng cho từng account).",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "e944fb5fd15c",
+          "title": "TAG POLICIES & BACKUP POLICIES",
+          "content": "✅ Tag Policies: chuẩn hóa quy tắc đặt TAG (tên, giá trị hợp lệ) áp dụng nhất quán trên toàn Organization, giúp báo cáo chi phí/quản trị theo tag chính xác hơn.\n✅ Backup Policies (qua AWS Backup): định nghĩa lịch backup TẬP TRUNG áp dụng tự động cho resource ở NHIỀU account trong Organization, không cần cấu hình backup riêng lẻ từng account.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
         }
       ]
     },
@@ -1441,6 +2071,41 @@
           "content": "📌 Tình huống: Một digital media platform chuẩn bị ra mắt dịch vụ interactive content dự kiến nhận các sudden spikes in user engagement trong các live events. Backend dùng Amazon Aurora PostgreSQL Serverless v2 cluster . Kiến trúc cần scale cả compute và storage performance để duy trì low latency, tránh bottlenecks, scale tự động theo traffic, tối ưu I/O performance và tiết kiệm chi phí mà không cần manual tuning . • Yêu cầu: Chọn cấu hình storage tối ưu nhất cho Aurora đáp ứng tự động...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Aurora I/O-Optimized là cấu hình lưu trữ lý tưởng cho các ứng dụng có I/O intensive workload hoặc traffic biến động mạnh đột ngột (như live events, gaming, media platforms). Nó loại bỏ hoàn toàn các khoản phí phát sinh theo số lượng I/O request (pay-per-request I/O), cung cấp hiệu suất cao với chi phí dễ dự đoán khi kết hợp cùng Aurora Serverless v2.",
           "createdAt": "2026-09-07T16:40:39.830770Z",
           "updatedAt": "2026-09-07T16:40:39.830771Z"
+        },
+        {
+          "id": "c4589e264992",
+          "title": "KIẾN TRÚC LƯU TRỮ CỦA AURORA",
+          "content": "✅ Aurora tách rời compute và storage: storage tự động scale (10GB → 128TB), replicate DỮ LIỆU thành 6 bản sao trên 3 AZ (không phải replicate cả server như RDS Multi-AZ) ➜ chịu được mất 2 bản sao mà vẫn ghi được, mất 3 bản sao vẫn đọc được, tự chữa lành (self-healing) dữ liệu hỏng.\n⚠️ Vì storage tách biệt, thêm Aurora Replica RẤT NHANH (không cần copy toàn bộ data như RDS Read Replica) vì cùng dùng chung 1 storage layer.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "146a10194ef5",
+          "title": "AURORA REPLICAS & FAILOVER PRIORITY (TIER)",
+          "content": "✅ Aurora hỗ trợ tối đa 15 Replica (nhiều hơn RDS MySQL/Postgres thường chỉ 5), mỗi Replica có thể gán FAILOVER PRIORITY TIER (0-15) để chỉ định thứ tự ưu tiên được promote thành Writer khi Writer hiện tại chết — Replica tier thấp hơn được ưu tiên trước.\n✅ Aurora dùng Aurora Endpoint (cluster endpoint cho writer) và Reader Endpoint (tự động load-balance qua các replica) — ứng dụng không cần tự quản lý IP từng replica.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "d31789283ddb",
+          "title": "AURORA SERVERLESS v1 vs v2",
+          "content": "✅ Aurora Serverless: tự động scale capacity (ACU - Aurora Capacity Unit) theo tải THỰC TẾ, KHÔNG cần quản lý instance, tính phí theo mức dùng — phù hợp workload không liên tục/khó dự đoán (dev/test, ứng dụng ít dùng).\n⚠️ v1: scale có ĐỘ TRỄ (vài giây tới hơn phút), có thể mất kết nối khi scale, phù hợp workload chấp nhận gián đoạn ngắn. v2: scale GẦN NHƯ TỨC THÌ (giây), không mất kết nối, hỗ trợ cả Read Replica & Global Database — v2 là lựa chọn hiện đại hơn.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "101d8b61b75b",
+          "title": "AURORA GLOBAL DATABASE",
+          "content": "📌 Tình huống: Ứng dụng cần đọc dữ liệu độ trễ thấp ở nhiều Region trên thế giới, đồng thời cần Disaster Recovery cross-Region với RTO/RPO thấp.\n✅ Đáp án đúng: Aurora Global Database — 1 Region PRIMARY (read/write) + tối đa 5 Region SECONDARY (read-only), replication cross-Region dưới 1 giây (dùng dedicated infrastructure, KHÔNG qua replication engine thông thường), khi Region chính gặp sự cố có thể promote 1 Region phụ thành primary trong <1 phút.",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "cf0b5b70563d",
+          "title": "AURORA CLONING & BACKTRACK",
+          "content": "✅ Aurora Cloning: tạo bản sao database MỚI cực nhanh (copy-on-write, chỉ tốn thêm dung lượng cho phần dữ liệu THAY ĐỔI so với gốc) — dùng cho testing/staging từ production mà không tốn thời gian/chi phí copy toàn bộ.\n✅ Backtrack (chỉ Aurora MySQL): \"tua ngược thời gian\" database về 1 thời điểm trong quá khứ RẤT NHANH mà không cần restore từ snapshot — hữu ích khi cần undo nhanh 1 thao tác lỗi (vd DELETE nhầm).",
+          "createdAt": "2026-09-14T03:17:58.276507Z",
+          "updatedAt": "2026-09-14T03:17:58.276507Z"
         }
       ]
     },
@@ -1472,6 +2137,34 @@
           "content": "📌 Tình huống: Hệ thống hiện có 3 alarm riêng lẻ (CPU cao, Memory cao, Disk cao) gây quá nhiều thông báo nhiễu (alarm noise) vì chỉ cần 1 điều kiện phụ vi phạm là đã báo động, trong khi team chỉ muốn được cảnh báo khi tình huống thực sự nghiêm trọng (ít nhất 2/3 điều kiện xảy ra ĐỒNG THỜI).\n\n✅ Đáp án đúng: Tạo CloudWatch Composite Alarm, gộp 3 alarm con bằng logic AND/OR (vd ít nhất 2 trong 3 alarm con ở trạng thái ALARM) thành 1 alarm tổng duy nhất để gửi thông báo.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Tự xử lý logic kết hợp bằng SNS + Lambda riêng ➜ phức tạp không cần thiết khi CloudWatch đã có sẵn Composite Alarm.\n   • Metric Filter: trích xuất metric số từ pattern trong CloudWatch Logs (vd đếm số dòng log chứa từ \"ERROR\") để tạo alarm dựa trên nội dung log thay vì chỉ số hệ thống.\n   • CloudWatch Logs Insights: cho phép query log bằng cú pháp riêng (gần giống SQL) để tìm kiếm, lọc, tổng hợp log nhanh trực tiếp trên console mà không cần export log ra công cụ khác.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "90a438a32c15",
+          "title": "CUSTOM METRICS & EMBEDDED METRIC FORMAT (EMF)",
+          "content": "✅ Custom Metrics: ứng dụng tự PUSH số liệu riêng (vd số đơn hàng/phút, độ dài queue nội bộ) vào CloudWatch qua PutMetricData API — CloudWatch không tự thu thập được các chỉ số nghiệp vụ này.\n✅ Embedded Metric Format (EMF): ghi metric NGAY TRONG log message (JSON có cấu trúc đặc biệt) thay vì gọi API riêng — CloudWatch tự parse log thành metric, giảm số lượng API call & chi phí so với PutMetricData khi cần log nhiều metric cùng lúc.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "1d3a1da94696",
+          "title": "CLOUDWATCH DASHBOARDS",
+          "content": "✅ Dashboard: trang tổng hợp hiển thị nhiều metric/alarm/log widget từ NHIỀU service, NHIỀU Region khác nhau trên CÙNG 1 màn hình, dùng để giám sát tổng quan hệ thống theo thời gian thực, chia sẻ được cho team hoặc public (read-only) cho khách hàng xem uptime.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "419252175ef9",
+          "title": "CLOUDWATCH SYNTHETICS (CANARIES)",
+          "content": "📌 Tình huống: Cần chủ động kiểm tra website/API có hoạt động đúng từ góc nhìn NGƯỜI DÙNG BÊN NGOÀI (không chỉ dựa vào metric nội bộ server), phát hiện lỗi TRƯỚC KHI khách hàng thật gặp phải.\n✅ Đáp án đúng: CloudWatch Synthetics (Canaries) — script tự động (Node.js/Python) mô phỏng hành vi người dùng (gọi API, load trang, click qua các bước) chạy ĐỊNH KỲ theo lịch, tự tạo alarm khi canary fail.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "b108badeb316",
+          "title": "CLOUDWATCH CONTRIBUTOR INSIGHTS",
+          "content": "📌 Tình huống: Hệ thống bị chậm do 1 vài IP/user cụ thể gửi request bất thường nhiều, cần xác định NHANH \"ai\" đang là top contributor gây tải mà không cần tự viết query phân tích log thủ công.\n✅ Đáp án đúng: CloudWatch Contributor Insights — tự động phân tích log (CloudWatch Logs/Application Signals) để tìm ra top-N contributor theo 1 field bất kỳ (IP, URL, user ID...) theo thời gian thực, hữu ích để phát hiện top talker gây nghẽn hoặc DDoS layer 7.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
         }
       ]
     },
@@ -1527,6 +2220,27 @@
           "content": "📌 Tình huống: Một e-commerce company theo dõi user clicks trên trang flagship website và thực hiện analytics để cung cấp near-real-time product recommendations . Một Amazon EC2 instance nhận dữ liệu từ website và gửi tới một Amazon Aurora Database instance . Một EC2 instance khác kiểm tra liên tục các thay đổi trong database và thực thi SQL queries để đưa ra recommendations. Công ty muốn thiết kế lại để decouple và scale infrastructure nhằm phân tích dữ liệu theo real-time mà không bị mất...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Amazon Kinesis Data Streams cung cấp khả năng thu thập và lưu giữ dữ liệu streaming quy mô lớn một cách an toàn, chống chịu được các **traffic spikes** mà không làm mất mát dữ liệu. Amazon Kinesis Data Analytics (hoặc Managed Service for Apache Flink) cho phép thực hiện các truy vấn và phân tích luồng dữ liệu liên tục theo real-time . Cuối cùng, Amazon Kinesis Data Firehose tự động chuyển tải dữ liệu đã phân tích vào Amazon S3 để lưu trữ lâu dài, tạo thành một kiến trúc streaming hoàn chỉnh, serverless và tách rời (decoupled) hoàn hảo.",
           "createdAt": "2026-09-07T16:40:39.830037Z",
           "updatedAt": "2026-09-07T16:40:39.830038Z"
+        },
+        {
+          "id": "5a78ff032e01",
+          "title": "KINESIS DATA STREAMS vs FIREHOSE vs DATA ANALYTICS",
+          "content": "✅ Kinesis Data Streams: streaming THỜI GIAN THỰC, TỰ QUẢN LÝ consumer (code tự đọc), độ trễ thấp nhất (~200ms), dữ liệu lưu tối đa 365 ngày để replay, phù hợp khi cần xử lý CUSTOM logic phức tạp theo thời gian thực.\n✅ Kinesis Data Firehose: KHÔNG cần quản lý consumer, TỰ ĐỘNG load dữ liệu vào đích (S3, Redshift, OpenSearch, Splunk...) theo batch, có thể transform bằng Lambda trước khi ghi, độ trễ cao hơn (giây, near real-time) — đơn giản hơn Data Streams rất nhiều.\n✅ Managed Service for Apache Flink (trước là Kinesis Data Analytics): chạy SQL/Flink app để xử lý/phân tích dữ liệu streaming NGAY TRONG LUỒNG (real-time ETL, aggregation, anomaly detection) mà không cần hạ tầng riêng.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "c77836db228a",
+          "title": "KINESIS DATA STREAMS: SHARDS & SCALING",
+          "content": "✅ Mỗi Shard: ghi tối đa 1MB/s hoặc 1000 record/s, đọc tối đa 2MB/s (standard consumer, chia sẻ giữa các consumer).\n✅ Muốn tăng throughput: tăng số Shard (Resharding — split shard để tăng, merge shard để giảm), throughput tổng của stream = tổng throughput các shard cộng lại.\n✅ On-demand capacity mode: tự động scale số shard theo traffic, không cần tự quản lý resharding thủ công (đánh đổi chi phí cao hơn Provisioned mode).",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "675713f764a3",
+          "title": "ENHANCED FAN-OUT",
+          "content": "📌 Tình huống: Có NHIỀU consumer application cùng đọc từ 1 Kinesis Data Stream, các consumer bắt đầu tranh nhau băng thông đọc (2MB/s/shard) khiến độ trễ tăng khi thêm consumer mới.\n✅ Đáp án đúng: Bật Enhanced Fan-Out cho từng consumer — mỗi consumer được cấp ĐƯỜNG TRUYỀN RIÊNG 2MB/s/shard (không chia sẻ với consumer khác), dùng cơ chế HTTP/2 push thay vì polling, giảm độ trễ xuống ~70ms, tính phí thêm theo consumer + dữ liệu truyền ra.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
         }
       ]
     },
@@ -1551,6 +2265,34 @@
           "content": "📌 Tình huống: Một company nhận thấy Amazon EBS Elastic Volume (io1) chiếm tới 90% chi phí , 10% còn lại thuộc về Amazon EC2 instance . CloudWatch metrics báo cáo cả EC2 và EBS đều under-utilized (dưới tải), đồng thời EBS volume có các đợt occasional I/O bursts . Toàn bộ hạ tầng được quản lý bằng AWS CloudFormation . • Yêu cầu: Đề xuất giải pháp giảm chi phí hiệu quả nhất cho bài toán EBS chiếm phần lớn chi phí nhưng đang dư thừa tài nguyên . • Ràng buộc: khối lượng công việc...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Loại ổ đĩa io1 (Provisioned IOPS SSD) có chi phí đắt đỏ vì bạn phải trả tiền cố định cho mỗi IOPS được cấp phát (provisioned IOPS) độc lập với lượng sử dụng thực tế. Vì hệ thống đang under-utilized nhưng lại có các đợt I/O bursts , việc chuyển sang General Purpose SSD (gp2 hoặc gp3) là lựa chọn hoàn hảo. Ổ đĩa gp2/gp3 cung cấp khả năng burst IOPS tự động dựa trên dung lượng mà không tính phí IOPS cố định đắt đỏ , giúp tiết kiệm phần lớn trong số 90% chi phí đang lãng phí.",
           "createdAt": "2026-09-07T16:40:39.830910Z",
           "updatedAt": "2026-09-07T16:40:39.830911Z"
+        },
+        {
+          "id": "f59960c6ccbc",
+          "title": "EBS VOLUME TYPES: GP3/GP2 vs IO1/IO2 vs ST1/SC1",
+          "content": "✅ gp3 (SSD, general purpose, KHUYẾN NGHỊ mặc định): IOPS & throughput đặt ĐỘC LẬP với dung lượng (khác gp2 phải tăng dung lượng mới tăng IOPS), rẻ hơn gp2 ~20%.\n✅ io1/io2 (SSD, Provisioned IOPS): IOPS cao nhất (io2 Block Express lên tới 256,000 IOPS), dùng cho database I/O cực cao (Oracle, SQL Server production lớn), io2 có độ bền cao hơn io1 (99.999%).\n✅ st1 (HDD, Throughput Optimized): tối ưu THROUGHPUT tuần tự (không phải IOPS ngẫu nhiên), giá rẻ, dùng cho big data/data warehouse/log processing.\n✅ sc1 (HDD, Cold): RẺ NHẤT, throughput thấp, dùng cho dữ liệu truy cập RẤT HIẾM (archive lạnh cần gắn volume, không dùng làm boot volume).",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "e9be654d155b",
+          "title": "EBS SNAPSHOTS: INCREMENTAL & FAST SNAPSHOT RESTORE",
+          "content": "✅ Snapshot lưu trên S3 (ẩn, không thấy trực tiếp trong S3 console), là INCREMENTAL — chỉ lưu phần dữ liệu THAY ĐỔI so với snapshot gần nhất, nhưng khi XÓA 1 snapshot cũ, AWS tự động giữ lại phần dữ liệu cần thiết để các snapshot mới hơn (dựa vào nó) vẫn khôi phục đầy đủ được.\n✅ Fast Snapshot Restore (FSR): khi tạo volume MỚI từ snapshot, mặc định volume có độ trễ ban đầu (lazy loading dữ liệu từ S3) — bật FSR để volume mới có FULL PERFORMANCE NGAY LẬP TỨC, tính phí theo giờ cho từng snapshot/AZ được bật FSR.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "c4709ba5fdb0",
+          "title": "EBS MULTI-ATTACH",
+          "content": "📌 Tình huống: Cần 1 EBS volume được gắn ĐỒNG THỜI vào NHIỀU EC2 instance để cùng đọc/ghi (cluster file system, ứng dụng cần shared block storage).\n✅ Đáp án đúng: Bật Multi-Attach (chỉ hỗ trợ volume io1/io2, trong CÙNG 1 AZ) — cho phép gắn 1 volume vào tối đa 16 instance Nitro cùng lúc.\n⚠️ Multi-Attach KHÔNG tự đồng bộ dữ liệu giữa các instance — ứng dụng/file system phải TỰ xử lý concurrent write (cần cluster-aware file system như CFS/GFS2), nếu không sẽ gây corrupt dữ liệu.",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "65b1dbc4b89b",
+          "title": "EBS ENCRYPTION",
+          "content": "✅ Mã hóa EBS dùng KMS, bao gồm cả data at-rest, data in-transit GIỮA instance và volume, và snapshot tạo từ volume đã mã hóa cũng TỰ ĐỘNG mã hóa theo.\n✅ Có thể đặt \"Encryption by default\" ở cấp Region — mọi volume/snapshot MỚI tạo trong Region đó tự động mã hóa mà không cần chọn thủ công mỗi lần.\n⚠️ Volume KHÔNG mã hóa từ trước không thể \"bật mã hóa\" trực tiếp — phải tạo snapshot từ volume đó, copy snapshot với tùy chọn encryption, rồi tạo volume mới từ snapshot đã mã hóa (giống RDS).",
+          "createdAt": "2026-09-14T03:21:35.599417Z",
+          "updatedAt": "2026-09-14T03:21:35.599417Z"
         }
       ]
     },
@@ -1575,6 +2317,27 @@
           "content": "📌 Tình huống: Một CRM company có một software as a service (SaaS) application gửi các bản cập nhật (updates) tới các in-house và third-party applications khác. SaaS application và các in-house applications đang được migrate sang sử dụng AWS services cho việc giao tiếp liên ứng dụng. • Yêu cầu: Đề xuất giải pháp bất đồng bộ dựa trên event bus để tách rời hệ thống (decouple) . • Ràng buộc: Tích hợp native với SaaS partners và định tuyến sự kiện linh hoạt bằng schema registry và rules .\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Amazon EventBridge là một serverless event bus giúp dễ dàng kết nối các ứng dụng với dữ liệu từ các ứng dụng SaaS, các dịch vụ AWS và ứng dụng tùy chỉnh của bạn. Trong ngữ cảnh tích hợp hệ thống SaaS hiện đại với các ứng dụng bên trong và bên thứ ba thông qua cơ chế phát ra sự kiện (event-driven), EventBridge cung cấp khả năng lọc và định tuyến sự kiện mạnh mẽ mà không yêu cầu các ứng dụng phải kết nối trực tiếp với nhau , giải quyết hoàn hảo bài toán tách rời kiến trúc theo chuẩn dịch vụ SaaS tích hợp.",
           "createdAt": "2026-09-07T16:40:39.830151Z",
           "updatedAt": "2026-09-07T16:40:39.830152Z"
+        },
+        {
+          "id": "184be545ea15",
+          "title": "EVENTBRIDGE: EVENT BUS, RULE & PATTERN MATCHING",
+          "content": "✅ Event Bus: nơi nhận event — Default bus (nhận event từ AWS service), Custom bus (ứng dụng tự publish), Partner bus (từ SaaS bên thứ 3 như Zendesk, Datadog).\n✅ Rule: định nghĩa Event Pattern (điều kiện lọc JSON, vd chỉ bắt event S3 PutObject của 1 bucket cụ thể) hoặc Schedule (cron/rate) — khi match, tự động gửi tới 1 hoặc nhiều Target (Lambda, SQS, SNS, Step Functions, API destination...).\n⚠️ Khác SNS (chỉ publish/subscribe đơn giản, không lọc theo nội dung phức tạp) — EventBridge cho phép lọc chi tiết theo NỘI DUNG event (content-based routing) mà không cần code thêm logic lọc.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "8c8dcbe7ccfc",
+          "title": "EVENTBRIDGE SCHEDULER",
+          "content": "📌 Tình huống: Cần chạy 1 tác vụ định kỳ (vd mỗi ngày lúc 2h sáng chạy Lambda dọn dữ liệu cũ), hoặc lên lịch chạy 1 lần trong tương lai cho hàng triệu task riêng lẻ (mỗi user 1 lịch khác nhau).\n✅ Đáp án đúng: Amazon EventBridge Scheduler — hỗ trợ tạo hàng triệu schedule ĐỘC LẬP (one-time hoặc recurring), scale tốt hơn nhiều so với việc tạo hàng triệu EventBridge Rule kiểu cron riêng lẻ.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "57ec515122de",
+          "title": "EVENTBRIDGE PIPES",
+          "content": "📌 Tình huống: Cần kết nối trực tiếp giữa 1 nguồn (vd DynamoDB Streams, SQS, Kinesis) tới 1 đích (Step Functions, Lambda...) kèm bước filter/transform đơn giản ở giữa, mà không muốn tự viết Lambda trung gian chỉ để chuyển tiếp dữ liệu.\n✅ Đáp án đúng: EventBridge Pipes — point-to-point integration có sẵn filter + enrichment + transform, giảm code \"glue\" (Lambda trung gian) không cần thiết giữa các service.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
         }
       ]
     },
@@ -1616,6 +2379,13 @@
           "content": "📌 Tình huống: Cloud infrastructure của một startup bao gồm một vài Amazon EC2 instances , Amazon RDS instances và Amazon S3 storage . Sau một năm hoạt động, startup đang phải gánh chịu chi phí quá cao so với nhu cầu kinh doanh. • Yêu cầu: Lựa chọn giải pháp tối ưu hóa chi phí hợp lý và chính xác nhất cho hạ tầng điện toán . • Ràng buộc: Xác định công cụ tích hợp giúp báo cáo tài nguyên nhàn rỗi (idle/low utilization) và đề xuất loại instance tối ưu .\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: AWS Cost Optimization Hub tập hợp các đề xuất tối ưu hóa chi phí trên toàn bộ AWS Organizations và các tài khoản, giúp bạn xác định các tài nguyên nhàn rỗi như EC2 instances có mức sử dụng thấp. Khi kết hợp cùng AWS Compute Optimizer (dịch vụ sử dụng Machine Learning để phân tích metrics hiệu năng), bạn sẽ nhận được các khuyến nghị chính xác về kích thước và loại instance tối ưu (right-sizing) nhằm cắt giảm chi phí hiệu quả cho hạ tầng của startup.",
           "createdAt": "2026-09-07T16:40:39.830299Z",
           "updatedAt": "2026-09-07T16:40:39.830300Z"
+        },
+        {
+          "id": "c0d24a10d605",
+          "title": "PHÂN BIỆT CÁC CÔNG CỤ TỐI ƯU CHI PHÍ CỦA AWS",
+          "content": "✅ AWS Cost Explorer: xem & phân tích LỊCH SỬ chi tiêu, dự báo (forecast) chi phí tương lai dựa trên xu hướng cũ.\n✅ AWS Budgets: đặt NGƯỠNG cảnh báo chủ động (cost, usage, RI/Savings Plan utilization) — gửi thông báo khi vượt/gần vượt ngưỡng đã đặt.\n✅ AWS Compute Optimizer: dùng ML phân tích usage LỊCH SỬ để đưa ra khuyến nghị RIGHT-SIZING cho EC2/EBS/Lambda/ASG (đang over-provisioned hay under-provisioned).\n✅ AWS Cost Optimization Hub: TỔNG HỢP TẤT CẢ khuyến nghị tiết kiệm chi phí (từ Compute Optimizer, Trusted Advisor, RI/Savings Plan recommendation...) vào 1 nơi DUY NHẤT, ước tính số tiền tiết kiệm được, ưu tiên theo mức độ tác động — dùng khi cần cái nhìn tổng quan toàn Organization thay vì xem rời rạc từng công cụ.",
+          "createdAt": "2026-09-14T03:23:39.666692Z",
+          "updatedAt": "2026-09-14T03:23:39.666692Z"
         }
       ]
     },
