@@ -342,6 +342,13 @@
           "content": "⚠️ Giới hạn quan trọng cần nhớ: tối đa 5,000 VPC Attachment/Transit Gateway (soft limit, tăng được), tối đa 10,000 route/Route Table — khi thiết kế hạ tầng cực lớn (hàng nghìn VPC), cần tính toán trước để tránh chạm giới hạn giữa chừng triển khai.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "f10153628d10",
+          "title": "TRANSIT GATEWAY: STATIC vs PROPAGATED ROUTES TRONG ROUTE TABLE",
+          "content": "✅ Propagated Route: TỰ ĐỘNG học route từ Attachment (VPC CIDR, VPN BGP route) mà không cần khai báo thủ công.\n✅ Static Route: khai báo THỦ CÔNG (vd Blackhole route, hoặc route đặc biệt không tự propagate được) — kết hợp cả 2 loại trong 1 Route Table để vừa tự động vừa kiểm soát chi tiết khi cần.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -1783,6 +1790,13 @@
           "content": "📌 Tình huống: Task chạy trên Fargate Spot/EC2 Spot bị AWS thu hồi capacity, cần xử lý GRACEFUL (không mất dữ liệu/gián đoạn dịch vụ) trước khi bị terminate.\n✅ Đáp án đúng: ECS tự động nhận Spot Interruption Notice và gửi SIGTERM cho container TRƯỚC (thường 2 phút cảnh báo), cho phép ứng dụng tự dọn dẹp (graceful shutdown) trước khi bị kill hẳn — code ứng dụng nên LẮNG NGHE SIGTERM để hoàn tất request đang xử lý dở.",
           "createdAt": "2026-09-14T06:50:22.526625Z",
           "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "11922675b760",
+          "title": "ECS: ENVIRONMENT FILES & SECRETS TỪ SSM/SECRETS MANAGER",
+          "content": "✅ Task Definition có thể inject Environment Variable TRỰC TIẾP TỪ SSM Parameter Store hoặc Secrets Manager (qua trường \"secrets\" trong container definition) — giá trị được lấy TỰ ĐỘNG lúc container khởi động mà KHÔNG hiển thị plaintext trong Task Definition, an toàn hơn nhiều so với hardcode giá trị nhạy cảm trực tiếp.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -1884,6 +1898,13 @@
           "content": "📌 Tình huống: Sau khi failover DR sang file system REPLICA ở Region phụ, giờ Region chính đã khôi phục, cần CHUYỂN NGƯỢC LẠI (failback) mà giữ nguyên dữ liệu mới nhất đã ghi ở Region phụ trong lúc DR.\n✅ Đáp án đúng: Tạo lại Replication Configuration THEO CHIỀU NGƯỢC LẠI (từ Region phụ hiện đang active về Region chính đã phục hồi), đồng bộ dữ liệu mới nhất trước khi chính thức chuyển traffic ứng dụng về Region chính.",
           "createdAt": "2026-09-14T06:50:22.526625Z",
           "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "53193214a5b4",
+          "title": "EFS: FILE SYSTEM POLICY (RESOURCE-BASED POLICY)",
+          "content": "✅ EFS File System Policy: tương tự S3 Bucket Policy — kiểm soát AI (IAM principal, account khác) được MOUNT/đọc/ghi vào file system này, có thể bắt buộc mount phải qua IAM Authorization (thay vì chỉ dựa vào Security Group), tăng thêm 1 lớp kiểm soát truy cập độc lập.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -2389,6 +2410,13 @@
           "content": "✅ Parameter Group (Redis/Memcached) cho phép tùy chỉnh hành vi engine (vd maxmemory-policy cho eviction, timeout cho idle connection) — tương tự Parameter Group của RDS nhưng áp dụng riêng cho cache engine, cần tạo Parameter Group TÙY CHỈNH (custom) nếu muốn sửa giá trị mặc định.",
           "createdAt": "2026-09-14T06:51:05.511889Z",
           "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "278f2d30661e",
+          "title": "ELASTICACHE: SUBNET GROUP",
+          "content": "✅ Cache Subnet Group: định nghĩa danh sách SUBNET (thường trải nhiều AZ) mà ElastiCache node được phép đặt vào — tương tự khái niệm DB Subnet Group của RDS, cần tạo TRƯỚC khi launch cluster để đảm bảo node được đặt đúng vị trí mạng mong muốn (thường là private subnet).",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -3044,6 +3072,13 @@
           "content": "📌 Tình huống: User vô tình xóa/sửa nhầm file trên file share Windows, cần cho phép TỰ KHÔI PHỤC phiên bản cũ mà không cần liên hệ admin restore từ backup.\n✅ Đáp án đúng: FSx for Windows hỗ trợ Shadow Copies (VSS - Volume Shadow Copy Service) — chụp snapshot ĐỊNH KỲ ở cấp file, user tự vào tab \"Previous Versions\" trên Windows Explorer để khôi phục file/thư mục về phiên bản trước đó ngay, giống trải nghiệm quen thuộc với Windows Server on-premises.",
           "createdAt": "2026-09-14T06:51:05.511889Z",
           "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "f88e9bbf7d3e",
+          "title": "FSx: BACKUP TỰ ĐỘNG & COPY BACKUP CROSS-REGION",
+          "content": "✅ Tất cả loại FSx hỗ trợ Automatic Daily Backup (retention tùy chỉnh) tích hợp AWS Backup, và có thể Copy Backup sang Region khác phục vụ Disaster Recovery — tương tự cơ chế snapshot của EBS/RDS nhưng áp dụng cho file system.",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -3145,6 +3180,13 @@
           "content": "✅ Ngoài Lambda, có thể dùng SSM Automation Document làm hành động khắc phục tự động khi có GuardDuty finding (vd chạy Automation Document cách ly instance, chạy antivirus scan qua Run Command) — tận dụng thư viện Automation Document có sẵn của SSM thay vì tự viết Lambda từ đầu cho mọi kịch bản remediation.",
           "createdAt": "2026-09-14T06:51:05.511889Z",
           "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "d5d082ae9814",
+          "title": "GUARDDUTY: ARCHIVE FINDINGS",
+          "content": "✅ Có thể ARCHIVE 1 finding (khác Suppression Rule áp dụng theo điều kiện tự động) — archive thủ công TỪNG finding cụ thể đã xác nhận là false positive/đã xử lý, finding archived vẫn xem lại được nhưng không hiện trong danh sách active mặc định.",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -3246,6 +3288,13 @@
           "content": "✅ Khi Macie quét lại 1 object đã có finding trước đó và phát hiện thay đổi (vd dữ liệu nhạy cảm đã bị xóa/sửa), nó tạo ra REVISED finding cập nhật trạng thái — giúp theo dõi được liệu vấn đề đã được XỬ LÝ hay vẫn còn tồn tại qua các lần quét, không chỉ dừng ở phát hiện 1 lần duy nhất.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "f209aa46fed1",
+          "title": "MACIE: DATA IDENTIFIER SEVERITY LEVEL TÙY CHỈNH",
+          "content": "✅ Khi tạo Custom Data Identifier, có thể gán SEVERITY riêng (Low/Medium/High) cho từng loại dữ liệu phát hiện được — cho phép công ty tự ĐỊNH NGHĨA mức độ nghiêm trọng theo NGỮ CẢNH RIÊNG (vd mã khách hàng nội bộ có thể quan trọng hơn với công ty dù không phải PII chuẩn quốc tế).",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -3347,6 +3396,13 @@
           "content": "✅ Từ 2022, WAF hỗ trợ xuất log TRỰC TIẾP ra S3 (không bắt buộc qua Firehose như trước) hoặc CloudWatch Logs — chọn S3 khi cần lưu trữ dài hạn/phân tích bằng Athena, chọn CloudWatch Logs khi cần xem/tạo alarm gần real-time trực tiếp trên metric filter.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "d035521cd777",
+          "title": "WAF: XSS MATCH & SQLI MATCH STATEMENT (LEGACY RULE TYPES)",
+          "content": "✅ Ngoài Managed Rule Group hiện đại, WAF vẫn hỗ trợ Rule Statement kiểu cũ chuyên biệt: XssMatchStatement (phát hiện script injection trong request), SqliMatchStatement (phát hiện SQL injection pattern) — có thể dùng riêng lẻ khi chỉ cần bảo vệ 1 loại tấn công cụ thể mà không muốn tốn WCU cho cả Managed Rule Group đầy đủ.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -3556,6 +3612,13 @@
           "content": "✅ Khi mời (Invite) 1 account tham gia Organization, quá trình diễn ra qua HANDSHAKE — account được mời nhận thông báo và phải CHỦ ĐỘNG Accept/Decline trong 15 ngày (hết hạn tự động), đảm bảo không ai bị ép buộc/vô tình gia nhập Organization khác mà không biết.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "743d1a32b2e8",
+          "title": "ORGANIZATIONS: EFFECTIVE POLICY (TỔNG HỢP SCP + RCP)",
+          "content": "✅ Từ khi có RCP, IAM cung cấp API GetOrganizationsAccessReport/simulate để xem EFFECTIVE POLICY — quyền thực tế cuối cùng của 1 principal sau khi tính TOÀN BỘ các lớp (SCP + RCP + Permission Boundary + Identity Policy) — hữu ích khi debug \"tại sao request này bị từ chối\" trong hệ thống nhiều lớp policy phức tạp.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -4089,6 +4152,13 @@
           "content": "📌 Tình huống: Dữ liệu streaming chứa nhiều loại sự kiện khác nhau (vd theo customer_id), cần TỰ ĐỘNG tổ chức file trên S3 theo PARTITION dựa trên GIÁ TRỊ THỰC TẾ trong dữ liệu (không chỉ theo thời gian ingest mặc định).\n✅ Đáp án đúng: Firehose Dynamic Partitioning — trích xuất giá trị từ JSON record (dùng JQ expression) để TỰ ĐỘNG tạo cấu trúc thư mục S3 tương ứng (vd s3://bucket/customer_id=123/...), tối ưu sẵn cho query sau này (Athena partition pruning) mà không cần ETL job riêng để tổ chức lại dữ liệu.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "77ff002dcc10",
+          "title": "KINESIS: ON-DEMAND vs PROVISIONED MODE (DATA STREAMS)",
+          "content": "✅ On-Demand Mode: TỰ ĐỘNG scale shard theo traffic, không cần tự resharding, tính phí theo lượng dữ liệu thực tế — phù hợp traffic khó dự đoán.\n✅ Provisioned Mode: TỰ chọn số shard cố định, RẺ HƠN nếu traffic ỔN ĐỊNH và dự đoán được, nhưng phải TỰ resharding khi cần scale — tương tự lựa chọn giữa DynamoDB On-Demand và Provisioned Capacity.",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -4190,6 +4260,13 @@
           "content": "📌 Tình huống: Cần ĐỌC dữ liệu snapshot EBS TRỰC TIẾP (từng block) để phân tích/backup tùy chỉnh mà KHÔNG cần tạo volume mới rồi mount vào EC2.\n✅ Đáp án đúng: EBS direct APIs (ListSnapshotBlocks, GetSnapshotBlock) — truy cập TRỰC TIẾP nội dung snapshot ở mức block qua API, dùng để xây công cụ backup/phân tích tùy chỉnh của bên thứ 3 mà không cần thao tác qua EC2 trung gian.",
           "createdAt": "2026-09-14T06:50:22.526625Z",
           "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "48731f1284c7",
+          "title": "EBS: COPY SNAPSHOT CROSS-REGION VỚI RE-ENCRYPTION",
+          "content": "📌 Tình huống: Snapshot đã mã hóa bằng CMK ở Region A, cần copy sang Region B nhưng CMK gốc KHÔNG TỒN TẠI ở Region B (KMS key là tài nguyên theo Region).\n✅ Đáp án đúng: Khi Copy Snapshot sang Region khác, PHẢI chỉ định 1 CMK KHÁC đã tồn tại SẴN ở Region đích để re-encrypt — không thể dùng lại CMK ID của Region nguồn vì KMS key không tồn tại xuyên Region (trừ Multi-Region Key).",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -4291,6 +4368,13 @@
           "content": "✅ Retry Policy: cấu hình số lần thử lại tối đa (Maximum Retry Attempts) và thời gian tối đa 1 event còn HIỆU LỰC để retry (Maximum Event Age, tối đa 24h) — sau khi vượt quá 1 trong 2 điều kiện này, event bị coi là thất bại và chuyển vào DLQ (nếu có cấu hình).",
           "createdAt": "2026-09-14T06:51:05.511889Z",
           "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "7ad4eb3099d8",
+          "title": "EVENTBRIDGE: GLOBAL ENDPOINTS (DISASTER RECOVERY CHO EVENT BUS)",
+          "content": "📌 Tình huống: Ứng dụng event-driven đa Region cần Event Bus KHÔNG BỊ GIÁN ĐOẠN nếu 1 Region gặp sự cố.\n✅ Đáp án đúng: EventBridge Global Endpoint — TỰ ĐỘNG failover việc gửi event sang Event Bus ở Region phụ nếu Region chính gặp sự cố (dựa trên Health Check), replicate event 2 chiều giữa 2 Region, ứng dụng chỉ gọi 1 endpoint duy nhất mà không cần tự xử lý logic failover.",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -4392,6 +4476,13 @@
           "content": "✅ Neptune hỗ trợ đặt Query Timeout (chặn 1 query chạy quá lâu chiếm tài nguyên) và giới hạn số lượng query CONCURRENT tối đa — tương tự khái niệm WLM của Redshift nhưng đơn giản hơn, ngăn 1 truy vấn đồ thị phức tạp (vd traversal quá sâu) làm nghẽn toàn bộ cluster cho các truy vấn khác.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "50c3f0f32349",
+          "title": "NEPTUNE: RDF TRIPLE STORE & SPARQL 1.1 SUPPORT",
+          "content": "✅ Với model RDF, Neptune lưu dữ liệu dạng TRIPLE (subject-predicate-object) và hỗ trợ đầy đủ chuẩn SPARQL 1.1 — dùng cho ontology phức tạp, knowledge graph theo chuẩn ngành (vd dữ liệu y sinh, dữ liệu chính phủ liên kết) cần tuân thủ chuẩn semantic web quốc tế.",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -4500,6 +4591,13 @@
           "content": "📌 Tình huống: Cần ƯỚC TÍNH chi phí TRƯỚC KHI triển khai 1 kiến trúc mới (chưa có usage thực tế để Cost Explorer/Compute Optimizer phân tích).\n✅ Đáp án đúng: AWS Pricing Calculator — công cụ ĐỘC LẬP (không cần đăng nhập account) để MÔ PHỎNG chi phí dự kiến của 1 kiến trúc theo cấu hình dự kiến (số EC2, loại RDS, dung lượng S3...) TRƯỚC khi thực sự deploy, dùng cho việc lập ngân sách/so sánh phương án kiến trúc khác nhau.",
           "createdAt": "2026-09-14T06:51:05.511889Z",
           "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "627ca38d014a",
+          "title": "AWS BUDGETS REPORTS",
+          "content": "✅ Budgets Reports: gửi email TỰ ĐỘNG ĐỊNH KỲ (hàng ngày/tuần/tháng) tổng hợp tình trạng NHIỀU Budget cùng lúc dưới dạng báo cáo dễ đọc — khác Budget Alert (chỉ gửi khi VƯỢT ngưỡng), Report gửi ĐỀU ĐẶN dù có vượt ngưỡng hay không, giúp theo dõi xu hướng chi tiêu định kỳ chủ động hơn.",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -4740,6 +4838,13 @@
           "content": "📌 Tình huống: SQS Queue subscribe SNS Topic, nhưng ứng dụng consumer muốn nhận NGUYÊN VĂN message body gốc, không muốn phải tự parse thêm 1 lớp JSON envelope mà SNS mặc định bọc quanh message khi gửi vào SQS.\n✅ Đáp án đúng: Bật Raw Message Delivery cho Subscription — SNS gửi message TRỰC TIẾP (không bọc thêm metadata JSON của SNS) vào SQS, giúp consumer code đơn giản hơn, đặc biệt hữu ích khi hệ thống downstream đã có sẵn logic parse message theo format riêng không phải của SNS.",
           "createdAt": "2026-09-14T06:51:05.511889Z",
           "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "6da1a00bfd2e",
+          "title": "SNS: TOPIC TYPES - STANDARD vs FIFO SO SÁNH THROUGHPUT",
+          "content": "✅ Standard Topic: throughput GẦN NHƯ VÔ HẠN, không đảm bảo thứ tự.\n✅ FIFO Topic: giới hạn throughput (300 msg/s, hoặc cao hơn với batching), đảm bảo THỨ TỰ + EXACTLY-ONCE, chỉ subscribe được bởi SQS FIFO Queue — cân nhắc dùng FIFO Topic khi thứ tự xử lý sự kiện QUAN TRỌNG (vd trạng thái đơn hàng phải đúng tuần tự: tạo → thanh toán → giao hàng).",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -4942,6 +5047,13 @@
           "content": "✅ Optimized Integration: 1 số service PHỔ BIẾN (Lambda, SQS, SNS, DynamoDB, ECS, SageMaker...) có cú pháp NGẮN GỌN & tính năng đặc biệt (như .sync/.waitForTaskToken).\n✅ SDK Integration (AWS SDK Service Integration): gọi được BẤT KỲ API action nào của HẦU HẾT AWS service (200+) theo cú pháp SDK chuẩn, dùng khi service cần gọi KHÔNG nằm trong danh sách Optimized Integration.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "8a65f6704686",
+          "title": "STEP FUNCTIONS: RESULT PATH & INPUT PATH - KIỂM SOÁT LUỒNG DỮ LIỆU",
+          "content": "✅ InputPath: chọn PHẦN NÀO của input sẽ được đưa vào state xử lý (lọc bớt field không cần).\n✅ ResultPath: quyết định KẾT QUẢ của state được GHI ĐÈ toàn bộ input hay CHÈN THÊM vào 1 field cụ thể trong input gốc (giữ nguyên phần còn lại) — kiểm soát chính xác cấu trúc dữ liệu truyền qua các bước, tránh mất dữ liệu cần dùng ở bước sau.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -5043,6 +5155,13 @@
           "content": "✅ Pre Token Generation Trigger: cho phép CHÈN THÊM/SỬA claim tùy chỉnh vào JWT token TRƯỚC KHI Cognito phát hành (vd thêm role/permission lấy từ DB ngoài) — hữu ích khi cần đưa thông tin PHỨC TẠP HƠN group đơn giản vào token để backend/API Gateway dùng phân quyền chi tiết.",
           "createdAt": "2026-09-14T06:50:22.526625Z",
           "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "518067cf1548",
+          "title": "COGNITO: DEVICE TRACKING & REMEMBERED DEVICES",
+          "content": "✅ Device Tracking: Cognito ghi nhớ THIẾT BỊ đã đăng nhập trước đó — có thể cấu hình BỎ QUA MFA cho thiết bị đã \"remember\" (giảm ma sát trải nghiệm) trong khi vẫn yêu cầu MFA đầy đủ cho thiết bị MỚI/LẠ, cân bằng giữa bảo mật và trải nghiệm người dùng.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -5332,6 +5451,13 @@
           "content": "✅ Concurrency Scaling tích lũy 1 giờ MIỄN PHÍ credit cho mỗi 24 giờ cluster hoạt động — với hầu hết workload dùng Concurrency Scaling KHÔNG THƯỜNG XUYÊN, credit tích lũy đủ để KHÔNG PHÁT SINH thêm chi phí, chỉ tính phí khi vượt quá lượng credit đã tích lũy.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "7c1127fec254",
+          "title": "REDSHIFT: CROSS-DATABASE QUERY",
+          "content": "📌 Tình huống: Trong CÙNG 1 Redshift cluster có NHIỀU DATABASE riêng biệt (vd theo team), cần JOIN dữ liệu GIỮA các database đó trong CÙNG 1 câu query.\n✅ Đáp án đúng: Cross-Database Query — truy vấn TRỰC TIẾP xuyên nhiều database trong CÙNG cluster mà không cần data sharing hay tạo external schema phức tạp, đơn giản hóa việc kết hợp dữ liệu từ nhiều database nội bộ.",
+          "createdAt": "2026-09-14T06:56:14.322729Z",
+          "updatedAt": "2026-09-14T06:56:14.322729Z"
         }
       ]
     },
@@ -5433,6 +5559,13 @@
           "content": "📌 Tình huống: Bảng có RẤT NHIỀU partition (hàng triệu, vd theo giờ/ngày/năm), việc Glue Crawler quét & load hết metadata partition vào Catalog trở nên CHẬM và tốn kém.\n✅ Đáp án đúng: Partition Projection — khai báo QUY LUẬT tính partition (vd theo range ngày tháng) TRỰC TIẾP trong table property, Athena TỰ TÍNH partition cần quét dựa trên điều kiện WHERE mà KHÔNG cần tra cứu Glue Catalog cho từng partition, tăng tốc query đáng kể với bảng partition khổng lồ.",
           "createdAt": "2026-09-14T06:50:22.526625Z",
           "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "b0eec97ff7d6",
+          "title": "GLUE: TRIGGERS - SCHEDULE, ON-DEMAND, EVENT-BASED, CONDITIONAL",
+          "content": "✅ Glue Trigger khởi chạy Job theo nhiều cách: Schedule (cron), On-Demand (thủ công), EventBridge Event (khi 1 sự kiện AWS xảy ra), Conditional (chạy Job B SAU KHI Job A hoàn tất thành công) — cho phép xây dựng PIPELINE ETL nhiều bước phụ thuộc lẫn nhau mà không cần công cụ orchestration ngoài như Step Functions cho trường hợp đơn giản.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -6119,6 +6252,13 @@
           "content": "✅ Lifecycle Policy có thể áp dụng theo TAG PREFIX cụ thể (vd chỉ xóa image tag bắt đầu bằng \"dev-\" sau 7 ngày, giữ nguyên tag \"prod-\" vô thời hạn) — cho phép chính sách dọn dẹp KHÁC NHAU cho từng loại image (dev/staging/production) trong CÙNG 1 repository.",
           "createdAt": "2026-09-14T06:50:22.526625Z",
           "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "30b3970758f7",
+          "title": "EKS: ADDONS (MANAGED ADD-ONS)",
+          "content": "✅ EKS Add-ons: AWS quản lý VÒNG ĐỜI của các thành phần cốt lõi cluster cần (VPC CNI, CoreDNS, kube-proxy, EBS/EFS CSI Driver) — tự động cập nhật version tương thích, giảm gánh nặng phải TỰ THEO DÕI & vá các thành phần hạ tầng Kubernetes quan trọng này thủ công.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
@@ -6220,6 +6360,13 @@
           "content": "✅ Có thể chia sẻ Manual Snapshot của DocumentDB Cluster với account AWS KHÁC (tương tự RDS snapshot sharing) — dùng để chuyển dữ liệu giữa các môi trường/account (dev copy từ prod snapshot) mà không cần export/import thủ công qua mongodump/mongorestore.",
           "createdAt": "2026-09-14T06:51:46.690504Z",
           "updatedAt": "2026-09-14T06:51:46.690504Z"
+        },
+        {
+          "id": "ded3b4193bcc",
+          "title": "DOCUMENTDB: CLUSTER PARAMETER - AUDIT LOGGING BẬT/TẮT",
+          "content": "✅ Audit Logging của DocumentDB PHẢI được bật qua Cluster Parameter Group (mặc định TẮT) rồi mới xuất được ra CloudWatch Logs — đây là bước cấu hình dễ bị quên, khác với 1 số dịch vụ khác có audit log bật sẵn mặc định.",
+          "createdAt": "2026-09-14T06:55:39.679205Z",
+          "updatedAt": "2026-09-14T06:55:39.679205Z"
         }
       ]
     },
