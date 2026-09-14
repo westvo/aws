@@ -1785,6 +1785,20 @@
           "content": "✅ CloudFront: tối ưu cho nội dung CÓ THỂ CACHE ĐƯỢC (static/dynamic content HTTP/HTTPS), hoạt động ở tầng ứng dụng (Layer 7).\n✅ Global Accelerator: tối ưu cho traffic KHÔNG CACHE ĐƯỢC (TCP/UDP thuần túy, gaming, VoIP, IoT) hoặc cần IP tĩnh cố định, hoạt động ở tầng mạng (Layer 3/4), cải thiện performance bằng cách đưa traffic vào mạng backbone AWS SỚM NHẤT có thể (ngay từ Edge gần user) thay vì cache nội dung.\n⚠️ Có thể DÙNG CHUNG cả 2: CloudFront cho phần static asset, Global Accelerator cho phần API/game server cần IP cố định.",
           "createdAt": "2026-09-14T04:04:07.265302Z",
           "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "b45863f49616",
+          "title": "GLOBAL ACCELERATOR: CUSTOM ROUTING ACCELERATOR",
+          "content": "📌 Tình huống: Cần route traffic TỚI ĐÚNG 1 IP/PORT CỤ THỂ trong hàng nghìn EC2 instance (vd game server, mỗi instance phục vụ 1 phòng chơi riêng) dựa theo địa chỉ IP/port của Accelerator mà client kết nối vào.\n✅ Đáp án đúng: Custom Routing Accelerator (khác Standard Accelerator định tuyến theo health/gần nhất) — cho phép MAP TRỰC TIẾP 1 cổng/IP cụ thể của Accelerator tới 1 EC2 instance:port cụ thể, phù hợp kiến trúc cần kiểm soát chính xác client nào tới đúng server nào.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "6757f912386e",
+          "title": "GLOBAL ACCELERATOR: FLOW LOGS",
+          "content": "✅ Global Accelerator hỗ trợ Flow Logs (giống VPC Flow Logs) ghi lại thông tin traffic đi qua Accelerator (IP nguồn, Edge Location tiếp nhận, endpoint đích) — xuất ra S3 để phân tích pattern truy cập toàn cầu hoặc debug vấn đề routing.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
         }
       ]
     },
@@ -1844,6 +1858,20 @@
           "content": "✅ DMS Fleet Advisor: tự động quét TOÀN BỘ database on-premises trong công ty (kể cả chưa biết hết), đưa ra khuyến nghị nên migrate database nào lên đâu (RDS, Aurora, hay giữ nguyên) dựa trên độ phức tạp và mức độ tương thích, giúp lập kế hoạch migration ở QUY MÔ LỚN (nhiều database cùng lúc) thay vì đánh giá thủ công từng cái.",
           "createdAt": "2026-09-14T04:02:45.495017Z",
           "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "a14c02749bdd",
+          "title": "DMS: TARGET TABLE PREPARATION MODE",
+          "content": "✅ Do Nothing: DMS giả định bảng đích ĐÃ TỒN TẠI sẵn, chỉ load dữ liệu vào.\n✅ Drop Tables on Target: xóa bảng đích (nếu có) rồi tạo mới trước khi load — dùng khi muốn đảm bảo bảng đích SẠCH HOÀN TOÀN trước khi migrate.\n✅ Truncate: giữ nguyên cấu trúc bảng đích nhưng XÓA SẠCH dữ liệu cũ trước khi load mới — dùng khi bảng đích đã đúng schema, chỉ cần làm mới dữ liệu.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "112fdd5985e0",
+          "title": "DMS: MULTI-AZ REPLICATION INSTANCE",
+          "content": "✅ Replication Instance có thể bật Multi-AZ (giống RDS) để có standby dự phòng ở AZ khác — tăng độ sẵn sàng cho tiến trình migration/CDC quan trọng chạy liên tục dài hạn, tránh gián đoạn đồng bộ nếu AZ chính gặp sự cố giữa chừng.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
         }
       ]
     },
@@ -1896,6 +1924,20 @@
           "content": "📌 Tình huống: Công ty đã có AD Managed Microsoft AD trên AWS, muốn user trong đó SSO được vào nhiều AWS account khác nhau qua IAM Identity Center.\n✅ Đáp án đúng: Cấu hình IAM Identity Center dùng Directory Service làm nguồn identity (thay vì tự tạo user riêng trong Identity Center) — user AD login 1 lần, chọn account/role cần vào, không cần đồng bộ/tạo user trùng lặp.",
           "createdAt": "2026-09-14T04:02:45.495017Z",
           "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "a2338a8d0b4d",
+          "title": "DIRECTORY SERVICE: SCHEMA EXTENSION",
+          "content": "✅ AWS Managed Microsoft AD cho phép mở rộng Schema AD (thêm attribute/class tùy chỉnh) — cần thiết khi có ứng dụng doanh nghiệp (vd HRM tích hợp AD) yêu cầu lưu thêm field riêng vào user object mà schema AD mặc định không có.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "dd45cb0ee4c8",
+          "title": "DIRECTORY SERVICE: FSx CHO ONTAP/WINDOWS TÍCH HỢP AD",
+          "content": "✅ FSx for Windows File Server và FSx for NetApp ONTAP đều CẦN join vào 1 Active Directory (AWS Managed Microsoft AD, Simple AD, hoặc AD on-premises qua trust) để quản lý quyền truy cập file/folder theo NTFS permission — đây là điểm tích hợp phổ biến hay được hỏi trong đề thi khi kết hợp FSx + Directory Service.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
         }
       ]
     },
@@ -2418,6 +2460,20 @@
           "content": "📌 Tình huống: Công ty có hạ tầng storage on-premises phức tạp (nhiều NAS/file server), chưa biết rõ nên ưu tiên migrate phần nào trước, dung lượng/pattern truy cập ra sao.\n✅ Đáp án đúng: DataSync Discovery — tự động quét & phân tích storage on-premises hiện có (dung lượng, IOPS, throughput pattern), gợi ý dịch vụ AWS storage phù hợp và ước tính chi phí TRƯỚC khi thực hiện migration thật.",
           "createdAt": "2026-09-14T04:02:45.495017Z",
           "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "8afb7d429b8b",
+          "title": "DATASYNC: OBJECT TAGS & METADATA PRESERVATION",
+          "content": "✅ DataSync giữ nguyên (preserve) metadata quan trọng khi transfer: file permission (POSIX), timestamp gốc, và Object Tag của S3 — quan trọng khi migration cần giữ đúng thông tin gốc phục vụ compliance/audit, không chỉ đơn thuần copy nội dung file.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "b0a95e906229",
+          "title": "DATASYNC: TASK EXECUTION HISTORY & REPORTING",
+          "content": "✅ Mỗi lần Task chạy tạo ra 1 Task Execution với báo cáo chi tiết: số file đã transfer, bị skip, bị lỗi, tổng dung lượng, thời gian chạy — xuất được report chi tiết ra CloudWatch Logs để audit từng lần đồng bộ, phục vụ chứng minh tuân thủ SLA di trú dữ liệu.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
         }
       ]
     },
@@ -2887,6 +2943,20 @@
           "content": "✅ Route-Based VPN (AWS mặc định dùng loại này): dùng BGP để trao đổi route ĐỘNG, linh hoạt khi mạng thay đổi, hỗ trợ ECMP (dùng nhiều tunnel cùng lúc tăng băng thông).\n✅ Policy-Based VPN: định nghĩa CỨNG cặp CIDR nguồn-đích được phép qua VPN (dùng cho thiết bị VPN cũ không hỗ trợ BGP) — AWS Site-to-Site VPN CHỦ YẾU hỗ trợ Route-Based, cần kiểm tra tương thích nếu thiết bị Customer Gateway chỉ hỗ trợ Policy-Based.",
           "createdAt": "2026-09-14T04:04:07.265302Z",
           "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "8805f8c450bc",
+          "title": "VPN: DEAD PEER DETECTION (DPD) & TUNNEL MONITORING",
+          "content": "✅ Dead Peer Detection: cơ chế 2 đầu VPN tunnel định kỳ kiểm tra \"đối phương còn sống không\" — nếu phát hiện tunnel chết, tự động chuyển traffic sang tunnel còn lại (trong 2 tunnel mặc định) hoặc trigger route thay thế.\n✅ Nên giám sát CloudWatch Metric TunnelState của VPN để biết tunnel nào đang UP/DOWN theo thời gian thực, kết hợp alarm cảnh báo khi cả 2 tunnel cùng down (mất kết nối hoàn toàn).",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "1f42df6c9223",
+          "title": "VPN: STATIC ROUTING vs DYNAMIC ROUTING (BGP)",
+          "content": "✅ Static Routing: khai báo CỨNG các CIDR route 2 phía — đơn giản nhưng phải tự cập nhật thủ công mỗi khi mạng thay đổi, dùng khi Customer Gateway không hỗ trợ BGP.\n✅ Dynamic Routing (BGP, khuyến nghị): route TỰ ĐỘNG trao đổi và cập nhật giữa 2 phía, hỗ trợ failover tự động qua nhiều tunnel/connection, linh hoạt hơn nhiều khi mạng có thay đổi.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
         }
       ]
     },
@@ -3127,6 +3197,27 @@
           "content": "✅ Fleet Manager: giao diện tập trung để quản lý, kết nối (RDP web-based), xem thông tin của TOÀN BỘ fleet server (EC2 + on-premises) trong 1 nơi mà không cần vào từng console riêng.\n✅ Có thể chạy Automation Document (chuỗi bước tự động hóa) trên HÀNG NGHÌN instance ĐỒNG THỜI, với Rate Control (giới hạn % instance xử lý song song) để tránh gây gián đoạn diện rộng nếu automation có lỗi.",
           "createdAt": "2026-09-14T04:04:07.265302Z",
           "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "8c5adfc411c1",
+          "title": "SSM: PARAMETER STORE - ADVANCED PARAMETERS",
+          "content": "✅ Standard Parameter: miễn phí, tối đa 4KB, tối đa 10,000 parameter/account.\n✅ Advanced Parameter: tính phí, dung lượng tới 8KB, hỗ trợ Parameter Policy (vd tự động thông báo/hết hạn theo lịch, ràng buộc bắt buộc xoay vòng) — dùng khi cần lưu giá trị lớn hơn 4KB hoặc cần policy nâng cao mà Standard không hỗ trợ.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "e3626ab167bf",
+          "title": "SSM: MAINTENANCE WINDOWS",
+          "content": "📌 Tình huống: Cần chạy các tác vụ bảo trì (patch, restart, backup) TRÊN NHIỀU instance nhưng CHỈ TRONG khung giờ ít ảnh hưởng nhất (vd 2h-4h sáng Chủ nhật), tránh gây gián đoạn giờ cao điểm.\n✅ Đáp án đúng: SSM Maintenance Windows — định nghĩa khung giờ + tần suất cố định, gắn các Task (Run Command, Automation, Lambda...) chỉ được thực thi trong đúng khung giờ đó, tự động dừng nếu quá giờ dù task chưa xong.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "302b3a117d8f",
+          "title": "SSM: DISTRIBUTOR",
+          "content": "✅ SSM Distributor: quản lý & phân phối TỰ ĐỘNG các package phần mềm (agent, antivirus, driver) tới fleet EC2/on-premises theo lịch hoặc khi cần, đảm bảo mọi instance luôn có đúng version package chuẩn mà không cần cài thủ công từng máy.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
         }
       ]
     },
@@ -3679,6 +3770,20 @@
           "content": "📌 Tình huống: Ứng dụng DR chạy đa Region cần secret (DB credentials) giống nhau ở cả 2 Region, đồng bộ tự động khi rotate.\n✅ Đáp án đúng: Multi-Region Secrets — tạo secret REPLICA ở Region khác, tự động đồng bộ nội dung khi secret gốc được rotate/update, ứng dụng ở Region phụ đọc secret y hệt mà không cần tự đồng bộ thủ công.",
           "createdAt": "2026-09-14T04:04:07.265302Z",
           "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "132b22d21f33",
+          "title": "SECRETS MANAGER: CUSTOM ROTATION LAMBDA (4 BƯỚC)",
+          "content": "✅ Khi viết Rotation Lambda tùy chỉnh (cho hệ thống không có template sẵn), phải implement đúng 4 bước chuẩn: createSecret (tạo credential mới), setSecret (áp dụng credential mới lên hệ thống đích), testSecret (kiểm tra credential mới hoạt động đúng), finishSecret (đánh dấu version mới là AWSCURRENT) — đảm bảo quy trình rotation an toàn, có thể rollback nếu 1 bước lỗi giữa chừng.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "6fa87f3668fe",
+          "title": "SECRETS MANAGER: SECRET VALUE VERSIONING & STAGING LABELS",
+          "content": "✅ Mỗi version secret gắn Staging Label: AWSCURRENT (version hiện tại ứng dụng đang dùng), AWSPENDING (version mới đang trong quá trình rotate, chưa hoàn tất), AWSPREVIOUS (version trước đó, giữ lại để rollback khẩn cấp nếu version mới có vấn đề).",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
         }
       ]
     },
@@ -3877,6 +3982,20 @@
           "content": "📌 Tình huống: Cần chạy TRUY VẤN SQL phức tạp trên log CloudTrail để phân tích/audit sâu (vd tổng hợp theo user, theo thời gian, join nhiều điều kiện) mà không muốn tự dựng Athena + Glue Crawler riêng.\n✅ Đáp án đúng: CloudTrail Lake — kho dữ liệu quản lý sẵn (managed data lake) cho CloudTrail event, hỗ trợ query SQL trực tiếp, lưu trữ tới 7 năm, không cần tự thiết lập pipeline ETL như đưa log qua Athena thủ công.",
           "createdAt": "2026-09-14T04:02:45.495017Z",
           "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "0160c2b8421f",
+          "title": "CLOUDTRAIL: KMS ENCRYPTION CHO LOG FILE",
+          "content": "✅ Có thể mã hóa log file CloudTrail bằng KMS CMK riêng (SSE-KMS) thay vì chỉ SSE-S3 mặc định — cho phép kiểm soát chặt hơn AI được decrypt/đọc log (qua Key Policy), quan trọng khi log chứa thông tin nhạy cảm về hoạt động hệ thống.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "be68c7a1064c",
+          "title": "CLOUDTRAIL: VPC ENDPOINT",
+          "content": "✅ Có thể tạo VPC Endpoint cho CloudTrail để các dịch vụ trong private subnet ghi log CloudTrail mà KHÔNG cần đi qua Internet/NAT Gateway — giữ toàn bộ traffic logging trong mạng AWS riêng, tăng bảo mật cho môi trường yêu cầu air-gapped/isolated cao.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
         }
       ]
     },
@@ -3936,6 +4055,20 @@
           "content": "✅ CloudTrail: ghi lại AI đã gọi API GÌ, khi nào (WHO did WHAT).\n✅ Config: ghi lại TRẠNG THÁI CẤU HÌNH của resource tại từng thời điểm, và đánh giá có TUÂN THỦ policy hay không (WHAT does it LOOK LIKE, và có ĐÚNG chuẩn không).\n⚠️ Đáp án sai thường gặp: dùng CloudTrail để kiểm tra compliance cấu hình hiện tại ➜ CloudTrail chỉ có log hành động, không tự đánh giá compliance như Config Rule.",
           "createdAt": "2026-09-14T04:02:45.495017Z",
           "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "9d08946265e3",
+          "title": "AWS CONFIG: RESOURCE RELATIONSHIP & CONFIGURATION SNAPSHOT",
+          "content": "✅ Config tự động vẽ RA MỐI QUAN HỆ giữa các resource (vd EC2 này thuộc Security Group nào, Security Group đó dùng bởi bao nhiêu resource khác) — hữu ích khi cần đánh giá TÁC ĐỘNG trước khi xóa/sửa 1 resource (impact analysis).\n✅ Configuration Snapshot: chụp lại TOÀN BỘ trạng thái cấu hình mọi resource tại 1 thời điểm, xuất ra S3 — dùng cho audit định kỳ hoặc so sánh trạng thái giữa 2 thời điểm xa nhau.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "33957b242067",
+          "title": "AWS CONFIG: MULTI-ACCOUNT MULTI-REGION DATA AGGREGATION",
+          "content": "✅ Ngoài Aggregator thông thường, Config còn hỗ trợ gộp dữ liệu từ Organization TỰ ĐỘNG (không cần tự thêm từng account) khi dùng Service-Managed Aggregator qua AWS Organizations — account MỚI thêm vào Org tự động được gộp vào view tổng hợp mà không cần cấu hình thủ công lại.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
         }
       ]
     },
@@ -4134,6 +4267,20 @@
           "content": "⚠️ Chứng chỉ ACM gắn với 1 Region CỤ THỂ — CloudFront LUÔN yêu cầu chứng chỉ tạo ở us-east-1 (N. Virginia) dù distribution phục vụ toàn cầu, trong khi ALB dùng chứng chỉ ở CHÍNH Region của ALB đó — đây là bẫy hay gặp khi cấu hình HTTPS cho CloudFront.",
           "createdAt": "2026-09-14T04:02:45.495017Z",
           "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "69e875e727c3",
+          "title": "ACM: CHỨNG CHỈ CHO ELASTIC BEANSTALK & OPSWORKS",
+          "content": "✅ Ngoài CloudFront/ALB/API Gateway, ACM certificate cũng gắn được cho Elastic Beanstalk (qua Load Balancer bên dưới) — không cần tự quản lý chứng chỉ riêng khi dùng các dịch vụ PaaS build trên nền ALB.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "621ae7719bcb",
+          "title": "ACM: CERTIFICATE TRANSPARENCY LOGGING",
+          "content": "✅ Mọi chứng chỉ public do ACM cấp đều được ghi vào Certificate Transparency (CT) Log công khai (theo chuẩn ngành, bắt buộc từ trình duyệt hiện đại) — có thể TẮT logging cho 1 chứng chỉ cụ thể nếu domain đó nhạy cảm/chưa công bố, tránh lộ tên miền nội bộ ra log công khai trước khi ra mắt.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
         }
       ]
     },
@@ -4186,6 +4333,20 @@
           "content": "✅ Managed Platform Updates: tự động áp dụng bản vá bảo mật/cập nhật minor version của platform (runtime, OS) theo lịch bảo trì định sẵn, có thể cấu hình rollback tự động nếu update gây lỗi health check — giảm gánh nặng tự theo dõi & vá platform thủ công.",
           "createdAt": "2026-09-14T04:04:07.265302Z",
           "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "298e4bc45b59",
+          "title": "BEANSTALK: WORKER TIER + SQS CUSTOM QUEUE",
+          "content": "✅ Có thể trỏ Worker Environment tới 1 SQS Queue đã có SẴN từ trước (thay vì để Beanstalk tự tạo queue mới) — hữu ích khi queue đó đã được nhiều hệ thống khác dùng chung hoặc cần cấu hình đặc biệt (FIFO, DLQ riêng) mà Beanstalk mặc định không cung cấp.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "bc8996f4f4a5",
+          "title": "BEANSTALK: CUSTOM PLATFORM (PACKER)",
+          "content": "📌 Tình huống: Platform có sẵn của Beanstalk (Java, Node.js...) không đáp ứng đủ yêu cầu OS/runtime đặc thù của công ty.\n✅ Đáp án đúng: Custom Platform — dùng Packer để tự build 1 AMI RIÊNG làm nền tảng cho Beanstalk environment, kiểm soát sâu hơn Platform Hook (.platform/.ebextensions) thông thường, nhưng phức tạp hơn và cần tự bảo trì AMI đó.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
         }
       ]
     },
@@ -4238,6 +4399,20 @@
           "content": "✅ Giống GuardDuty, Inspector hỗ trợ Delegated Administrator để bật/quản lý quét lỗ hổng cho TOÀN BỘ account trong Organization từ 1 nơi, tự động bật cho account MỚI thêm vào Organization mà không cần cấu hình thủ công lại.",
           "createdAt": "2026-09-14T04:01:22.238023Z",
           "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "fc3cb7c56975",
+          "title": "INSPECTOR: EXPOSURE DATE & DELEGATED ADMIN REPORTING",
+          "content": "✅ Inspector cho biết chính xác Finding này đã TỒN TẠI BAO LÂU (exposure date) kể từ lúc phát hiện — giúp ưu tiên xử lý finding tồn đọng lâu ngày, đồng thời Delegated Admin có thể export báo cáo tổng hợp CSV toàn Organization để phục vụ họp review bảo mật định kỳ.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "33c7be911ea8",
+          "title": "INSPECTOR: SUPPORT CHO LAMBDA LAYER SCANNING",
+          "content": "✅ Inspector quét CẢ Lambda Layer (không chỉ code chính của function) để tìm lỗ hổng trong dependency được đóng gói qua Layer — quan trọng vì nhiều team dùng chung 1 Layer cho nhiều function, 1 lỗ hổng trong Layer có thể ảnh hưởng HÀNG LOẠT function cùng lúc.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
         }
       ]
     },
@@ -4290,6 +4465,20 @@
           "content": "✅ Proactive Engagement: SRT chủ động LIÊN HỆ VỚI BẠN ngay khi phát hiện dấu hiệu tấn công (thay vì chờ bạn báo), cần đăng ký trước thông tin liên lạc khẩn cấp.\n✅ Health-Based Detection: tích hợp Route 53 Health Check để Shield hiểu ĐÚNG tình trạng SỨC KHỎE ứng dụng (dựa trên business metric thật, vd tỷ lệ lỗi ứng dụng) thay vì chỉ dựa vào lưu lượng traffic thô — giảm false positive khi traffic tăng cao NHƯNG là traffic thật (sale event) chứ không phải bị tấn công.",
           "createdAt": "2026-09-14T04:01:22.238023Z",
           "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "976a4569b4c8",
+          "title": "SHIELD ADVANCED: DDOS RESPONSE TEAM (DRT) & RUNBOOK",
+          "content": "✅ Có thể chuẩn bị SẴN 1 Runbook (tài liệu hướng dẫn) mô tả kiến trúc hệ thống + cách xử lý mong muốn khi bị tấn công, chia sẻ trước cho DRT — giúp DRT phản ứng NHANH & ĐÚNG NGỮ CẢNH hệ thống của bạn ngay khi có sự cố, thay vì mất thời gian tìm hiểu kiến trúc từ đầu lúc khẩn cấp.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "fe1e247d4f8e",
+          "title": "SHIELD: BẢO VỆ EIP CHO NLB/EC2",
+          "content": "✅ Shield Advanced có thể bảo vệ RIÊNG Elastic IP gắn cho NLB hoặc EC2 (dùng cho ứng dụng TCP/UDP không qua ALB/CloudFront) — không chỉ giới hạn ở CloudFront/Route 53/ALB, đảm bảo bảo vệ được cả kiến trúc dùng NLB với IP tĩnh.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
         }
       ]
     },
@@ -4342,6 +4531,20 @@
           "content": "📌 Tình huống: Công ty có backup đầy đủ nhưng CHƯA BAO GIỜ thử restore thực tế, không chắc backup có DÙNG ĐƯỢC khi cần hay không (backup bị hỏng ngầm).\n✅ Đáp án đúng: AWS Backup Restore Testing — tự động lên lịch restore backup ra môi trường TEST định kỳ để xác minh backup thực sự khôi phục được, phát hiện sớm backup lỗi trước khi cần dùng thật trong tình huống khẩn cấp.",
           "createdAt": "2026-09-14T04:01:22.238023Z",
           "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "f361305d9ba7",
+          "title": "AWS BACKUP: CONTINUOUS BACKUP (PITR) QUA BACKUP",
+          "content": "✅ AWS Backup cũng hỗ trợ Point-in-Time Recovery cho các resource hỗ trợ (RDS, Aurora, S3, DynamoDB, VMware/EC2 với PITR) NGAY TRONG cùng 1 Backup Plan — không cần bật tính năng PITR riêng lẻ của từng service, quản lý tập trung luôn cả continuous và point-in-time backup.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "63fc394aff4f",
+          "title": "AWS BACKUP: TAG-BASED RESOURCE ASSIGNMENT",
+          "content": "📌 Tình huống: Có hàng trăm resource rải rác, muốn TỰ ĐỘNG áp dụng đúng Backup Plan cho resource mới tạo ra sau này mà không phải thêm thủ công từng cái vào plan.\n✅ Đáp án đúng: Gán resource vào Backup Plan bằng TAG (vd Backup=Daily) thay vì chọn thủ công từng Resource ID — mọi resource MỚI tạo có đúng tag đó sẽ TỰ ĐỘNG được backup theo plan tương ứng.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
         }
       ]
     },
@@ -4394,6 +4597,20 @@
           "content": "📌 Tình huống: Tỷ lệ lỗi của 1 service tăng đột biến, cần biết NGAY mà không phải tự ngồi xem dashboard liên tục.\n✅ Đáp án đúng: X-Ray Insights — tự động phân tích trace để phát hiện BẤT THƯỜNG (tỷ lệ lỗi tăng, latency tăng bất thường), tự tạo insight kèm root cause gợi ý và timeline sự kiện, có thể gửi thông báo qua EventBridge.",
           "createdAt": "2026-09-14T04:01:22.238023Z",
           "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "41a82273ba9a",
+          "title": "X-RAY: SUBSEGMENT & CUSTOM INSTRUMENTATION",
+          "content": "✅ Subsegment: chia nhỏ 1 Segment (đại diện 1 service) thành các bước con CHI TIẾT hơn (vd gọi DB, gọi API ngoài, xử lý logic riêng) — cho phép biết CHÍNH XÁC bước nào bên trong 1 service đang chậm, không chỉ biết cả service chậm chung chung.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "e17d066fa7be",
+          "title": "X-RAY: GROUPS & FILTER EXPRESSIONS",
+          "content": "✅ Groups: tạo nhóm trace theo điều kiện lọc riêng (vd chỉ trace có lỗi, hoặc chỉ trace của 1 API endpoint cụ thể) — mỗi Group có thể gắn CloudWatch Alarm/Insight riêng, giúp theo dõi tách biệt theo từng phần quan trọng của hệ thống thay vì trộn chung tất cả trace.",
+          "createdAt": "2026-09-14T06:30:53.189120Z",
+          "updatedAt": "2026-09-14T06:30:53.189120Z"
         }
       ]
     },
@@ -4585,6 +4802,20 @@
           "content": "✅ Merged API: gộp NHIỀU AppSync API con (do các team khác nhau quản lý riêng) thành 1 API GraphQL DUY NHẤT cho client gọi — phù hợp kiến trúc microservices nơi mỗi team sở hữu 1 phần schema riêng nhưng vẫn expose ra 1 endpoint thống nhất.",
           "createdAt": "2026-09-14T04:01:22.238023Z",
           "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "78fcccae11b5",
+          "title": "APPSYNC: BATCHING VỚI AWS LAMBDA RESOLVER",
+          "content": "✅ Khi resolver là Lambda, AppSync có thể tự động GỘP (batch) nhiều request Lambda GIỐNG NHAU trong 1 GraphQL query (vd query danh sách 50 user, mỗi user cần gọi resolver riêng) thành 1 lần gọi Lambda DUY NHẤT với mảng input — giải quyết bài toán N+1 query kinh điển, giảm số lượng Lambda invocation đáng kể.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "3e06d44f3c12",
+          "title": "APPSYNC: CONFLICT DETECTION & RESOLUTION (OFFLINE SYNC)",
+          "content": "📌 Tình huống: 2 thiết bị mobile cùng sửa 1 bản ghi khi đang offline, khi cả 2 đồng bộ lại thì xảy ra xung đột (conflict).\n✅ Đáp án đúng: AppSync Conflict Detection (dùng version number tự động) + Conflict Resolution Strategy — Optimistic Concurrency (từ chối ghi đè nếu version không khớp), Auto Merge (tự gộp thay đổi không trùng field), hoặc Lambda tùy chỉnh logic resolve xung đột riêng theo nghiệp vụ.",
+          "createdAt": "2026-09-14T06:30:05.057954Z",
+          "updatedAt": "2026-09-14T06:30:05.057954Z"
         }
       ]
     },
