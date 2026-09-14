@@ -1685,6 +1685,20 @@
           "content": "✅ Placement Strategy (chỉ áp dụng EC2 launch type, Fargate không cần vì AWS tự quản lý): binpack (dồn task vào ÍT instance nhất để tối ưu tận dụng tài nguyên/chi phí), spread (trải đều task qua nhiều instance/AZ để tăng chịu lỗi), random.\n✅ Placement Constraint: ép buộc task CHỈ chạy trên instance thỏa điều kiện cụ thể (vd chỉ instance có GPU, hoặc phải distinctInstance — mỗi task 1 instance riêng không share).",
           "createdAt": "2026-09-14T06:28:13.873303Z",
           "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "2c3e01499af2",
+          "title": "ECS: CONTAINER INSIGHTS",
+          "content": "✅ Container Insights: tự động thu thập metric/log chi tiết CẤP CONTAINER (CPU, memory, network của TỪNG container, không chỉ tổng ở cấp task/service) qua CloudWatch — cung cấp dashboard sẵn để debug hiệu năng ở mức độ chi tiết mà CloudWatch metric mặc định của ECS không có.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "ff791183d5a9",
+          "title": "ECS: BLUE/GREEN DEPLOYMENT VỚI CODEDEPLOY",
+          "content": "📌 Tình huống: Cần deploy version mới của ECS Service theo kiểu Blue/Green (tạo Target Group MỚI hoàn toàn, test xong mới chuyển traffic) thay vì Rolling Update mặc định.\n✅ Đáp án đúng: Tích hợp ECS với CodeDeploy (Deployment Controller = CODE_DEPLOY) — CodeDeploy tạo Task Set MỚI song song, dùng ALB Listener Rule để chuyển traffic dần/toàn bộ sang version mới, hỗ trợ rollback tự động nếu CloudWatch Alarm phát hiện lỗi sau khi chuyển.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -1758,6 +1772,20 @@
           "content": "✅ EFS mount qua NFSv4.1, hỗ trợ mount SONG SONG từ HÀNG NGHÌN EC2/container/Lambda cùng lúc (đọc/ghi đồng thời) — điểm khác biệt lớn so với EBS (chỉ 1 instance, trừ Multi-Attach io1/io2 giới hạn 16).\n✅ EFS One Zone: chỉ lưu trong 1 AZ (rẻ hơn ~47% so với Standard đa AZ) — dùng cho dữ liệu KHÔNG cần độ bền đa AZ (dev/test, hoặc dữ liệu có thể tái tạo lại dễ dàng).",
           "createdAt": "2026-09-14T06:28:13.873303Z",
           "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "87480e775859",
+          "title": "EFS: THROUGHPUT MODE ELASTIC - CHI TIẾT",
+          "content": "✅ Elastic Throughput Mode: tự động scale throughput LÊN/XUỐNG tức thì theo workload thực tế (không cần đặt Provisioned cố định), CHỈ TÍNH PHÍ theo lượng dữ liệu ĐỌC/GHI thực tế — phù hợp workload có pattern truy cập THAY ĐỔI THẤT THƯỜNG (spiky) mà Bursting/Provisioned khó tối ưu chi phí bằng.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "3feeb3cf7c9f",
+          "title": "EFS: BACKUP TỰ ĐỘNG QUA AWS BACKUP",
+          "content": "✅ EFS tích hợp SẴN với AWS Backup — bật Automatic Backup ngay khi tạo file system là có backup định kỳ ngay, không cần tự cấu hình Lifecycle/script riêng, hỗ trợ luôn cả restore selective (chỉ khôi phục 1 vài file/folder thay vì toàn bộ file system).",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -2123,6 +2151,20 @@
           "content": "✅ Encryption in-transit (TLS) và at-rest (KMS) đều CHỈ đặt được KHI TẠO cluster (không bật/tắt sau), giống nhiều dịch vụ khác của AWS.\n✅ Redis AUTH: đặt thêm PASSWORD (token) để client phải xác thực trước khi kết nối vào Redis, thay vì chỉ dựa vào Security Group — lớp bảo vệ bổ sung khi cần chia sẻ endpoint trong môi trường nhiều team.",
           "createdAt": "2026-09-14T06:26:11.067628Z",
           "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "40d577c56a89",
+          "title": "ELASTICACHE: RESERVED NODES & AUTO DISCOVERY (MEMCACHED)",
+          "content": "✅ Reserved Nodes: cam kết 1-3 năm giảm giá, tương tự RI của EC2/RDS.\n✅ Auto Discovery (chỉ Memcached): client tự động PHÁT HIỆN các node hiện có trong cluster mà không cần hardcode danh sách endpoint — quan trọng vì Memcached hay thêm/bớt node để scale (sharding), client cần biết danh sách node mới nhất để phân phối key đúng.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "6b309672cc02",
+          "title": "ELASTICACHE: DATA TIERING",
+          "content": "📌 Tình huống: Dataset Redis LỚN HƠN nhiều so với RAM có thể chi trả, nhưng phần lớn dữ liệu ÍT ĐƯỢC TRUY CẬP (cold data).\n✅ Đáp án đúng: Data Tiering (chỉ node type r6gd) — tự động đẩy dữ liệu ÍT DÙNG xuống ổ SSD local (rẻ hơn RAM nhiều), giữ dữ liệu HAY DÙNG trên RAM — cho phép mở rộng dataset tới 20x so với chỉ dùng RAM, giảm chi phí đáng kể so với phải chọn node RAM cực lớn.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -2708,6 +2750,20 @@
           "content": "✅ Thừa hưởng tính năng ONTAP: Snapshot gần như tức thì không tốn thêm dung lượng ban đầu (copy-on-write), Thin Provisioning (chỉ dùng dung lượng THỰC TẾ đang chứa, không cấp phát trước toàn bộ), SnapMirror để replicate dữ liệu — phù hợp khi migrate workload NetApp on-premises muốn giữ nguyên các tính năng quen thuộc này.",
           "createdAt": "2026-09-14T06:28:13.873303Z",
           "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "e759b624cec3",
+          "title": "FSx for ONTAP: STORAGE VIRTUAL MACHINE (SVM) & MULTI-PROTOCOL",
+          "content": "✅ SVM: mỗi FSx for ONTAP file system có thể chứa NHIỀU SVM độc lập — mỗi SVM có namespace/security/quản trị RIÊNG, dùng để tách biệt giữa các team/môi trường (dev/prod) dùng chung 1 file system vật lý.\n✅ Multi-Protocol: CÙNG 1 dữ liệu truy cập được qua NHIỀU giao thức khác nhau đồng thời (NFS cho Linux, SMB cho Windows, iSCSI cho block) — không cần duplicate dữ liệu cho từng loại client.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "4d739b712301",
+          "title": "FSx for LUSTRE: DEPLOYMENT TYPES (SCRATCH vs PERSISTENT)",
+          "content": "✅ Scratch: hiệu năng CAO NHẤT, chi phí thấp, nhưng KHÔNG có replication (mất dữ liệu nếu node lỗi) — dùng cho workload TẠM THỜI, dữ liệu có thể tái tạo lại được (checkpoint training tạm, xử lý batch ngắn hạn).\n✅ Persistent: có replication trong AZ, độ bền cao hơn, phù hợp dữ liệu QUAN TRỌNG cần giữ lâu dài mà vẫn cần hiệu năng cao của Lustre.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -2781,6 +2837,20 @@
           "content": "✅ EC2 finding: traffic bất thường, communication với known-malicious IP, cryptomining.\n✅ IAM finding: API call bất thường (vd từ Tor exit node, geolocation lạ), thử enumerate permission (dấu hiệu do thám).\n✅ S3 finding: truy cập bất thường vào bucket (vd data exfiltration pattern), đổi bucket policy đáng ngờ.\n✅ EKS/RDS/Lambda finding: theo protection plan tương ứng đã bật riêng.",
           "createdAt": "2026-09-14T06:26:11.067628Z",
           "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "776e0b5bfef6",
+          "title": "GUARDDUTY: THREAT INTELLIGENCE SETS TÙY CHỈNH",
+          "content": "✅ Có thể UPLOAD danh sách IP/domain độc hại TỰ BIẾT (Threat List riêng của công ty, vd từ threat intel feed nội bộ) để GuardDuty dùng làm nguồn phát hiện BỔ SUNG ngoài threat intel mặc định của AWS — tăng độ chính xác phát hiện cho các mối đe dọa ĐẶC THÙ ngành/khu vực công ty đang hoạt động.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "daf7b7c12488",
+          "title": "GUARDDUTY: ESTIMATED COST & 30-DAY FREE TRIAL",
+          "content": "✅ GuardDuty có 30 ngày dùng thử miễn phí khi bật lần đầu (đủ để ước tính chi phí thực tế dựa trên khối lượng log thực của account trước khi cam kết) — chi phí tính theo khối lượng VPC Flow Logs/CloudTrail/DNS log được PHÂN TÍCH (không phải theo số finding tạo ra), cần cân nhắc khi bật thêm Protection Plan mở rộng (S3/EKS/Malware...) vì mỗi cái tính phí riêng.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -3623,6 +3693,20 @@
           "content": "📌 Tình huống: Cần throughput/IOPS VƯỢT giới hạn của 1 volume EBS đơn lẻ.\n✅ Đáp án đúng: Kết hợp NHIỀU volume EBS thành RAID ở tầng OS — RAID 0 (striping, TĂNG hiệu năng bằng cách gộp IOPS/throughput nhiều volume, nhưng KHÔNG tăng độ bền — mất 1 volume là mất dữ liệu cả dải), RAID 1 (mirroring, tăng độ sẵn sàng đọc nhưng không tăng hiệu năng ghi) — RAID 0 phổ biến hơn cho database cần hiệu năng cao vì EBS đã tự có độ bền riêng (99.999%) nên ít cần RAID 1.",
           "createdAt": "2026-09-14T06:28:13.873303Z",
           "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "179a41280798",
+          "title": "EBS: ELASTIC VOLUMES - RESIZE KHÔNG DOWNTIME",
+          "content": "✅ Elastic Volumes: có thể TĂNG dung lượng, ĐỔI volume type (vd gp2→gp3), hoặc TĂNG IOPS/throughput của volume đang GẮN & ĐANG CHẠY mà KHÔNG cần detach/downtime — chỉ cần mở rộng filesystem ở tầng OS sau đó (lệnh resize2fs/growpart) để tận dụng dung lượng mới.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "8212ab32d3e9",
+          "title": "EBS: SNAPSHOT ARCHIVE TIER",
+          "content": "📌 Tình huống: Có snapshot cũ hiếm khi cần restore nhưng vẫn phải giữ lại lâu dài (compliance), muốn giảm chi phí lưu trữ.\n✅ Đáp án đúng: EBS Snapshot Archive Tier — chuyển snapshot sang tier LƯU TRỮ RẺ HƠN tới 75% so với Standard, đổi lại thời gian RESTORE lâu hơn (24-72h) — tương tự khái niệm archive tier của S3 nhưng áp dụng cho EBS snapshot.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -3696,6 +3780,20 @@
           "content": "✅ Input Transformer: BIẾN ĐỔI nội dung event TRƯỚC KHI gửi tới Target (vd chỉ lấy 1 vài field, định dạng lại thành message dễ đọc cho Slack/email) — tránh phải thêm Lambda trung gian chỉ để format lại dữ liệu đơn giản trước khi gửi đi.",
           "createdAt": "2026-09-14T06:26:11.067628Z",
           "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "fc5cb8ee1375",
+          "title": "EVENTBRIDGE: API DESTINATIONS",
+          "content": "📌 Tình huống: Cần gửi event TỚI 1 API HTTP BÊN NGOÀI AWS (SaaS webhook, hệ thống on-premises có endpoint public) khi có sự kiện xảy ra, kèm xác thực (API key/OAuth) mà không muốn tự viết Lambda gọi HTTP.\n✅ Đáp án đúng: EventBridge API Destinations — cấu hình endpoint HTTP đích + Connection (lưu credential xác thực an toàn) NGAY TRONG EventBridge, có Rate Limiting để không làm quá tải hệ thống đích, không cần Lambda trung gian.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "7bc0f18e2c4a",
+          "title": "EVENTBRIDGE: SCHEMA DISCOVERY",
+          "content": "✅ Schema Discovery: tự động BẬT trên 1 Event Bus để EventBridge tự PHÂN TÍCH & LƯU LẠI cấu trúc (schema) của MỌI loại event thực tế đã đi qua — giúp developer tra cứu \"event này có field gì\" ngay trong console mà không cần hỏi team khác hay đọc code nguồn phát event.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -4047,6 +4145,20 @@
           "content": "✅ Delivery Status Logging: ghi log CloudWatch Logs chi tiết việc gửi message THÀNH CÔNG/THẤT BẠI tới từng subscriber — dùng để audit & debug khi 1 subscriber không nhận được message như mong đợi.\n✅ Retry Policy (HTTP/HTTPS endpoint): tùy chỉnh số lần thử lại, khoảng cách giữa các lần retry khi endpoint tạm thời không phản hồi — có Backoff Function (linear/exponential) để tránh dồn dập gửi lại ngay khi endpoint vẫn đang quá tải.",
           "createdAt": "2026-09-14T06:31:58.066350Z",
           "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "28fbab55ca67",
+          "title": "SNS: MESSAGE ARCHIVING & ANALYTICS (SNS + FIREHOSE)",
+          "content": "✅ SNS Topic có thể subscribe TRỰC TIẾP bởi Kinesis Data Firehose (không cần qua Lambda trung gian) — dùng để LƯU TRỮ mọi message đã publish vào S3/Redshift phục vụ phân tích/audit sau này, trong khi vẫn fanout real-time cho các subscriber khác song song.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "de9da5a1e697",
+          "title": "SNS: TOPIC POLICY CHO PHÉP S3/CLOUDWATCH PUBLISH",
+          "content": "📌 Tình huống: S3 Event Notification hoặc CloudWatch Alarm cần PUBLISH message vào 1 SNS Topic để thông báo.\n✅ Đáp án đúng: Gắn Topic Policy (resource-based policy) cho phép service principal tương ứng (s3.amazonaws.com, cloudwatch.amazonaws.com) publish vào topic — đây là bước THƯỜNG BỊ QUÊN khiến notification không hoạt động dù đã cấu hình đúng phía S3/CloudWatch.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -4266,6 +4378,20 @@
           "content": "✅ Có thể gắn Custom Domain (vd login.yourcompany.com) cho Hosted UI thay vì domain mặc định của Cognito (*.amazoncognito.com) — cần chứng chỉ ACM tương ứng, giúp trải nghiệm đăng nhập nhất quán thương hiệu công ty.",
           "createdAt": "2026-09-14T06:27:04.373715Z",
           "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "29a0a8f1ef0c",
+          "title": "COGNITO: ADVANCED SECURITY - COMPROMISED CREDENTIALS CHECK",
+          "content": "✅ Cognito có thể tự động SO SÁNH password người dùng đăng ký/đăng nhập với danh sách credential đã bị RÒ RỈ CÔNG KHAI (known compromised credentials) — cảnh báo hoặc chặn nếu user đang dùng password đã từng bị lộ ở nơi khác, tăng bảo mật chủ động thay vì chỉ đợi bị khai thác.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "ccee8eb0097d",
+          "title": "COGNITO: USER MIGRATION LAMBDA TRIGGER",
+          "content": "📌 Tình huống: Đang có hệ thống user cũ (tự xây hoặc dùng nhà cung cấp khác), muốn chuyển dần sang Cognito mà KHÔNG bắt user phải đăng ký lại/đặt lại password ngay từ đầu.\n✅ Đáp án đúng: User Migration Lambda Trigger — khi user CHƯA CÓ trong Cognito cố đăng nhập lần đầu, Cognito gọi Lambda này để XÁC THỰC NGƯỢC với hệ thống cũ, nếu đúng thì TỰ ĐỘNG TẠO user đó trong Cognito ngay lúc đó — di trú user DẦN DẦN theo từng lượt đăng nhập thay vì phải migrate hàng loạt 1 lần.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -4579,6 +4705,20 @@
           "content": "✅ Data Usage Control: đặt giới hạn tổng lượng dữ liệu quét (GB) mỗi Workgroup được phép trong 1 khoảng thời gian — tự động ngăn query \"quét nhầm\" quá nhiều dữ liệu gây chi phí bất ngờ.\n✅ Athena Engine Version: có thể chọn version engine mới (dựa trên Trino) để có hiệu năng/tính năng SQL mới hơn, hoặc giữ version cũ để tương thích ngược nếu cần.",
           "createdAt": "2026-09-14T06:29:02.614843Z",
           "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "384253f7289b",
+          "title": "GLUE: DYNAMIC FRAME vs DATA FRAME",
+          "content": "✅ DynamicFrame (đặc trưng của Glue, dựa trên Spark DataFrame): tự XỬ LÝ được dữ liệu có SCHEMA KHÔNG NHẤT QUÁN (semi-structured, field thiếu/kiểu dữ liệu lẫn lộn giữa các record) mà không lỗi ngay như DataFrame chuẩn — phù hợp dữ liệu thô chưa được làm sạch từ nhiều nguồn khác nhau, có thể convert qua lại DataFrame khi cần dùng thư viện Spark chuẩn.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "0d3f04730e44",
+          "title": "ATHENA: CTAS (CREATE TABLE AS SELECT) & UNLOAD",
+          "content": "✅ CTAS: chạy 1 query rồi LƯU KẾT QUẢ thành 1 bảng MỚI (định dạng Parquet, có thể partition/bucket lại) — dùng để biến đổi dữ liệu thô (CSV) thành dạng tối ưu cho query sau này.\n✅ UNLOAD: tương tự CTAS nhưng chỉ ghi RA FILE trên S3 (không tạo bảng catalog mới) — dùng khi chỉ cần export kết quả, không cần track như 1 bảng riêng.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
@@ -5062,6 +5202,20 @@
           "content": "✅ Cluster Autoscaler: scale Node Group (Auto Scaling Group) dựa trên Pod đang PENDING không đủ chỗ chạy — hoạt động theo ASG truyền thống.\n✅ Karpenter (công cụ mở, AWS khuyến khích cho thiết kế mới): tự động chọn & launch ĐÚNG loại/kích thước EC2 phù hợp NHẤT cho Pod đang chờ (không cần định nghĩa trước Node Group cứng nhắc), scale nhanh & tối ưu chi phí hơn Cluster Autoscaler truyền thống.",
           "createdAt": "2026-09-14T06:27:04.373715Z",
           "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "a049cf8e7fd7",
+          "title": "EKS: POD IDENTITY (THAY THẾ IRSA MỚI HƠN)",
+          "content": "✅ EKS Pod Identity: cách gán IAM Role cho Pod ĐƠN GIẢN HÓA hơn IRSA (không cần cấu hình OIDC provider thủ công, không cần sửa annotation phức tạp trong manifest) — chỉ cần tạo association giữa Service Account và IAM Role qua EKS API, giảm độ phức tạp khi setup quyền cho khối lượng lớn ứng dụng.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "36645604385b",
+          "title": "ECR: PULL THROUGH CACHE",
+          "content": "📌 Tình huống: Ứng dụng dùng nhiều image công khai từ Docker Hub/Quay.io, lo ngại rủi ro rate-limit hoặc image bị gỡ khỏi registry gốc.\n✅ Đáp án đúng: ECR Pull Through Cache — cấu hình ECR tự động CACHE LẠI image từ registry public NGAY LẦN ĐẦU pull, các lần sau lấy từ cache nội bộ ECR (nhanh hơn, không phụ thuộc registry ngoài), đồng thời tự động quét bảo mật cho cả image bên ngoài này.",
+          "createdAt": "2026-09-14T06:37:52.690628Z",
+          "updatedAt": "2026-09-14T06:37:52.690628Z"
         }
       ]
     },
