@@ -1929,6 +1929,13 @@
           "content": "✅ Gateway (dạng VM) cần khai báo RÕ ổ đĩa local dành cho Cache (lưu dữ liệu hay dùng) và Upload Buffer (đệm trước khi đẩy lên S3/EBS) — kích thước 2 vùng này ảnh hưởng trực tiếp hiệu năng: Buffer quá nhỏ khiến việc ghi bị chậm lại (throttle) khi upload không kịp.",
           "createdAt": "2026-09-14T06:49:29.551737Z",
           "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "27715666e6cc",
+          "title": "STORAGE GATEWAY: SỐ LƯỢNG VOLUME & DUNG LƯỢNG TỐI ĐA",
+          "content": "✅ Volume Gateway hỗ trợ tối đa 32 volume/gateway, mỗi volume tối đa 32TB (Cached) hoặc 16TB (Stored) — cần tính toán đúng số lượng gateway cần triển khai nếu tổng dung lượng on-premises vượt quá giới hạn 1 gateway đơn lẻ có thể xử lý.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -2023,6 +2030,13 @@
           "content": "✅ Endpoint hỗ trợ: ALB, NLB, EC2 instance (trực tiếp), Elastic IP — KHÔNG hỗ trợ trực tiếp API Gateway/Lambda/S3 (khác CloudFront có thể dùng các origin này) — cần lưu ý phạm vi endpoint phù hợp khi thiết kế kiến trúc dùng Global Accelerator.",
           "createdAt": "2026-09-14T06:48:46.965472Z",
           "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "497231d9a895",
+          "title": "GLOBAL ACCELERATOR: PRICING MODEL",
+          "content": "✅ Tính phí gồm 2 phần: phí CỐ ĐỊNH theo giờ cho Accelerator (dù không có traffic), CỘNG THÊM phí Data Transfer-Premium theo GB truyền qua (cao hơn data transfer thông thường vì đi qua mạng backbone tối ưu) — cần cân nhắc chi phí này so với lợi ích cải thiện performance khi quyết định có dùng Global Accelerator hay không cho ứng dụng ít nhạy cảm về độ trễ.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -2117,6 +2131,13 @@
           "content": "✅ Khi migrate bảng có cột LOB (BLOB/CLOB/dữ liệu lớn), DMS hỗ trợ Limited LOB Mode (giới hạn kích thước tối đa, nhanh hơn) hoặc Full LOB Mode (migrate LOB với kích thước bất kỳ nhưng chậm hơn) — chọn đúng mode tùy đặc tính dữ liệu để cân bằng tốc độ và tính đầy đủ.",
           "createdAt": "2026-09-14T06:48:46.965472Z",
           "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "2d60e89900e2",
+          "title": "DMS: TASK SETTINGS - PARALLEL LOAD",
+          "content": "✅ DMS có thể chia 1 bảng LỚN thành nhiều PHÂN ĐOẠN (theo khoảng giá trị khóa chính, hoặc theo partition có sẵn của bảng nguồn) để LOAD SONG SONG nhiều luồng cùng lúc thay vì tuần tự — giảm đáng kể thời gian Full Load cho bảng hàng trăm triệu dòng.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -2211,6 +2232,13 @@
           "content": "✅ Ngoài EC2/RDS, Directory Service còn dùng làm nguồn xác thực cho Amazon WorkSpaces (desktop ảo) và Amazon QuickSight (Enterprise edition) — cho phép user dùng CHUNG 1 bộ credential AD cho nhiều dịch vụ AWS khác nhau, không cần tạo tài khoản riêng biệt từng nơi.",
           "createdAt": "2026-09-14T06:48:46.965472Z",
           "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "571f3dffbd39",
+          "title": "DIRECTORY SERVICE: MONITORING QUA CLOUDWATCH",
+          "content": "✅ AWS Managed Microsoft AD tích hợp CloudWatch Metrics (CPU, memory, disk của domain controller) và có thể gửi Log Event (Security Event Log) ra CloudWatch Logs — giúp giám sát sức khỏe & audit hoạt động AD mà không cần tự triển khai công cụ giám sát Windows Server riêng.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -3538,6 +3566,13 @@
           "content": "✅ Metric quan trọng cần giám sát: TunnelState (0=down, 1=up), TunnelDataIn/Out (lượng traffic qua tunnel) — nên tạo Alarm khi TunnelState về 0 để phát hiện NGAY khi 1 trong 2 tunnel bị đứt, dù traffic vẫn chạy bình thường qua tunnel còn lại (dễ bị bỏ sót nếu không giám sát riêng).",
           "createdAt": "2026-09-14T06:49:29.551737Z",
           "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "17705ca5f5bb",
+          "title": "VPN: TRANSIT GATEWAY ATTACHMENT vs VIRTUAL PRIVATE GATEWAY ATTACHMENT - SO SÁNH",
+          "content": "✅ VPN gắn vào Virtual Private Gateway: đơn giản, phù hợp kết nối 1 VPC DUY NHẤT với on-premises.\n✅ VPN gắn vào Transit Gateway: phù hợp khi cần kết nối on-premises với NHIỀU VPC cùng lúc (qua Transit Gateway làm hub), hỗ trợ ECMP để tăng băng thông, và dễ mở rộng thêm kết nối khác (VPC Peering, Direct Connect) vào cùng hub sau này.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -3848,6 +3883,13 @@
           "content": "✅ Parameter Store hỗ trợ đặt tên theo HIERARCHY (vd /myapp/prod/db-password, /myapp/dev/db-password) — cho phép viết IAM Policy giới hạn quyền theo PATH PREFIX (chỉ truy cập được /myapp/prod/*), và lấy CẢ NHÓM parameter cùng lúc bằng 1 API call (GetParametersByPath) thay vì gọi riêng từng cái.",
           "createdAt": "2026-09-14T06:49:29.551737Z",
           "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "027755c1e687",
+          "title": "SSM: EXPLORER - TỔNG HỢP OPERATIONAL DATA TOÀN ORGANIZATION",
+          "content": "✅ SSM Explorer: dashboard TỔNG HỢP dữ liệu vận hành (OpsItem, Patch Compliance, Config Compliance...) từ NHIỀU account/Region trong Organization vào 1 nơi — cho cái nhìn tổng quan tình trạng vận hành toàn bộ hạ tầng công ty mà không cần chuyển qua lại giữa các account.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -4454,6 +4496,13 @@
           "content": "✅ Direct Connect hỗ trợ Jumbo Frame (MTU 9001 byte, thay vì 1500 byte chuẩn) cho Private/Transit VIF — giảm overhead đóng gói, TĂNG throughput hiệu quả cho truyền tải dữ liệu lớn, cần đảm bảo thiết bị 2 đầu đều hỗ trợ MTU lớn để tránh phân mảnh gói tin.",
           "createdAt": "2026-09-14T06:48:46.965472Z",
           "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "9c0578087038",
+          "title": "DIRECT CONNECT: LOCATION SELECTION - PROXIMITY",
+          "content": "✅ Nên chọn Direct Connect Location GẦN NHẤT với data center on-premises của công ty (không nhất thiết cùng Region với VPC đích, vì có thể dùng Direct Connect Gateway để bắc cầu) — khoảng cách vật lý từ on-premises tới Direct Connect Location ảnh hưởng trực tiếp tới độ trễ và chi phí kéo cáp/cross-connect.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -4687,6 +4736,13 @@
           "content": "✅ Có thể viết IAM Policy dùng Condition secretsmanager:ResourceTag để CHỈ CHO PHÉP truy cập secret có TAG cụ thể (vd Environment=Production) — kiểm soát truy cập linh hoạt theo tag thay vì liệt kê từng Secret ARN cụ thể trong policy, dễ mở rộng khi có nhiều secret mới.",
           "createdAt": "2026-09-14T06:48:46.965472Z",
           "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "aa54bd975f40",
+          "title": "SECRETS MANAGER: KHÔI PHỤC SECRET ĐÃ XÓA (RECOVERY WINDOW)",
+          "content": "✅ Khi \"xóa\" 1 secret, nó KHÔNG bị xóa ngay mà vào trạng thái chờ xóa trong Recovery Window (7-30 ngày, mặc định 30) — có thể HỦY yêu cầu xóa (RestoreSecret) trong khoảng thời gian này nếu phát hiện xóa nhầm, tương tự cơ chế Waiting Period của KMS key.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -5467,6 +5523,13 @@
           "content": "📌 Tình huống: Kiến trúc gồm nhiều Beanstalk Environment (vd frontend + backend API riêng), cần frontend biết địa chỉ backend mà không hardcode URL.\n✅ Đáp án đúng: Environment Links — liên kết 2 Environment lại với nhau, Beanstalk tự động inject biến môi trường chứa URL của environment liên kết vào environment kia, giúp giao tiếp linh hoạt hơn khi environment được deploy lại/đổi tên.",
           "createdAt": "2026-09-14T06:48:46.965472Z",
           "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "40ddcc32ed26",
+          "title": "BEANSTALK: NOTIFICATIONS QUA SNS",
+          "content": "✅ Beanstalk tự động gửi thông báo (qua SNS Topic) khi có sự kiện quan trọng xảy ra với environment (deploy thành công/thất bại, health thay đổi, scaling event) — đăng ký email/subscriber vào topic này để đội vận hành biết ngay khi có vấn đề mà không cần liên tục theo dõi Console.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -5561,6 +5624,13 @@
           "content": "📌 Tình huống: 1 lỗ hổng CVE đã BIẾT nhưng KHÔNG thể vá ngay (vd chưa có bản patch chính thức từ vendor) và đã có biện pháp GIẢM THIỂU khác (compensating control) áp dụng riêng.\n✅ Đáp án đúng: Tạo Suppression Rule theo đúng CVE/package đó — tạm ẩn finding này khỏi danh sách chính (không xóa hẳn dữ liệu, có thể xem lại khi cần) để team tập trung vào các finding CHƯA CÓ giải pháp thay vì bị nhiễu bởi finding đã biết và đã xử lý theo cách khác.",
           "createdAt": "2026-09-14T06:49:29.551737Z",
           "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "9f13e90d52ce",
+          "title": "INSPECTOR: ONBOARDING TỰ ĐỘNG CHO RESOURCE MỚI",
+          "content": "✅ Khi bật Inspector cho account/Organization, nó TỰ ĐỘNG quét MỌI EC2/ECR repository/Lambda function MỚI được tạo sau này mà không cần bật thủ công lại — giảm rủi ro có resource mới \"lọt lưới\" không được quét bảo mật do quên cấu hình.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -5843,6 +5913,13 @@
           "content": "✅ Dữ liệu trace X-Ray được mã hóa MẶC ĐỊNH bằng key quản lý bởi X-Ray, có thể đổi sang dùng CMK riêng (KMS) nếu cần kiểm soát chặt hơn về quyền truy cập/audit key sử dụng để mã hóa dữ liệu trace (có thể chứa thông tin nhạy cảm trong request/response).",
           "createdAt": "2026-09-14T06:49:29.551737Z",
           "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "213c150db749",
+          "title": "X-RAY: RESOURCE POLICY CHO PHÉP SERVICE KHÁC GỬI TRACE",
+          "content": "✅ Cần IAM permission (xray:PutTraceSegments, xray:PutTelemetryRecords) gắn cho Role của service đang gửi trace (Lambda Execution Role, ECS Task Role...) — đây là bước CẤU HÌNH IAM cơ bản thường bị quên khi lần đầu bật X-Ray cho 1 service mới, khiến trace không hiện dù đã bật Active Tracing.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     },
@@ -6240,6 +6317,13 @@
           "content": "✅ Security Group Policy trong Firewall Manager có 2 loại: Common Security Group (áp dụng 1 SG chuẩn cho mọi resource được chỉ định) và Content Audit (chỉ AUDIT/CẢNH BÁO nếu Security Group vi phạm rule đã định, vd mở port nguy hiểm ra Internet, mà không tự động sửa) — cho phép chọn mức độ can thiệp phù hợp (bắt buộc vs chỉ cảnh báo).",
           "createdAt": "2026-09-14T06:48:46.965472Z",
           "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "255cff0e30ae",
+          "title": "SECURITY HUB: PRICING - THEO SỐ LƯỢNG SECURITY CHECK & FINDING INGESTED",
+          "content": "✅ Security Hub tính phí theo SỐ LƯỢNG SECURITY CHECK chạy (theo Standard đã bật) VÀ số lượng finding được NGHIN NHẬN từ các nguồn tích hợp — bật NHIỀU Standard (CIS + PCI + NIST cùng lúc) sẽ tăng chi phí tương ứng, nên chỉ bật Standard THỰC SỰ CẦN theo yêu cầu compliance của tổ chức.",
+          "createdAt": "2026-09-14T06:53:17.729061Z",
+          "updatedAt": "2026-09-14T06:53:17.729061Z"
         }
       ]
     }
