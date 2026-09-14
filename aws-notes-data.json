@@ -241,6 +241,76 @@
           "content": "📌 Tình huống: Sau khi đã sửa lỗi khiến message bị đẩy vào DLQ trước đó, cần XỬ LÝ LẠI các message đó bằng cách đưa chúng VỀ LẠI queue chính.\n✅ Đáp án đúng: Dùng tính năng DLQ Redrive (có sẵn trong Console/API StartMessageMoveTask) — di chuyển HÀNG LOẠT message từ DLQ về lại Source Queue để consumer xử lý lại, không cần tự viết script đọc-ghi thủ công từng message.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "92a6905f43eb",
+          "title": "SQS: MESSAGE RETENTION PERIOD",
+          "content": "✅ Message Retention Period: khoảng thời gian message được GIỮ LẠI trong queue nếu KHÔNG bị xóa — mặc định 4 NGÀY, cấu hình được từ 1 PHÚT đến TỐI ĐA 14 NGÀY. Message QUÁ HẠN retention sẽ tự động bị XÓA VĨNH VIỄN dù chưa được consumer xử lý — cần đặt đủ dài để hệ thống downstream có thời gian phục hồi khi gặp sự cố kéo dài (vd consumer down vài ngày) mà không làm mất dữ liệu.",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "b1f6056ea10f",
+          "title": "SQS FIFO: DEDUPLICATION - CONTENT-BASED vs EXPLICIT MESSAGE DEDUPLICATION ID",
+          "content": "⚠️ FIFO Queue áp dụng cơ chế loại bỏ message TRÙNG LẶP trong khoảng DEDUPLICATION INTERVAL 5 PHÚT — nếu gửi 2 message giống nhau (theo tiêu chí dedup) trong vòng 5 phút, message thứ 2 bị BỎ QUA (consumer chỉ nhận 1 lần).\n✅ Content-Based Deduplication: SQS tự động tính SHA-256 hash của NỘI DUNG body để xác định trùng lặp (bật tùy chọn, không cần gửi kèm ID).\n✅ Explicit MessageDeduplicationId: TỰ CUNG CẤP 1 ID duy nhất cho mỗi message khi gửi — kiểm soát chính xác hơn content-based (2 message có body GIỐNG NHAU nhưng ý nghĩa nghiệp vụ khác nhau vẫn được xử lý riêng nếu dùng ID khác nhau).",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "a347bcd5dbaf",
+          "title": "SQS: BATCH API - SENDMESSAGEBATCH, RECEIVEMESSAGE, DELETEMESSAGEBATCH",
+          "content": "✅ SendMessageBatch: gửi TỐI ĐA 10 message (hoặc 256KB tổng) trong 1 lời gọi API DUY NHẤT — giảm số round-trip, giảm chi phí (tính phí theo request, không theo message).\n✅ ReceiveMessage: có thể lấy TỐI ĐA 10 message/lần gọi qua tham số MaxNumberOfMessages — kết hợp Long Polling để tối ưu cả độ trễ lẫn chi phí.\n✅ DeleteMessageBatch: xóa TỐI ĐA 10 message cùng lúc sau khi xử lý xong — dùng batch API xuyên suốt pipeline giúp giảm ĐÁNG KỂ số lượng request tính phí so với xử lý từng message riêng lẻ.",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "c822d026f012",
+          "title": "SQS + LAMBDA: EVENT SOURCE MAPPING & PARTIAL BATCH FAILURE",
+          "content": "📌 Tình huống: Lambda được trigger từ SQS xử lý 1 BATCH gồm nhiều message, nhưng CHỈ 1-2 message trong batch bị lỗi xử lý — mặc định TOÀN BỘ batch sẽ bị coi là fail và TẤT CẢ message (kể cả message đã xử lý thành công) quay lại queue để retry, gây XỬ LÝ TRÙNG LẶP không cần thiết.\n✅ Đáp án đúng: Bật ReportBatchItemFailures trong Event Source Mapping — Lambda function CHỦ ĐỘNG trả về danh sách CHÍNH XÁC message nào bị lỗi (batchItemFailures), CHỈ những message đó mới quay lại queue để retry, message xử lý THÀNH CÔNG được xóa bình thường — tránh lãng phí xử lý lại toàn bộ batch.\n⚠️ Lambda tự động SCALE số lượng concurrent execution dựa trên độ dài queue (tối đa 1000 concurrent execution mặc định), có thể giới hạn qua Reserved Concurrency hoặc Maximum Concurrency trên Event Source Mapping.",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "d16325537136",
+          "title": "SQS FIFO: HIGH THROUGHPUT MODE CHI TIẾT",
+          "content": "📌 Tình huống: FIFO Queue mặc định giới hạn 300 message/giây (3000 nếu dùng batching) — không đủ cho ứng dụng cần thứ tự NHƯNG throughput cao hơn.\n✅ Đáp án đúng: Bật High Throughput Mode (đặt DeduplicationScope=messageGroup và FifoThroughputLimit=perMessageGroupId) — SQS xử lý dedup & ordering ở CẤP MESSAGE GROUP thay vì cấp QUEUE, cho phép throughput SCALE GẦN NHƯ VÔ HẠN theo số lượng Message Group ID khác nhau (mỗi group vẫn giữ đúng thứ tự riêng), thay vì bị giới hạn cứng ở mức queue.",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "d4989ed83d2e",
+          "title": "SQS: QUEUE POLICY vs IAM POLICY",
+          "content": "⚠️ IAM Policy: gắn vào USER/ROLE, kiểm soát quyền của IDENTITY đó (vd Lambda Execution Role được phép sqs:SendMessage).\n⚠️ Queue Policy: RESOURCE-BASED POLICY gắn trực tiếp vào QUEUE, cho phép chỉ định AI (kể cả account khác) được phép thao tác — BẮT BUỘC dùng Queue Policy khi cần CROSS-ACCOUNT ACCESS (IAM Policy của account gửi không đủ, phải có Queue Policy phía account nhận CHO PHÉP tường minh) — cả 2 loại policy có thể dùng ĐỒNG THỜI, request được phép khi ít nhất 1 bên cho phép và không có Explicit Deny.",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "49c3caad6941",
+          "title": "SQS: INTERFACE VPC ENDPOINT (PRIVATELINK)",
+          "content": "⚠️ Khác S3/DynamoDB dùng Gateway Endpoint (miễn phí), SQS chỉ hỗ trợ INTERFACE VPC ENDPOINT (qua AWS PrivateLink, TÍNH PHÍ theo giờ + data processed) — tạo ENI trong subnet của VPC, cho phép EC2/Lambda trong private subnet gọi SQS API mà KHÔNG qua Internet/NAT Gateway, cần Security Group kiểm soát truy cập tới Interface Endpoint đó.",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "9e58f8bd7a08",
+          "title": "SQS: TEMPORARY QUEUE (VIRTUAL QUEUE)",
+          "content": "📌 Tình huống: Cần mô hình REQUEST-RESPONSE 2 CHIỀU qua SQS (client gửi request, chờ nhận đúng response tương ứng) nhưng KHÔNG muốn tạo/xóa hàng loạt queue thật (tốn thời gian & chi phí quản lý) cho từng phiên giao tiếp ngắn hạn.\n✅ Đáp án đúng: Temporary Queue Client (Amazon SQS Temporary Queues Client Library) — tạo ra các VIRTUAL QUEUE nhẹ, TỰ ĐỘNG DỌN DẸP khi không còn dùng, dùng chung 1 queue vật lý bên dưới cho nhiều virtual queue — giảm chi phí & độ trễ so với tạo/xóa Queue thật liên tục cho pattern request-response tạm thời.",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "9a0a0cf9e093",
+          "title": "SQS: IDEMPOTENT CONSUMER CHO STANDARD QUEUE",
+          "content": "⚠️ Standard Queue chỉ đảm bảo AT-LEAST-ONCE delivery — 1 message CÓ THỂ được nhận & xử lý NHIỀU HƠN 1 LẦN (do retry mạng, visibility timeout hết hạn trước khi kịp xóa...) — đây là hành vi BÌNH THƯỜNG, không phải lỗi.\n✅ Đáp án đúng: Ứng dụng consumer PHẢI được thiết kế IDEMPOTENT — xử lý CÙNG 1 message NHIỀU LẦN vẫn cho kết quả ĐÚNG NHƯ xử lý 1 lần (vd dùng unique transaction ID để kiểm tra đã xử lý chưa trước khi ghi, thay vì luôn cộng dồn/tạo mới) — trách nhiệm đảm bảo idempotency thuộc về CODE ỨNG DỤNG, không phải cấu hình SQS (chỉ FIFO Queue mới có exactly-once ở tầng queue).",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "d9f8a24f9ab2",
+          "title": "SQS: GIÁ THÀNH & FREE TIER",
+          "content": "✅ SQS tính phí theo SỐ LƯỢNG REQUEST (không theo số message nếu dùng batch — 1 batch request tối đa 10 message vẫn tính là 1 request), có FREE TIER 1 TRIỆU request/tháng miễn phí VĨNH VIỄN (không giới hạn 12 tháng như nhiều dịch vụ khác).\n⚠️ Dùng Batch API (SendMessageBatch/ReceiveMessage nhiều message/lần) là cách TỐI ƯU CHI PHÍ quan trọng nhất — gộp 10 message vào 1 batch chỉ tính phí bằng 1/10 so với gửi từng message riêng lẻ.",
+          "createdAt": "2026-09-14T15:34:08.296152Z",
+          "updatedAt": "2026-09-14T15:34:08.296152Z"
         }
       ]
     },
