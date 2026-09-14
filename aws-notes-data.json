@@ -2831,6 +2831,13 @@
           "content": "✅ Task có thể chạy theo Schedule Expression (cron) TỰ ĐỘNG định kỳ, hoặc Start Manually mỗi khi cần — với dữ liệu thay đổi liên tục nên dùng schedule tần suất phù hợp; với migration 1 lần chỉ cần chạy thủ công 1-2 lần (full load + verify) là đủ.",
           "createdAt": "2026-09-14T06:48:01.624462Z",
           "updatedAt": "2026-09-14T06:48:01.624462Z"
+        },
+        {
+          "id": "63b742c7f70c",
+          "title": "DATASYNC: NETWORK REQUIREMENT - PORT CẦN MỞ",
+          "content": "✅ DataSync Agent cần mở 1 số port cụ thể (443 cho control plane, 1024-1064 cho data plane với NFS) giữa on-premises và AWS — cần cấu hình đúng Security Group/Firewall trước khi Agent hoạt động được, đây là bước cấu hình mạng dễ bị bỏ sót khi setup lần đầu.",
+          "createdAt": "2026-09-14T06:52:30.816405Z",
+          "updatedAt": "2026-09-14T06:52:30.816405Z"
         }
       ]
     },
@@ -4969,6 +4976,13 @@
           "content": "✅ CloudTrail Insights có 2 loại: API Call Rate Insight (phát hiện tần suất gọi API bất thường) và API Error Rate Insight (phát hiện tỷ lệ LỖI API tăng đột biến, vd do policy sai làm hàng loạt request bị AccessDenied) — loại thứ 2 hữu ích để phát hiện SỚM lỗi cấu hình/outage trước khi user report.",
           "createdAt": "2026-09-14T06:48:01.624462Z",
           "updatedAt": "2026-09-14T06:48:01.624462Z"
+        },
+        {
+          "id": "f15731a5a246",
+          "title": "CLOUDTRAIL: CLOUDTRAIL LAKE - EVENT DATA STORE RETENTION",
+          "content": "✅ CloudTrail Lake lưu trữ dữ liệu trong Event Data Store với retention tùy chỉnh (tối đa 7 năm), tính phí theo LƯỢNG DỮ LIỆU NẠP (ingestion) thay vì theo API call như Insights — phù hợp nhu cầu audit dài hạn theo yêu cầu compliance ngành tài chính/y tế.",
+          "createdAt": "2026-09-14T06:52:30.816405Z",
+          "updatedAt": "2026-09-14T06:52:30.816405Z"
         }
       ]
     },
@@ -5056,6 +5070,13 @@
           "content": "✅ Organization Conformance Pack: deploy 1 Conformance Pack (bộ Config Rule chuẩn compliance) đồng loạt cho TOÀN BỘ account trong Organization/OU chỉ với 1 thao tác, tự động áp dụng cho account MỚI thêm vào — tương tự StackSets Service-Managed nhưng dành riêng cho compliance rule.",
           "createdAt": "2026-09-14T06:48:01.624462Z",
           "updatedAt": "2026-09-14T06:48:01.624462Z"
+        },
+        {
+          "id": "523373eb2d57",
+          "title": "AWS CONFIG: EXCLUSION BY RESOURCE TYPE",
+          "content": "✅ Có thể loại trừ (exclude) 1 số RESOURCE TYPE cụ thể khỏi việc ghi nhận của Config (thay vì chỉ chọn recording TỪNG loại muốn theo dõi) — linh hoạt hơn khi danh sách loại trừ NGẮN hơn danh sách cần theo dõi, giảm công cấu hình.",
+          "createdAt": "2026-09-14T06:52:30.816405Z",
+          "updatedAt": "2026-09-14T06:52:30.816405Z"
         }
       ]
     },
@@ -5345,6 +5366,13 @@
           "content": "⚠️ 1 chứng chỉ ACM hỗ trợ tối đa 10 domain name (Subject Alternative Names) MẶC ĐỊNH, có thể xin tăng quota — nếu cần bảo vệ NHIỀU HƠN domain không liên quan, cân nhắc tách thành nhiều chứng chỉ riêng thay vì cố nhồi hết vào 1 chứng chỉ duy nhất.",
           "createdAt": "2026-09-14T06:48:01.624462Z",
           "updatedAt": "2026-09-14T06:48:01.624462Z"
+        },
+        {
+          "id": "da6903ace56a",
+          "title": "ACM: RATE LIMIT KHI CẤP CHỨNG CHỈ",
+          "content": "⚠️ ACM có giới hạn số lượng chứng chỉ MỚI được cấp trong 1 khoảng thời gian (theo domain/account) để chống lạm dụng — nếu cần cấp SỐ LƯỢNG LỚN chứng chỉ tự động (vd multi-tenant SaaS mỗi khách hàng 1 domain riêng), cần xin tăng quota trước hoặc thiết kế cấp chứng chỉ theo batch hợp lý.",
+          "createdAt": "2026-09-14T06:52:30.816405Z",
+          "updatedAt": "2026-09-14T06:52:30.816405Z"
         }
       ]
     },
@@ -5620,6 +5648,13 @@
           "content": "✅ Kết hợp Shield Advanced Health-Based Detection với Route 53 Health Check dựa trên CloudWatch Alarm tùy chỉnh (không chỉ ping đơn giản) — cho phép Shield hiểu ĐÚNG tình trạng SỨC KHỎE THỰC SỰ của ứng dụng (vd tỷ lệ lỗi 5xx, độ trễ transaction) để phân biệt chính xác hơn giữa traffic thật tăng cao và traffic tấn công.",
           "createdAt": "2026-09-14T06:48:46.965472Z",
           "updatedAt": "2026-09-14T06:48:46.965472Z"
+        },
+        {
+          "id": "4d2a3fd672c0",
+          "title": "SHIELD: KHÁC BIỆT SHIELD ADVANCED vs AWS WAF VỀ MỤC ĐÍCH SỬ DỤNG CHÍNH",
+          "content": "⚠️ Cách nhớ rõ ràng khi làm đề thi: câu hỏi nhắc tới \"DDoS\" (khối lượng traffic lớn làm sập dịch vụ) → nghĩ tới Shield trước; câu hỏi nhắc tới \"SQL injection\", \"XSS\", \"bot\", \"rule cụ thể theo nội dung request\" → nghĩ tới WAF trước — 2 dịch vụ THƯỜNG dùng CHUNG (Shield Advanced tự động tạo WAF rule) nhưng mục đích chính khác nhau rõ rệt.",
+          "createdAt": "2026-09-14T06:52:30.816405Z",
+          "updatedAt": "2026-09-14T06:52:30.816405Z"
         }
       ]
     },
@@ -5707,6 +5742,13 @@
           "content": "✅ On-Demand Backup: chạy backup NGAY LẬP TỨC ngoài lịch (vd trước khi thực hiện thay đổi rủi ro cao) — vẫn tính vào cùng retention/lifecycle của Backup Plan nếu gắn kèm, hoặc độc lập nếu chạy thủ công không qua Plan.",
           "createdAt": "2026-09-14T06:48:01.624462Z",
           "updatedAt": "2026-09-14T06:48:01.624462Z"
+        },
+        {
+          "id": "4407859c8c0b",
+          "title": "AWS BACKUP: SUPPORTED RESOURCE TYPES ĐẦY ĐỦ",
+          "content": "✅ Ngoài EBS/RDS/DynamoDB/EFS/FSx đã đề cập, AWS Backup còn hỗ trợ: Aurora, DocumentDB, Neptune, Redshift, S3, EC2 (toàn bộ instance, không chỉ volume), Storage Gateway Volume, CloudFormation stack (backup nguyên cụm resource theo stack) — gần như bao phủ toàn bộ dịch vụ stateful chính của AWS trong 1 giải pháp backup duy nhất.",
+          "createdAt": "2026-09-14T06:52:30.816405Z",
+          "updatedAt": "2026-09-14T06:52:30.816405Z"
         }
       ]
     },
@@ -6090,6 +6132,20 @@
           "content": "✅ Dùng directive @aws_subscribe trong schema GraphQL để khai báo 1 Subscription TỰ ĐỘNG kích hoạt mỗi khi 1 Mutation cụ thể chạy thành công — client subscribe 1 lần, AppSync tự động push update real-time mà không cần code thêm logic publish thủ công như dùng WebSocket thuần.",
           "createdAt": "2026-09-14T06:48:01.624462Z",
           "updatedAt": "2026-09-14T06:48:01.624462Z"
+        },
+        {
+          "id": "a6d4c7368984",
+          "title": "APPSYNC: X-RAY TRACING TÍCH HỢP",
+          "content": "✅ Có thể bật X-Ray Tracing trực tiếp trên AppSync API để theo dõi độ trễ TỪNG RESOLVER trong 1 GraphQL query — hữu ích khi 1 query gọi nhiều field/resolver khác nhau, giúp xác định CHÍNH XÁC resolver nào đang là điểm nghẽn hiệu năng.",
+          "createdAt": "2026-09-14T06:52:30.816405Z",
+          "updatedAt": "2026-09-14T06:52:30.816405Z"
+        },
+        {
+          "id": "af023a65b21a",
+          "title": "APPSYNC: API KEY EXPIRATION",
+          "content": "⚠️ API Key (auth mode đơn giản nhất) có thời hạn TỐI ĐA 365 ngày và mặc định chỉ 7 ngày nếu không chỉ định — cần chủ động GIA HẠN/tạo API Key mới trước khi hết hạn, nếu không mọi request dùng API Key cũ sẽ bị từ chối đột ngột, phù hợp cho demo/prototype hơn là production lâu dài.",
+          "createdAt": "2026-09-14T06:52:30.816405Z",
+          "updatedAt": "2026-09-14T06:52:30.816405Z"
         }
       ]
     },
