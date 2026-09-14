@@ -140,6 +140,13 @@
           "content": "Unpredictable event-driven workload => traffic không đoán trước, chạy ngắn => Lambda có thể phù hợp => trả tiền theo lần gọi, không cần quản lý server",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "ddf070e280fe",
+          "title": "SO SÁNH: LAMBDA vs FARGATE/EC2",
+          "content": "Điểm phân biệt: Function model vs container/server workload.\n✅ Lambda => FUNCTION ngắn hạn (tối đa 15 phút), event-driven, trả tiền theo LẦN GỌI, không quản lý runtime/OS.\n✅ Fargate/EC2 => chạy CONTAINER/SERVER dài hạn liên tục, kiểm soát nhiều hơn (OS, runtime, tự scaling qua ASG), phù hợp workload chạy LIÊN TỤC hoặc cần môi trường tùy chỉnh sâu.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -346,6 +353,13 @@
           "content": "Standard => throughput gần vô hạn => at-least-once => không đảm bảo thứ tự; FIFO => đảm bảo thứ tự => exactly-once => giới hạn throughput => hậu tố .fifo",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "67ad181513eb",
+          "title": "SO SÁNH: SQS vs SNS",
+          "content": "Điểm phân biệt: Queue vs Pub/Sub.\n✅ SQS => HÀNG ĐỢI (queue), message LƯU LẠI chờ ĐÚNG 1 consumer lấy & xóa (pull model), phù hợp xử lý bất đồng bộ có buffer.\n✅ SNS => PUB/SUB, message PUSH tới NHIỀU subscriber CÙNG LÚC (fan-out), KHÔNG lưu trữ lại lâu dài, phù hợp thông báo/broadcast.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -674,6 +688,13 @@
           "content": "Origin Access Control => S3 origin private => chỉ CloudFront truy cập được => chặn truy cập trực tiếp qua S3 URL",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "d2e2ee219551",
+          "title": "SO SÁNH: CLOUDFRONT vs GLOBAL ACCELERATOR",
+          "content": "Điểm phân biệt: CDN/cache vs network acceleration.\n✅ CloudFront => CACHE nội dung tại Edge Location, hoạt động Layer 7 (HTTP/HTTPS), phù hợp static/dynamic WEB content.\n✅ Global Accelerator => Anycast IP TĨNH, tối ưu ĐƯỜNG ĐI MẠNG ở Layer 4 (TCP/UDP), KHÔNG cache nội dung, phù hợp ứng dụng non-HTTP hoặc cần IP cố định để allowlist.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -1523,6 +1544,20 @@
           "content": "Relational + SQL + transaction (ACID) => cần schema cố định, join giữa bảng => RDS / Aurora",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "de3d9d8a3988",
+          "title": "SO SÁNH: RDS MULTI-AZ vs READ REPLICA",
+          "content": "Điểm phân biệt: HA vs Read Scaling.\n✅ Multi-AZ => đảm bảo TÍNH SẴN SÀNG CAO (High Availability), standby chỉ dùng để FAILOVER tự động, KHÔNG dùng để đọc.\n✅ Read Replica => tăng KHẢ NĂNG ĐỌC (Read Scaling), replication BẤT ĐỒNG BỘ, có thể ĐỌC trực tiếp từ replica, và có thể PROMOTE thành instance độc lập.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "2e8e0bd47155",
+          "title": "SO SÁNH: RDS/AURORA vs DYNAMODB",
+          "content": "Điểm phân biệt: Relational vs NoSQL.\n✅ RDS/Aurora => QUAN HỆ, SQL, schema CỐ ĐỊNH, transaction ACID phức tạp, JOIN được nhiều bảng — phù hợp dữ liệu có cấu trúc rõ ràng, nghiệp vụ phức tạp.\n✅ DynamoDB => NoSQL key-value/document, schema LINH HOẠT, scale ngang GẦN NHƯ VÔ HẠN, độ trễ thấp ỔN ĐỊNH ở quy mô cực lớn — phù hợp truy vấn đơn giản theo key, traffic cao.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -2159,6 +2194,27 @@
           "content": "Peering => kết nối 1-1 => không transitive => phức tạp khi nhiều VPC; Transit Gateway => hub trung tâm => transitive => scale tốt hơn nhiều VPC",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "118496095cd2",
+          "title": "SO SÁNH: SECURITY GROUP vs NACL",
+          "content": "Điểm phân biệt: Stateful vs Stateless.\n✅ Security Group => STATEFUL, tự động cho phép traffic phản hồi (return traffic), áp dụng ở cấp INSTANCE/ENI, chỉ có rule ALLOW.\n✅ NACL => STATELESS, phải tự khai báo rule cho CẢ 2 CHIỀU inbound/outbound, áp dụng ở cấp SUBNET, có cả ALLOW và DENY.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "8824715195ca",
+          "title": "SO SÁNH: VPC PEERING vs TRANSIT GATEWAY",
+          "content": "Điểm phân biệt: Point-to-point vs hub-and-spoke.\n✅ VPC Peering => kết nối TRỰC TIẾP 1-1 giữa 2 VPC, KHÔNG transitive (VPC A peer B, B peer C thì A KHÔNG tự thấy C), phức tạp khi nhiều VPC (cần full-mesh).\n✅ Transit Gateway => HUB trung tâm, TRANSITIVE routing, quản lý tập trung khi có nhiều VPC/VPN/Direct Connect, scale tốt hơn nhiều so với peering.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "49355daeceed",
+          "title": "SO SÁNH: NAT GATEWAY vs VPC ENDPOINT",
+          "content": "Điểm phân biệt: Internet egress vs private service access.\n✅ NAT Gateway => cho phép resource trong PRIVATE SUBNET ra INTERNET (outbound only), traffic đi qua Internet Gateway, tính phí theo giờ + data processed.\n✅ VPC Endpoint => truy cập TRỰC TIẾP tới AWS service (S3, DynamoDB, SQS...) qua mạng RIÊNG của AWS, KHÔNG cần ra Internet, Gateway Endpoint (S3/DynamoDB) miễn phí, Interface Endpoint tính phí theo giờ.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -2295,6 +2351,13 @@
           "content": "Target unhealthy => tự động loại khỏi routing => target khỏe lại => tự động thêm lại, không cần can thiệp thủ công",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "7dec58e3b566",
+          "title": "SO SÁNH: ALB vs NLB",
+          "content": "Điểm phân biệt: Layer 7 vs Layer 4.\n✅ ALB => xử lý ở TẦNG ỨNG DỤNG (HTTP/HTTPS), routing theo path/host/header, hiểu nội dung request.\n✅ NLB => xử lý ở TẦNG TRANSPORT (TCP/UDP), hiệu năng CỰC CAO (hàng triệu request/giây), static IP, KHÔNG hiểu nội dung HTTP bên trong.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -3404,6 +3467,13 @@
           "content": "General database caching (không riêng DynamoDB) => cache-aside pattern, tự code logic cache => ElastiCache (Redis/Memcached)",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "6b95251615a2",
+          "title": "SO SÁNH: ELASTICACHE vs DAX",
+          "content": "Điểm phân biệt: General caching vs DynamoDB cache.\n✅ ElastiCache => cache TỔNG QUÁT cho BẤT KỲ database/nguồn dữ liệu nào (RDS, tự query API...), phải TỰ CODE logic cache-aside.\n✅ DAX => cache CHUYÊN BIỆT CHỈ CHO DynamoDB, TƯƠNG THÍCH API sẵn có (chỉ đổi endpoint), KHÔNG cần sửa logic code.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -3655,6 +3725,20 @@
           "content": "Role => credential tạm thời, assume được bởi service/user khác; User => credential lâu dài, gắn cố định 1 identity",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "05a7ccfe312b",
+          "title": "SO SÁNH: IAM USER vs IAM ROLE",
+          "content": "Điểm phân biệt: Long-term identity vs Role/temporary access.\n✅ IAM User => credential DÀI HẠN (access key/password), gắn CỐ ĐỊNH cho 1 identity cụ thể (người hoặc application).\n✅ IAM Role => KHÔNG có credential cố định, được ASSUME TẠM THỜI (cấp STS token hết hạn) bởi user/service/account khác — dùng cho EC2 instance profile, cross-account access, federation.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "e28aff925545",
+          "title": "SO SÁNH: IDENTITY POLICY vs RESOURCE POLICY",
+          "content": "Điểm phân biệt: Gắn với identity vs gắn với resource.\n✅ Identity-based Policy => gắn vào USER/GROUP/ROLE, quyết định IDENTITY đó được phép làm gì.\n✅ Resource-based Policy => gắn TRỰC TIẾP vào RESOURCE (S3 Bucket Policy, SQS Queue Policy, KMS Key Policy...), quyết định AI được truy cập resource đó — BẮT BUỘC dùng khi cần CROSS-ACCOUNT access vì identity policy phía người gọi (account khác) không đủ.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -4028,6 +4112,13 @@
           "content": "Agent cài on-premises => transfer nhanh (song song, nén, mã hóa in-transit) => tới S3/EFS/FSx => khác Storage Gateway (transfer 1 lần/định kỳ, không phải mount liên tục)",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "5f9647ad72b6",
+          "title": "SO SÁNH: DATASYNC vs STORAGE GATEWAY",
+          "content": "Điểm phân biệt: Data transfer vs hybrid storage integration.\n✅ DataSync => di chuyển dữ liệu MỘT LẦN hoặc ĐỊNH KỲ giữa on-premises và AWS storage (S3/EFS/FSx), tối ưu TỐC ĐỘ TRANSFER (song song, nén).\n✅ Storage Gateway => tích hợp HYBRID LIÊN TỤC, cho phép on-premises MOUNT & TRUY CẬP storage AWS NHƯ Ổ ĐĨA/FILE SHARE hàng ngày (không chỉ transfer 1 lần rồi thôi).",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -4847,6 +4938,13 @@
           "content": "IPSec => đi qua Internet công khai => 2 tunnel redundant => triển khai nhanh => độ ổn định thấp hơn Direct Connect",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "845b0d1125e5",
+          "title": "SO SÁNH: VPN vs DIRECT CONNECT",
+          "content": "Điểm phân biệt: Internet tunnel vs dedicated connection.\n✅ Site-to-Site VPN => IPSec đi qua INTERNET công khai, triển khai NHANH (phút-giờ), băng thông/độ trễ KHÔNG ỔN ĐỊNH (phụ thuộc Internet).\n✅ Direct Connect => kết nối VẬT LÝ RIÊNG tới AWS, băng thông ỔN ĐỊNH & độ trễ THẤP, triển khai LÂU HƠN (tuần-tháng do cần kéo cáp vật lý).",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -5443,6 +5541,13 @@
           "content": "Point-in-time => lưu trên S3 => incremental (chỉ lưu phần thay đổi) => tạo volume mới từ snapshot => copy được cross-region",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "acf0b55ec660",
+          "title": "SO SÁNH: EBS vs EFS vs S3",
+          "content": "Điểm phân biệt: Block vs File vs Object.\n✅ EBS => BLOCK storage, gắn được 1 EC2 (trừ Multi-Attach io1/io2), cần format filesystem giống ổ cứng thường.\n✅ EFS => FILE storage (NFS), NHIỀU EC2 mount & đọc/ghi CÙNG LÚC, scale dung lượng tự động.\n✅ S3 => OBJECT storage, truy cập qua API/HTTP (không phải filesystem/mount), scale GẦN NHƯ VÔ HẠN, rẻ nhất cho lưu trữ lớn.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -6070,6 +6175,13 @@
           "content": "Fan-out => 1 topic => nhiều subscriber (SQS, Lambda, email, HTTP/S, SMS) => pub/sub => decoupling 1-nhiều",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "1f61a3c2db99",
+          "title": "SO SÁNH: SNS vs EVENTBRIDGE",
+          "content": "Điểm phân biệt: Fan-out vs event routing.\n✅ SNS => FAN-OUT đơn giản, 1 topic đẩy tới NHIỀU subscriber, publisher tự tạo message, cấu hình nhanh gọn.\n✅ EventBridge => EVENT ROUTING phức tạp hơn, lọc theo PATTERN chi tiết trên nội dung event, tích hợp SẴN với nhiều nguồn AWS service/SaaS partner, hỗ trợ Schema Registry để định nghĩa cấu trúc event.",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
@@ -6185,6 +6297,13 @@
           "content": "Secrets Manager => auto rotation tích hợp, trả phí theo secret; Parameter Store (Standard) => miễn phí, không auto rotation built-in",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "8e35f4e7427d",
+          "title": "SO SÁNH: SECRETS MANAGER vs PARAMETER STORE",
+          "content": "Điểm phân biệt: Secret/rotation vs config/parameter.\n✅ Secrets Manager => chuyên cho SECRET NHẠY CẢM (DB password, API key), có AUTO ROTATION tích hợp sẵn (Lambda rotation), TÍNH PHÍ theo secret/tháng.\n✅ Systems Manager Parameter Store => lưu CONFIG/PARAMETER chung (cả secret ở tier Advanced), tier Standard MIỄN PHÍ, KHÔNG có auto rotation built-in (phải tự viết).",
+          "createdAt": "2026-09-14T16:18:04.325835Z",
+          "updatedAt": "2026-09-14T16:18:04.325835Z"
         }
       ]
     },
