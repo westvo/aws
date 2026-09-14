@@ -238,6 +238,9 @@
     <div class="flex items-start justify-between gap-3 p-5 border-b border-white/10 shrink-0">
       <h3 id="viewNoteTitle" class="text-lg font-bold text-white leading-snug"></h3>
       <div class="flex items-center gap-1.5 shrink-0">
+        <button id="viewNoteReadBtn" title="Đánh dấu đã đọc" class="p-2 rounded-lg border border-white/10 hover:bg-white/5 text-slate-300 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+        </button>
         <button id="viewNoteAudioBtn" title="Đọc ghi chú bằng AI" class="p-2 rounded-lg border border-white/10 hover:bg-white/5 text-slate-300 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a9 9 0 0 1 0 12"/></svg>
         </button>
@@ -513,7 +516,10 @@
     const emptyNotes = document.getElementById('notesEmpty');
     const notes = [...(service.notes||[])].sort((a,b) => new Date(b.updatedAt||b.createdAt) - new Date(a.updatedAt||a.createdAt));
     currentNoteIds = notes.map(n => n.id);
-    document.getElementById('noteCount').textContent = notes.length ? `(${notes.length})` : '';
+    const readCount = notes.filter(n => n.read).length;
+    document.getElementById('noteCount').textContent = notes.length
+      ? `(${notes.length})${readCount ? ` · ${readCount} đã đọc` : ''}`
+      : '';
 
     if(!notes.length){
       grid.innerHTML = '';
@@ -523,9 +529,12 @@
     emptyNotes.classList.add('hidden');
 
     grid.innerHTML = notes.map(n => `
-      <div data-view-note="${n.id}" class="note-card bg-white/[0.03] border border-white/10 rounded-xl p-4 flex flex-col cursor-pointer">
+      <div data-view-note="${n.id}" class="note-card bg-white/[0.03] border ${n.read ? 'border-emerald-500/30' : 'border-white/10'} rounded-xl p-4 flex flex-col cursor-pointer">
         <div class="flex items-start justify-between gap-2 mb-1.5">
-          <h4 class="text-sm font-semibold text-slate-100 leading-snug">${esc(n.title)}</h4>
+          <h4 class="text-sm font-semibold ${n.read ? 'text-slate-400' : 'text-slate-100'} leading-snug flex items-center gap-1.5">
+            ${n.read ? '<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>' : ''}
+            <span>${esc(n.title)}</span>
+          </h4>
           <div class="flex items-center gap-1 shrink-0">
             <button data-edit-note="${n.id}" class="p-1 rounded-md hover:bg-white/10 text-slate-400 hover:text-slate-200" title="Sửa">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -647,8 +656,31 @@
     updateViewNoteNav();
     stopAudioPlayback();
     updateAudioBtnIdleTitle(n);
+    updateReadBtn(n);
     openModal('viewNoteModal');
   }
+  const ICON_READ_OUTLINE = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>';
+  const ICON_READ_DONE = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></svg>';
+  function updateReadBtn(n){
+    const btn = document.getElementById('viewNoteReadBtn');
+    btn.innerHTML = n.read ? ICON_READ_DONE : ICON_READ_OUTLINE;
+    btn.title = n.read ? 'Đã đọc — bấm để bỏ đánh dấu' : 'Đánh dấu đã đọc';
+    btn.className = 'p-2 rounded-lg border transition ' + (n.read
+      ? 'border-emerald-500/40 hover:bg-emerald-500/10 text-emerald-400'
+      : 'border-white/10 hover:bg-white/5 text-slate-300');
+  }
+  document.getElementById('viewNoteReadBtn').addEventListener('click', () => {
+    const svc = state.services.find(s => s.id === selectedServiceId);
+    if(!svc) return;
+    const n = svc.notes.find(x => x.id === currentViewNoteId);
+    if(!n) return;
+    n.read = !n.read;
+    n.readAt = n.read ? now() : null;
+    save();
+    updateReadBtn(n);
+    renderNotes(svc);
+    toast(n.read ? 'Đã đánh dấu đọc' : 'Đã bỏ đánh dấu đọc');
+  });
   function updateViewNoteNav(){
     const idx = currentNoteIds.indexOf(currentViewNoteId);
     const total = currentNoteIds.length;
