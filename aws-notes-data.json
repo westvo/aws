@@ -1204,6 +1204,69 @@
           "content": "📌 Tình huống: Muốn CÙNG 1 domain (vd api.company.com) trả về IP KHÁC NHAU tùy client truy vấn từ BÊN TRONG VPC nội bộ (trỏ tới ALB internal) hay từ INTERNET công khai (trỏ tới ALB internet-facing).\n✅ Đáp án đúng: Split-View DNS (Split-Horizon DNS) — tạo 2 Hosted Zone CÙNG TÊN DOMAIN: 1 Public Hosted Zone (trả IP/endpoint public cho Internet) và 1 Private Hosted Zone gắn với VPC (trả IP/endpoint internal cho traffic nội bộ) — Route 53 tự động trả kết quả ĐÚNG NGỮ CẢNH tùy truy vấn đến từ đâu, không cần đổi tên domain giữa môi trường internal/external.",
           "createdAt": "2026-09-14T09:04:10.758217Z",
           "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "9e5293845f24",
+          "title": "ROUTE 53 HEALTH CHECK: KHÔNG KIỂM TRA ĐƯỢC ENDPOINT PRIVATE",
+          "content": "⚠️ Route 53 Health Checker nằm HOÀN TOÀN BÊN NGOÀI VPC (public global network), nên KHÔNG THỂ trực tiếp kiểm tra 1 endpoint PRIVATE (vd instance chỉ có private IP trong VPC nội bộ, không public).\n📌 Tình huống: Cần Failover Routing dựa trên health của 1 resource PRIVATE (database internal, ALB internal).\n✅ Đáp án đúng: Tạo CloudWatch Alarm giám sát metric nội bộ đó (qua CloudWatch Agent hoặc metric ứng dụng tự đẩy lên), sau đó tạo Route 53 Health Check kiểu \"CloudWatch Alarm\" gắn với alarm này — Health Check sẽ dựa vào TRẠNG THÁI ALARM (thay vì tự ping endpoint) để quyết định healthy/unhealthy.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "de691fd3debc",
+          "title": "ROUTE 53 HEALTH CHECK: NGƯỠNG ĐỒNG THUẬN GIỮA CÁC HEALTH CHECKER TOÀN CẦU",
+          "content": "✅ Mỗi Health Check được kiểm tra ĐỒNG THỜI từ NHIỀU health checker location trên toàn cầu (mặc định khoảng 15+ location, có thể giới hạn theo Region cụ thể) — endpoint chỉ bị đánh dấu UNHEALTHY khi TỶ LỆ % health checker báo lỗi vượt ngưỡng cấu hình (mặc định 18%), tránh việc 1 checker bị lỗi mạng cục bộ làm failover NHẦM toàn hệ thống.\n✅ Health Check còn hỗ trợ String Matching — kiểm tra RESPONSE BODY có chứa 1 CHUỖI KÝ TỰ cụ thể hay không (không chỉ dựa vào HTTP status code), hữu ích khi server trả về 200 OK nhưng nội dung thực tế là trang lỗi ứng dụng.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "7a9cc58ef37f",
+          "title": "ROUTE 53: WEIGHTED ROUTING - WEIGHT = 0",
+          "content": "📌 Tình huống: Muốn TẠM THỜI NGỪNG gửi traffic tới 1 endpoint trong Weighted Routing (vd để bảo trì) nhưng KHÔNG muốn xóa hẳn record đó (giữ lại để bật lại sau).\n✅ Đáp án đúng: Đặt Weight = 0 cho record đó — Route 53 sẽ KHÔNG trả về record này nữa (trừ khi TẤT CẢ record khác trong nhóm cũng weight = 0, lúc đó Route 53 coi như tất cả weight bằng nhau và trả đều) — cách này giúp BẬT/TẮT 1 endpoint linh hoạt mà không phải xóa/tạo lại record, thường dùng trong canary deployment để dần dần tăng weight từ 0 lên.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "3b2ee6607b18",
+          "title": "ROUTE 53: VPC ASSOCIATION AUTHORIZATION CHO PRIVATE HOSTED ZONE CROSS-ACCOUNT",
+          "content": "📌 Tình huống: Cần gắn (associate) 1 Private Hosted Zone ở Account A với 1 VPC nằm ở Account B khác — không thể làm trực tiếp vì VPC thuộc account khác.\n✅ Đáp án đúng: Bên Account A (chủ Hosted Zone) tạo Authorization (create-vpc-association-authorization) cho phép VPC cụ thể của Account B được associate; sau đó bên Account B chủ động thực hiện associate-vpc-with-hosted-zone bằng chính VPC của mình — quy trình 2 CHIỀU này đảm bảo cả chủ Hosted Zone LẪN chủ VPC đều phải đồng ý trước khi DNS nội bộ được chia sẻ xuyên account.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "d4ca4382ad17",
+          "title": "ROUTE 53: REUSABLE DELEGATION SET",
+          "content": "📌 Tình huống: Có NHIỀU domain/Hosted Zone khác nhau nhưng muốn TẤT CẢ dùng CHUNG 1 bộ 4 Name Server cố định (vd để đơn giản hóa việc cấu hình glue record hoặc whitelist NS ở nhà cung cấp domain khác).\n✅ Đáp án đúng: Reusable Delegation Set — tạo 1 bộ Name Server DÙNG CHUNG, sau đó gán bộ này cho NHIỀU Hosted Zone khi tạo mới — mặc định mỗi Hosted Zone được cấp Name Server NGẪU NHIÊN riêng biệt, Reusable Delegation Set cho phép TÁI SỬ DỤNG cùng 1 bộ NS cho nhiều Hosted Zone thay vì mỗi zone 1 bộ khác nhau.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "c18895d4a1e4",
+          "title": "ROUTE 53 RESOLVER RULE: SYSTEM vs FORWARD",
+          "content": "✅ System Rule: loại rule MẶC ĐỊNH, TỰ ĐỘNG có sẵn cho mọi VPC — cho phép Resolver phân giải các domain AWS nội bộ chuẩn (vd Private Hosted Zone gắn với VPC đó), KHÔNG thể chỉnh sửa/xóa.\n✅ Forward Rule: rule người dùng TỰ TẠO — chỉ định 1 domain cụ thể sẽ được chuyển tiếp truy vấn ra ngoài (qua Outbound Endpoint) tới DNS server khác (on-premises hoặc Resolver của VPC khác) — đây là loại rule dùng trong Hybrid DNS.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "25b9a4d317c3",
+          "title": "ROUTE 53: XÓA HOSTED ZONE KHÔNG XÓA DOMAIN REGISTRATION",
+          "content": "⚠️ Domain Registration (quyền sở hữu tên miền) và Hosted Zone (nơi lưu DNS record) là 2 THỰC THỂ TÁCH BIỆT trong Route 53 — XÓA Hosted Zone KHÔNG hủy đăng ký domain, domain vẫn thuộc sở hữu của bạn và vẫn phải trả phí gia hạn hàng năm, nhưng DNS record sẽ NGỪNG HOẠT ĐỘNG (domain \"chết\" về mặt DNS) cho tới khi tạo lại Hosted Zone mới và cập nhật lại Name Server tương ứng.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "fe711c7e1e1c",
+          "title": "ROUTE 53: DUAL-STACK ROUTING VỚI IPv6 (A + AAAA)",
+          "content": "✅ Để hỗ trợ CẢ IPv4 lẫn IPv6 (dual-stack) cho cùng 1 domain, tạo ĐỒNG THỜI 2 record: A record (trỏ IPv4) và AAAA record (trỏ IPv6) cho cùng tên — client hỗ trợ IPv6 sẽ tự ưu tiên dùng AAAA, client chỉ hỗ trợ IPv4 vẫn dùng được A record bình thường, đảm bảo tương thích ngược trong giai đoạn chuyển đổi sang IPv6.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "b25377f5ff85",
+          "title": "ROUTE 53: GEOPROXIMITY BIAS - MỞ RỘNG/THU HẸP VÙNG PHỦ",
+          "content": "✅ Trong Geoproximity Routing (yêu cầu dùng qua Traffic Flow), tham số BIAS cho phép MỞ RỘNG (giá trị dương) hoặc THU HẸP (giá trị âm) phạm vi địa lý mà 1 endpoint phục vụ MÀ KHÔNG CẦN di chuyển hạ tầng vật lý thật — vd tăng bias cho Region A để nó \"kéo\" thêm traffic từ khu vực lân cận Region B đang quá tải, hữu ích khi cần cân bằng tải giữa các Region theo địa lý mà vẫn giữ nguyên vị trí server.",
+          "createdAt": "2026-09-14T09:08:58.756655Z",
+          "updatedAt": "2026-09-14T09:08:58.756655Z"
         }
       ]
     },
