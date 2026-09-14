@@ -1718,6 +1718,27 @@
           "content": "✅ DMS Replication Instance là 1 EC2 instance quản lý do AWS host, chạy DMS engine để thực hiện việc đọc/ghi/transform dữ liệu — cần chọn đúng kích thước (CPU/RAM) dựa trên khối lượng & số lượng task chạy song song, vì đây thường là ĐIỂM NGHẼN hiệu năng migration nếu chọn quá nhỏ.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "8c2183a96bd1",
+          "title": "DMS SCHEMA CONVERSION TOOL (SCT) vs DMS SCHEMA CONVERSION (DMS SC)",
+          "content": "✅ AWS SCT: công cụ desktop (cài riêng) chuyển đổi schema giữa 2 engine khác nhau (Oracle→PostgreSQL...), có thể tự động convert phần lớn, phần phức tạp (stored procedure logic đặc thù) cần review thủ công.\n✅ DMS Schema Conversion (dịch vụ mới hơn, quản lý trên AWS Console): làm việc tương tự SCT nhưng dưới dạng managed service tích hợp trực tiếp trong DMS, không cần cài phần mềm riêng.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "57af2472fc52",
+          "title": "DMS: DATA VALIDATION",
+          "content": "📌 Tình huống: Sau khi migrate xong, cần đảm bảo dữ liệu ở đích GIỐNG HỆT dữ liệu nguồn (không thiếu/sai sót do lỗi convert).\n✅ Đáp án đúng: Bật Data Validation trong DMS Task — tự động SO SÁNH dữ liệu giữa nguồn và đích sau khi migrate/trong lúc CDC, báo cáo bất kỳ sai lệch nào để xử lý trước khi cutover chính thức.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "f44c4b17002d",
+          "title": "DMS: FLEET ADVISOR & DATABASE MIGRATION ASSESSMENT",
+          "content": "✅ DMS Fleet Advisor: tự động quét TOÀN BỘ database on-premises trong công ty (kể cả chưa biết hết), đưa ra khuyến nghị nên migrate database nào lên đâu (RDS, Aurora, hay giữ nguyên) dựa trên độ phức tạp và mức độ tương thích, giúp lập kế hoạch migration ở QUY MÔ LỚN (nhiều database cùng lúc) thay vì đánh giá thủ công từng cái.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
         }
       ]
     },
@@ -1756,6 +1777,20 @@
           "content": "📌 Tình huống: Công ty muốn user hiện có trong AD on-premises truy cập được tài nguyên AWS (vd RDS SQL Server dùng Windows Authentication) MÀ KHÔNG CẦN tạo lại toàn bộ user trong AWS.\n✅ Đáp án đúng: Thiết lập Trust Relationship (1 chiều hoặc 2 chiều) giữa AWS Managed Microsoft AD và AD on-premises — user on-premises xác thực được với resource phía AWS mà không cần đồng bộ/tạo lại account, cần kết nối VPN/Direct Connect giữa 2 bên.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "85e9207b0b0a",
+          "title": "SIMPLE AD: GIỚI HẠN & USE CASE PHÙ HỢP",
+          "content": "✅ Simple AD dựa trên Samba 4, hỗ trợ tối đa 5,000 user, KHÔNG hỗ trợ: trust relationship, MFA, PowerShell AD cmdlet nâng cao, DNS dynamic update phức tạp — chỉ phù hợp nhu cầu cơ bản (Windows workload đơn giản cần domain join, không cần tích hợp AD doanh nghiệp phức tạp).",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "7eea413b0fd8",
+          "title": "AWS DIRECTORY SERVICE + IAM IDENTITY CENTER",
+          "content": "📌 Tình huống: Công ty đã có AD Managed Microsoft AD trên AWS, muốn user trong đó SSO được vào nhiều AWS account khác nhau qua IAM Identity Center.\n✅ Đáp án đúng: Cấu hình IAM Identity Center dùng Directory Service làm nguồn identity (thay vì tự tạo user riêng trong Identity Center) — user AD login 1 lần, chọn account/role cần vào, không cần đồng bộ/tạo user trùng lặp.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
         }
       ]
     },
@@ -2138,6 +2173,27 @@
           "content": "✅ DataSync tối ưu network bằng thuật toán nén + đa luồng song song, có thể giới hạn (throttle) băng thông sử dụng để không chiếm hết đường truyền công ty trong giờ làm việc.\n✅ Toàn bộ dữ liệu truyền qua TLS (mã hóa in-transit), hỗ trợ cả public endpoint và VPC endpoint (giữ traffic hoàn toàn trong mạng riêng khi kết hợp Direct Connect/VPN).",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "9eb5185964d0",
+          "title": "DATASYNC: LOCATION TYPES ĐA DẠNG",
+          "content": "✅ DataSync hỗ trợ transfer giữa nhiều loại location: on-premises NFS/SMB/HDFS, Amazon S3, Amazon EFS, Amazon FSx (mọi loại), và cả object storage tương thích S3 của bên thứ 3 — dùng cho cả migration LẪN đồng bộ liên tục giữa các loại storage khác nhau, không chỉ on-premises to cloud.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "46e07340ca2f",
+          "title": "DATASYNC: DATA VALIDATION & FILTER",
+          "content": "✅ DataSync tự động VERIFY dữ liệu sau khi copy (so sánh checksum nguồn-đích) để đảm bảo TOÀN VẸN dữ liệu, không chỉ copy xong là coi như hoàn tất.\n✅ Filter theo Include/Exclude pattern (theo tên file/thư mục) — chỉ đồng bộ đúng phần dữ liệu cần, tránh copy thừa file rác/tạm.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "37192de0eedc",
+          "title": "DATASYNC DISCOVERY",
+          "content": "📌 Tình huống: Công ty có hạ tầng storage on-premises phức tạp (nhiều NAS/file server), chưa biết rõ nên ưu tiên migrate phần nào trước, dung lượng/pattern truy cập ra sao.\n✅ Đáp án đúng: DataSync Discovery — tự động quét & phân tích storage on-premises hiện có (dung lượng, IOPS, throughput pattern), gợi ý dịch vụ AWS storage phù hợp và ước tính chi phí TRƯỚC khi thực hiện migration thật.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
         }
       ]
     },
@@ -2841,6 +2897,41 @@
           "content": "✅ Trusted Advisor: quét TỰ ĐỘNG theo 5 nhóm (Cost Optimization, Performance, Security, Fault Tolerance, Service Limits), đưa ra khuyến nghị dựa trên AWS BEST PRACTICE tổng quát (không chỉ riêng chi phí như Compute Optimizer).\n⚠️ Số lượng check đầy đủ CHỈ có ở Business/Enterprise Support Plan — Basic/Developer Support chỉ thấy 1 số check Security & Service Limits cơ bản.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "738b9e623e2c",
+          "title": "AWS BUDGETS: CÁC LOẠI BUDGET & ACTIONS",
+          "content": "✅ Loại Budget: Cost Budget (theo $ chi tiêu), Usage Budget (theo đơn vị dùng, vd giờ EC2), RI/Savings Plans Utilization & Coverage Budget (theo dõi hiệu quả cam kết đã mua).\n✅ Budget Actions: TỰ ĐỘNG thực thi hành động khi vượt ngưỡng (vd tự động apply IAM policy hạn chế tạo thêm resource, hoặc dừng EC2/RDS) — không chỉ dừng ở gửi cảnh báo qua email/SNS.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "9d193e1db0f3",
+          "title": "AWS COST EXPLORER: RIGHTSIZING RECOMMENDATIONS",
+          "content": "✅ Cost Explorer có sẵn tab Rightsizing Recommendations — phân tích usage EC2 lịch sử để gợi ý đổi sang instance type NHỎ HƠN/PHÙ HỢP HƠN mà không cần dùng riêng Compute Optimizer, ước tính luôn số tiền tiết kiệm mỗi khuyến nghị.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "44d86c1c89f9",
+          "title": "SAVINGS PLANS RECOMMENDATIONS & COVERAGE REPORT",
+          "content": "📌 Tình huống: Công ty đã dùng EC2 On-Demand ổn định nhiều tháng, muốn biết NÊN MUA Savings Plan mức cam kết bao nhiêu để tối ưu vừa đủ (không mua thừa gây lãng phí, không mua thiếu bỏ lỡ giảm giá).\n✅ Đáp án đúng: Xem Savings Plans Recommendations trong Cost Explorer — dựa trên usage 7/30/60 ngày qua để gợi ý mức cam kết $/giờ tối ưu, kèm Coverage Report cho biết % chi tiêu hiện tại ĐÃ được Savings Plan/RI che phủ để theo dõi hiệu quả liên tục.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "57fddeb8b141",
+          "title": "AWS COST ANOMALY DETECTION",
+          "content": "📌 Tình huống: Cần phát hiện SỚM khi chi phí AWS đột ngột tăng bất thường (do lỗi cấu hình, tài nguyên bị lạm dụng, hoặc bị tấn công dùng trộm tài nguyên) mà không phải tự đặt ngưỡng $ cố định.\n✅ Đáp án đúng: AWS Cost Anomaly Detection — dùng Machine Learning học pattern chi tiêu BÌNH THƯỜNG của bạn, tự động cảnh báo khi phát hiện chi tiêu LỆCH BẤT THƯỜNG so với pattern đó, không cần tự đặt threshold cứng như Budgets.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "7baecbc676ab",
+          "title": "COMPUTE OPTIMIZER: EBS & LAMBDA RECOMMENDATIONS",
+          "content": "✅ Ngoài EC2, Compute Optimizer còn phân tích & khuyến nghị cho: EBS volume (đổi loại/giảm IOPS provisioned dư thừa), Lambda function (điều chỉnh memory allocation tối ưu giữa cost và performance vì Lambda tính phí theo GB-giây), Auto Scaling Group (chọn instance type phù hợp cho cả nhóm).",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
         }
       ]
     },
@@ -2879,6 +2970,27 @@
           "content": "📌 Tình huống: 1 đường Direct Connect 1Gbps không đủ băng thông, cần tăng dung lượng mà vẫn coi là 1 kết nối logic duy nhất để dễ quản lý route.\n✅ Đáp án đúng: Link Aggregation Group (LAG) — gộp NHIỀU physical connection Direct Connect (cùng tốc độ, cùng vị trí) thành 1 kết nối logic duy nhất, tăng tổng băng thông, đồng thời tăng khả năng chịu lỗi (1 physical connection đứt vẫn còn các connection khác trong LAG).",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "5583e38d85dc",
+          "title": "DIRECT CONNECT: HOSTED CONNECTION vs DEDICATED CONNECTION",
+          "content": "✅ Dedicated Connection: thuê NGUYÊN 1 cổng vật lý 1/10/100Gbps tại AWS Direct Connect location, đặt trực tiếp qua AWS, thời gian setup lâu hơn (vài tuần).\n✅ Hosted Connection: thuê qua ĐỐI TÁC AWS Direct Connect Partner (họ có sẵn hạ tầng), băng thông linh hoạt hơn (từ 50Mbps), setup NHANH HƠN — phù hợp khi cần băng thông nhỏ/vừa hoặc không muốn tự quản lý phần cứng.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "94d8f62a24a7",
+          "title": "DIRECT CONNECT: SITE-LINK",
+          "content": "📌 Tình huống: Công ty có nhiều văn phòng đã kết nối Direct Connect tới các Direct Connect location khác nhau, muốn các văn phòng đó giao tiếp TRỰC TIẾP với nhau qua mạng backbone AWS mà không cần traffic phải vòng qua VPC/Region trung gian.\n✅ Đáp án đúng: Direct Connect SiteLink — cho phép truyền traffic TRỰC TIẾP giữa các Direct Connect location qua mạng backbone toàn cầu của AWS, tối ưu độ trễ hơn so với route traffic phải đi qua Region/VPC ở giữa.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "e8a778f59967",
+          "title": "DIRECT CONNECT: BGP & ROUTE FILTERING",
+          "content": "✅ Direct Connect dùng giao thức BGP (Border Gateway Protocol) để trao đổi route động giữa on-premises router và AWS — có thể dùng BGP Community Tag để đánh dấu route (public/local Region/toàn bộ Region khác), kiểm soát chi tiết route nào được advertise/nhận, tối ưu bảo mật và routing.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
         }
       ]
     },
@@ -3128,6 +3240,27 @@
           "content": "📌 Tình huống: Cần CẢNH BÁO NGAY khi có ai đó thực hiện hành động nhạy cảm (vd xóa CloudTrail trail, tắt GuardDuty, tạo root access key) thay vì chỉ xem log sau khi sự việc đã xảy ra.\n✅ Đáp án đúng: CloudTrail ghi Management Event gần như real-time → EventBridge rule bắt đúng API call đó (vd eventName = StopLogging) → trigger SNS/Lambda cảnh báo ngay lập tức.",
           "createdAt": "2026-09-14T03:42:37.586729Z",
           "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "e51cadf98e45",
+          "title": "CLOUDTRAIL INSIGHTS",
+          "content": "📌 Tình huống: Cần phát hiện HÀNH VI API BẤT THƯỜNG (vd đột nhiên có hàng nghìn lệnh RunInstances trong vài phút — dấu hiệu tài khoản bị chiếm quyền dùng để đào coin) mà không cần tự viết rule phân tích log thủ công.\n✅ Đáp án đúng: CloudTrail Insights — dùng ML tự động học pattern API call BÌNH THƯỜNG của account, phát hiện & cảnh báo khi có tần suất/loại API call bất thường so với baseline, không cần tự định nghĩa ngưỡng.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "91419e87bcee",
+          "title": "CLOUDTRAIL: CHI PHÍ & GIỚI HẠN",
+          "content": "✅ Management Events: 1 bản copy MIỄN PHÍ cho Event History 90 ngày; tạo thêm Trail để lưu S3 vẫn miễn phí phần Management Event (chỉ tính phí S3 storage), nhưng Data Events và Insights Events đều TÍNH PHÍ theo số lượng event ghi nhận.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "90e198e24fee",
+          "title": "CLOUDTRAIL LAKE",
+          "content": "📌 Tình huống: Cần chạy TRUY VẤN SQL phức tạp trên log CloudTrail để phân tích/audit sâu (vd tổng hợp theo user, theo thời gian, join nhiều điều kiện) mà không muốn tự dựng Athena + Glue Crawler riêng.\n✅ Đáp án đúng: CloudTrail Lake — kho dữ liệu quản lý sẵn (managed data lake) cho CloudTrail event, hỗ trợ query SQL trực tiếp, lưu trữ tới 7 năm, không cần tự thiết lập pipeline ETL như đưa log qua Athena thủ công.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
         }
       ]
     },
@@ -3166,6 +3299,27 @@
           "content": "✅ Conformance Pack: gói SẴN nhiều Config Rule + Remediation Action liên quan tới 1 chuẩn compliance cụ thể (PCI-DSS, HIPAA, Operational Best Practices) — deploy 1 lần là có ngay bộ rule kiểm tra tuân thủ đầy đủ, thay vì tự tạo từng rule riêng lẻ.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "4e2c6b65c9df",
+          "title": "AWS CONFIG: PROACTIVE vs DETECTIVE RULES",
+          "content": "✅ Detective Rule (phổ biến, mặc định): đánh giá resource SAU KHI đã tạo/thay đổi — phát hiện vi phạm sau thực tế.\n✅ Proactive Rule: đánh giá TRƯỚC KHI resource được tạo (tích hợp CloudFormation hook) — chặn ngay từ bước deploy nếu vi phạm, thay vì phải sửa lại sau khi đã tạo ra resource sai.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "f027c3d3fbdc",
+          "title": "AWS CONFIG: REMEDIATION ACTION TỰ ĐỘNG",
+          "content": "📌 Tình huống: Phát hiện Security Group mở port 22 ra 0.0.0.0/0 (NON-COMPLIANT), muốn TỰ ĐỘNG sửa ngay mà không cần người can thiệp thủ công.\n✅ Đáp án đúng: Gắn Remediation Action (SSM Automation Document) vào Config Rule — khi phát hiện NON-COMPLIANT, Config tự động chạy Automation Document để SỬA cấu hình (vd tự xóa rule mở port 22 công khai) mà không cần chờ người xử lý.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "c5a8c7efdc37",
+          "title": "AWS CONFIG vs CLOUDTRAIL: PHÂN BIỆT RÕ",
+          "content": "✅ CloudTrail: ghi lại AI đã gọi API GÌ, khi nào (WHO did WHAT).\n✅ Config: ghi lại TRẠNG THÁI CẤU HÌNH của resource tại từng thời điểm, và đánh giá có TUÂN THỦ policy hay không (WHAT does it LOOK LIKE, và có ĐÚNG chuẩn không).\n⚠️ Đáp án sai thường gặp: dùng CloudTrail để kiểm tra compliance cấu hình hiện tại ➜ CloudTrail chỉ có log hành động, không tự đánh giá compliance như Config Rule.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
         }
       ]
     },
@@ -3287,6 +3441,27 @@
           "content": "✅ Wildcard Certificate (*.example.com): 1 chứng chỉ dùng được cho MỌI subdomain cấp 1, tiện khi có nhiều subdomain (api., app., www.) mà không cần cấp riêng từng cái.\n✅ Subject Alternative Name (SAN): 1 chứng chỉ có thể gắn kèm NHIỀU domain KHÁC NHAU (không chỉ subdomain của 1 domain gốc) trong cùng 1 chứng chỉ.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "4d36c8d1e2cf",
+          "title": "ACM: RENEWAL & EXPIRY MONITORING",
+          "content": "✅ ACM tự động gia hạn chứng chỉ trước khi hết hạn (nếu DNS Validation record còn tồn tại) — vẫn nên bật CloudWatch Event/EventBridge để CẢNH BÁO nếu 1 chứng chỉ SẮP HẾT HẠN mà không gia hạn tự động được (vd do CNAME validation bị xóa nhầm), tránh downtime do chứng chỉ hết hạn đột ngột.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "c21a182455d9",
+          "title": "ACM: IMPORTED CERTIFICATES (BYOC)",
+          "content": "📌 Tình huống: Công ty đã có chứng chỉ SSL mua từ nhà cung cấp bên ngoài (DigiCert, GlobalSign...), muốn dùng nó cho CloudFront/ALB thay vì tạo mới qua ACM.\n✅ Đáp án đúng: Import chứng chỉ có sẵn vào ACM (Bring Your Own Certificate) — dùng được ngay với CloudFront/ALB, nhưng KHÔNG được ACM tự động gia hạn (phải tự renew & re-import thủ công trước khi hết hạn).",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "63bcd238ffd9",
+          "title": "ACM: PHẠM VI REGION",
+          "content": "⚠️ Chứng chỉ ACM gắn với 1 Region CỤ THỂ — CloudFront LUÔN yêu cầu chứng chỉ tạo ở us-east-1 (N. Virginia) dù distribution phục vụ toàn cầu, trong khi ALB dùng chứng chỉ ở CHÍNH Region của ALB đó — đây là bẫy hay gặp khi cấu hình HTTPS cho CloudFront.",
+          "createdAt": "2026-09-14T04:02:45.495017Z",
+          "updatedAt": "2026-09-14T04:02:45.495017Z"
         }
       ]
     },
@@ -3356,6 +3531,27 @@
           "content": "✅ Inspector chấm RISK SCORE cho từng finding dựa trên mức độ nghiêm trọng CVE + khả năng bị khai thác thực tế (network reachability — vd lỗ hổng ở port không mở ra ngoài sẽ có risk thấp hơn dù CVE nghiêm trọng) — giúp ưu tiên xử lý đúng finding NGUY HIỂM THỰC SỰ thay vì xử lý dàn trải theo CVSS score đơn thuần.\n✅ Suppression Rule: ẩn finding đã biết & chấp nhận rủi ro (đã có kế hoạch xử lý riêng hoặc false positive) khỏi danh sách hiển thị chính.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "4b09deebde91",
+          "title": "INSPECTOR: CODE SCANNING CHO LAMBDA",
+          "content": "✅ Ngoài quét OS package, Inspector còn quét TRỰC TIẾP CODE của Lambda function (Code Scanning) để tìm lỗ hổng bảo mật trong chính logic code (không chỉ dependency) — dùng kỹ thuật SAST (Static Application Security Testing), hỗ trợ cả code trong container image Lambda.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "605186eaa68a",
+          "title": "INSPECTOR: NETWORK REACHABILITY ANALYSIS",
+          "content": "📌 Tình huống: 1 EC2 instance có lỗ hổng CVE nghiêm trọng ở 1 port cụ thể, nhưng cần biết port đó CÓ THỰC SỰ tiếp cận được từ Internet hay không để đánh giá đúng mức độ ưu tiên xử lý.\n✅ Đáp án đúng: Inspector tự động phân tích cấu hình mạng (Security Group, NACL, route table) kết hợp với finding lỗ hổng để xác định NETWORK REACHABILITY — lỗ hổng ở port MỞ RA INTERNET được ưu tiên xử lý cao hơn nhiều so với lỗ hổng ở port chỉ nội bộ VPC.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "4245a4ae130f",
+          "title": "INSPECTOR: TÍCH HỢP ORGANIZATION-WIDE",
+          "content": "✅ Giống GuardDuty, Inspector hỗ trợ Delegated Administrator để bật/quản lý quét lỗ hổng cho TOÀN BỘ account trong Organization từ 1 nơi, tự động bật cho account MỚI thêm vào Organization mà không cần cấu hình thủ công lại.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
         }
       ]
     },
@@ -3387,6 +3583,27 @@
           "content": "✅ Cần đăng ký RÕ RÀNG từng resource (EIP, CloudFront, ALB, Route 53, Global Accelerator) vào Shield Advanced để được bảo vệ nâng cao — không tự động áp dụng cho MỌI resource như Shield Standard.\n✅ Cost Protection: nếu bị DDoS khiến Auto Scaling/CloudFront scale vọt lên gây phát sinh chi phí bất thường, AWS sẽ HOÀN LẠI phần chi phí phát sinh do chính cuộc tấn công đó gây ra (không phải miễn phí hoàn toàn, chỉ hoàn phần overage do attack).",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "9fc398ef0e27",
+          "title": "SHIELD ADVANCED: SRT (SHIELD RESPONSE TEAM) ACCESS",
+          "content": "✅ Khi bị tấn công DDoS lớn, có thể liên hệ SRT (đội chuyên trách 24/7 của AWS) để được hỗ trợ TRỰC TIẾP viết/áp dụng WAF rule khẩn cấp — cần cấp quyền TRƯỚC (IAM Role cho SRT) và có Business/Enterprise Support Plan mới liên hệ được SRT.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "82491e01b356",
+          "title": "SHIELD: PHÂN LOẠI CÁC LỚP TẤN CÔNG DDOS PHỔ BIẾN",
+          "content": "✅ Layer 3 (Network): tấn công bão hòa băng thông (vd UDP reflection/amplification).\n✅ Layer 4 (Transport): tấn công làm cạn kiệt tài nguyên kết nối (SYN Flood).\n✅ Layer 7 (Application): giả lập request HTTP hợp lệ số lượng lớn (HTTP Flood) — khó phân biệt với traffic thật nhất, cần WAF + Shield Advanced kết hợp mới xử lý tốt (Shield Standard chỉ mạnh ở Layer 3/4).",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "ee74e16e6461",
+          "title": "PROACTIVE ENGAGEMENT & HEALTH-BASED DETECTION",
+          "content": "✅ Proactive Engagement: SRT chủ động LIÊN HỆ VỚI BẠN ngay khi phát hiện dấu hiệu tấn công (thay vì chờ bạn báo), cần đăng ký trước thông tin liên lạc khẩn cấp.\n✅ Health-Based Detection: tích hợp Route 53 Health Check để Shield hiểu ĐÚNG tình trạng SỨC KHỎE ứng dụng (dựa trên business metric thật, vd tỷ lệ lỗi ứng dụng) thay vì chỉ dựa vào lưu lượng traffic thô — giảm false positive khi traffic tăng cao NHƯNG là traffic thật (sale event) chứ không phải bị tấn công.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
         }
       ]
     },
@@ -3425,6 +3642,20 @@
           "content": "✅ Backup Audit Manager: tự động kiểm tra xem các resource có TUÂN THỦ backup policy đã đề ra hay không (vd RDS nào chưa được backup, tần suất backup có đúng SLA không), sinh báo cáo compliance phục vụ audit mà không cần tự viết script kiểm tra thủ công.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "839e0a718b43",
+          "title": "AWS BACKUP: LEGAL HOLD",
+          "content": "📌 Tình huống: Có vụ kiện/điều tra pháp lý, cần GIỮ LẠI 1 số bản backup cụ thể VÔ THỜI HẠN bất kể retention policy thông thường, cho tới khi vụ việc kết thúc.\n✅ Đáp án đúng: Legal Hold — đánh dấu backup không được XÓA dù đã hết hạn retention theo Backup Plan, độc lập với Vault Lock, gỡ hold thủ công khi không còn cần thiết nữa.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "e73fad6da740",
+          "title": "AWS BACKUP: RESTORE TESTING",
+          "content": "📌 Tình huống: Công ty có backup đầy đủ nhưng CHƯA BAO GIỜ thử restore thực tế, không chắc backup có DÙNG ĐƯỢC khi cần hay không (backup bị hỏng ngầm).\n✅ Đáp án đúng: AWS Backup Restore Testing — tự động lên lịch restore backup ra môi trường TEST định kỳ để xác minh backup thực sự khôi phục được, phát hiện sớm backup lỗi trước khi cần dùng thật trong tình huống khẩn cấp.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
         }
       ]
     },
@@ -3456,6 +3687,27 @@
           "content": "✅ Annotations: key-value ĐƠN GIẢN, có thể dùng để FILTER/TÌM KIẾM trace (vd tìm mọi trace có annotation customerType=premium) — index được.\n✅ Metadata: dữ liệu PHONG PHÚ hơn (object lồng nhau) nhưng KHÔNG index/filter được, chỉ dùng để xem chi tiết bổ sung khi đã tìm ra đúng trace.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "c48302014302",
+          "title": "X-RAY DAEMON & AWS DISTRO FOR OPENTELEMETRY (ADOT)",
+          "content": "✅ X-Ray Daemon: tiến trình chạy nền (trên EC2/ECS/on-premises) nhận trace data từ SDK ứng dụng rồi batch gửi lên X-Ray service — Lambda không cần daemon riêng (tích hợp sẵn).\n✅ ADOT (AWS Distro for OpenTelemetry): bản phân phối OpenTelemetry (chuẩn mở, không vendor lock-in) do AWS duy trì, có thể gửi trace tới X-Ray HOẶC công cụ khác (Datadog, New Relic...) — dùng khi muốn tránh phụ thuộc hoàn toàn vào X-Ray SDK riêng.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "e01713af5735",
+          "title": "X-RAY: TRACING QUA SQS/SNS/API GATEWAY (PROPAGATION)",
+          "content": "✅ X-Ray hỗ trợ TRUYỀN TIẾP Trace ID xuyên qua các service bất đồng bộ (message trong SQS/SNS mang theo trace header) — cho phép xem được TOÀN BỘ hành trình của 1 request kể cả khi nó đi qua hàng đợi message, không chỉ giới hạn ở lời gọi HTTP đồng bộ trực tiếp.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "9f1dc2987c7d",
+          "title": "X-RAY INSIGHTS: TỰ ĐỘNG PHÁT HIỆN BẤT THƯỜNG",
+          "content": "📌 Tình huống: Tỷ lệ lỗi của 1 service tăng đột biến, cần biết NGAY mà không phải tự ngồi xem dashboard liên tục.\n✅ Đáp án đúng: X-Ray Insights — tự động phân tích trace để phát hiện BẤT THƯỜNG (tỷ lệ lỗi tăng, latency tăng bất thường), tự tạo insight kèm root cause gợi ý và timeline sự kiện, có thể gửi thông báo qua EventBridge.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
         }
       ]
     },
@@ -3525,6 +3777,27 @@
           "content": "✅ DocumentDB Elastic Clusters: tự động SHARDING dữ liệu ngang qua nhiều instance để scale write throughput vượt giới hạn 1 node (khác cụm DocumentDB thường chỉ scale READ qua Replica) — dùng cho workload MongoDB cực lớn cần ghi song song nhiều shard.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "95bb1cdf0968",
+          "title": "DOCUMENTDB: BACKUP & POINT-IN-TIME RECOVERY",
+          "content": "✅ Giống Aurora: DocumentDB tự động backup liên tục (continuous backup) lên S3, hỗ trợ Point-in-Time Recovery khôi phục về bất kỳ giây nào trong retention period (tối đa 35 ngày) mà KHÔNG ảnh hưởng hiệu năng cluster đang chạy.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "59ee3caba697",
+          "title": "DOCUMENTDB READ SCALING & GLOBAL CLUSTERS",
+          "content": "✅ Đọc scale qua Replica (tối đa 15) dùng chung storage layer với Writer (giống Aurora) — thêm Replica gần như tức thì.\n✅ Global Clusters: replicate cross-Region với độ trễ thấp (<1 giây) cho đọc toàn cầu + Disaster Recovery, tương tự Aurora Global Database.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "ed6f48a0cd91",
+          "title": "DOCUMENTDB: MÃ HÓA & VPC-ONLY ACCESS",
+          "content": "✅ DocumentDB LUÔN nằm trong VPC (không có endpoint public trực tiếp) — chỉ truy cập được từ trong VPC hoặc qua peering/VPN/Direct Connect, tăng bảo mật mặc định.\n✅ Mã hóa at-rest dùng KMS (bắt buộc chọn lúc tạo cluster, không bật sau được — giống RDS phải snapshot/restore mới đổi được), mã hóa in-transit qua TLS.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
         }
       ]
     },
@@ -3563,6 +3836,20 @@
           "content": "✅ Bật Server-Side Cache ở cấp resolver hoặc toàn API — giảm số lần gọi xuống Data Source (DynamoDB/Lambda) cho các query GIỐNG NHAU trong khoảng TTL, tương tự API Gateway Caching nhưng áp dụng theo từng field GraphQL riêng lẻ.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "edf5bdcbfaf2",
+          "title": "APPSYNC EVENTS API",
+          "content": "📌 Tình huống: Cần xây dựng tính năng real-time đơn giản (chat, live notification, dashboard cập nhật trực tiếp) mà KHÔNG cần định nghĩa schema GraphQL phức tạp.\n✅ Đáp án đúng: AppSync Events API — API pub/sub qua WebSocket ĐƠN GIẢN HƠN GraphQL truyền thống, chỉ cần định nghĩa channel để publish/subscribe, phù hợp khi chỉ cần real-time messaging mà không cần data model phức tạp.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "797d67e3e474",
+          "title": "APPSYNC MERGED APIS",
+          "content": "✅ Merged API: gộp NHIỀU AppSync API con (do các team khác nhau quản lý riêng) thành 1 API GraphQL DUY NHẤT cho client gọi — phù hợp kiến trúc microservices nơi mỗi team sở hữu 1 phần schema riêng nhưng vẫn expose ra 1 endpoint thống nhất.",
+          "createdAt": "2026-09-14T04:01:22.238023Z",
+          "updatedAt": "2026-09-14T04:01:22.238023Z"
         }
       ]
     },
