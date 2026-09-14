@@ -2121,6 +2121,13 @@
           "content": "✅ Global Accelerator hỗ trợ CẢ TCP LẪN UDP (khác ALB chỉ HTTP/HTTPS) — dùng cho ứng dụng UDP-based (gaming real-time, VoIP, IoT sensor data) cần cải thiện performance toàn cầu mà CloudFront/ALB không đáp ứng được vì chỉ hoạt động ở tầng HTTP.",
           "createdAt": "2026-09-14T06:57:32.533591Z",
           "updatedAt": "2026-09-14T06:57:32.533591Z"
+        },
+        {
+          "id": "85249ca2b165",
+          "title": "GLOBAL ACCELERATOR: LISTENER PORT RANGES",
+          "content": "✅ 1 Listener có thể định nghĩa DẢI PORT (port range) thay vì chỉ 1 port đơn lẻ — hữu ích cho ứng dụng dùng nhiều port động (vd game server cấp port ngẫu nhiên trong 1 dải cho từng phiên chơi), không cần tạo Listener riêng cho từng port.",
+          "createdAt": "2026-09-14T06:59:29.002195Z",
+          "updatedAt": "2026-09-14T06:59:29.002195Z"
         }
       ]
     },
@@ -2229,6 +2236,13 @@
           "content": "✅ Trước khi chạy Task thật, DMS cung cấp Premigration Assessment — tự động kiểm tra & CẢNH BÁO các vấn đề tiềm ẩn (kiểu dữ liệu không tương thích, thiếu quyền, cấu hình sai) TRƯỚC KHI bắt đầu migration thật, giảm rủi ro phát hiện lỗi giữa chừng khi đã chạy migration lớn.",
           "createdAt": "2026-09-14T06:57:32.533591Z",
           "updatedAt": "2026-09-14T06:57:32.533591Z"
+        },
+        {
+          "id": "b65202710480",
+          "title": "DMS: SOURCE/TARGET ENDPOINT TESTING",
+          "content": "✅ Trước khi tạo Task, nên dùng nút \"Test Connection\" cho cả Source và Target Endpoint — DMS thử kết nối thực tế (network, credential, quyền) và báo lỗi CỤ THỂ ngay (vd Security Group chưa mở đúng port) thay vì để tới lúc chạy Task thật mới phát hiện lỗi kết nối.",
+          "createdAt": "2026-09-14T06:59:29.002195Z",
+          "updatedAt": "2026-09-14T06:59:29.002195Z"
         }
       ]
     },
@@ -2337,6 +2351,13 @@
           "content": "⚠️ Khi XÓA 1 Managed Microsoft AD, cần trước đó GỠ (deregister) mọi service đang dùng directory đó (RDS, WorkSpaces, Trust Relationship...) — AWS sẽ CHẶN việc xóa nếu vẫn còn dependency, đảm bảo không xóa nhầm directory đang được nhiều dịch vụ khác phụ thuộc.",
           "createdAt": "2026-09-14T06:57:32.533591Z",
           "updatedAt": "2026-09-14T06:57:32.533591Z"
+        },
+        {
+          "id": "64816ade676d",
+          "title": "DIRECTORY SERVICE: SSO VỚI OFFICE 365 / AZURE AD",
+          "content": "✅ AWS Managed Microsoft AD có thể đồng bộ (qua Azure AD Connect) với Azure AD để cung cấp Single Sign-On cho Microsoft 365 — cho phép user dùng CHUNG credential AD trên AWS để đăng nhập cả ứng dụng AWS lẫn Office 365, giảm số lượng identity phải quản lý riêng biệt.",
+          "createdAt": "2026-09-14T06:59:29.002195Z",
+          "updatedAt": "2026-09-14T06:59:29.002195Z"
         }
       ]
     },
@@ -2783,6 +2804,13 @@
           "content": "📌 Tình huống: Account A có dữ liệu mã hóa bằng CMK của account A, cần cho phép account B (đối tác) giải mã dữ liệu đó khi được chia sẻ.\n✅ Đáp án đúng: Sửa Key Policy của CMK ở account A để cho phép PRINCIPAL của account B (ARN cụ thể) dùng key — account B vẫn cần thêm IAM Policy phía họ cho phép gọi kms:Decrypt trên đúng key ARN đó, quyền cuối cùng vẫn là GIAO giữa Key Policy và IAM Policy của account B.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "c5fbfd31f075",
+          "title": "KMS: GRANT TOKENS - EVENTUAL CONSISTENCY WORKAROUND",
+          "content": "📌 Tình huống: Vừa tạo 1 Grant để cấp quyền dùng key, nhưng GỌI NGAY LẬP TỨC action đó bị từ chối do KMS Grant có độ trễ eventual consistency (vài giây) lan truyền.\n✅ Đáp án đúng: Dùng Grant Token trả về TỪ chính lời gọi CreateGrant, đính kèm Grant Token đó vào lời gọi action tiếp theo ngay lập tức — cho phép SỬ DỤNG GRANT NGAY dù chưa kịp lan truyền đầy đủ trong hệ thống KMS.",
+          "createdAt": "2026-09-14T06:59:29.002195Z",
+          "updatedAt": "2026-09-14T06:59:29.002195Z"
         }
       ]
     },
@@ -3668,6 +3696,13 @@
           "content": "✅ Từ khi có RCP, IAM cung cấp API GetOrganizationsAccessReport/simulate để xem EFFECTIVE POLICY — quyền thực tế cuối cùng của 1 principal sau khi tính TOÀN BỘ các lớp (SCP + RCP + Permission Boundary + Identity Policy) — hữu ích khi debug \"tại sao request này bị từ chối\" trong hệ thống nhiều lớp policy phức tạp.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "9c6403afb5ea",
+          "title": "ORGANIZATIONS: MAXIMUM OU DEPTH & ACCOUNT LIMIT",
+          "content": "⚠️ AWS Organizations giới hạn độ SÂU tối đa của cây OU (5 tầng tính từ root) và số lượng account tối đa mặc định (thường vài trăm, xin tăng được) — cần THIẾT KẾ cấu trúc OU hợp lý ngay từ đầu (theo môi trường: prod/dev, hoặc theo business unit) để tránh phải tái cấu trúc phức tạp sau này khi tổ chức phát triển lớn.",
+          "createdAt": "2026-09-14T06:59:29.002195Z",
+          "updatedAt": "2026-09-14T06:59:29.002195Z"
         }
       ]
     },
@@ -4769,6 +4804,13 @@
           "content": "✅ BFD: cơ chế PHÁT HIỆN LỖI LIÊN KẾT NHANH HƠN nhiều so với chỉ dựa vào BGP timer mặc định (giây thay vì phút) — khi bật BFD trên Direct Connect, thời gian phát hiện & chuyển failover sang đường dự phòng (VPN hoặc Direct Connect khác) nhanh hơn đáng kể, giảm downtime khi kết nối vật lý gặp sự cố.",
           "createdAt": "2026-09-14T06:57:32.533591Z",
           "updatedAt": "2026-09-14T06:57:32.533591Z"
+        },
+        {
+          "id": "1b0f24b40b80",
+          "title": "DIRECT CONNECT: CROSS-CONNECT VS PARTNER PATCH PANEL",
+          "content": "✅ Với Dedicated Connection, bạn cần tự sắp xếp \"cross-connect\" (kéo cáp vật lý) tại đúng Direct Connect Location — có thể tự làm nếu công ty đã có thiết bị đặt tại đó, hoặc thuê qua Colocation Provider tại facility đó nếu chưa có presence vật lý sẵn.",
+          "createdAt": "2026-09-14T06:59:29.002195Z",
+          "updatedAt": "2026-09-14T06:59:29.002195Z"
         }
       ]
     },
@@ -5347,6 +5389,13 @@
           "content": "✅ Khi 1 user assume role rồi thực hiện action, CloudTrail có thể ghi lại Source Identity (danh tính GỐC trước khi assume role) nếu được cấu hình yêu cầu — giúp TRUY VẾT chính xác AI ĐÃ THỰC SỰ làm hành động đó ngay cả khi họ dùng chung 1 Role được assume bởi nhiều người khác nhau.",
           "createdAt": "2026-09-14T06:56:57.225371Z",
           "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "1fa9734afada",
+          "title": "CLOUDTRAIL: TAGGING TRAIL & CROSS-REGION TRAIL LOGGING",
+          "content": "✅ 1 Trail có thể cấu hình ghi log cho TẤT CẢ Region (Apply trail to all regions) — đây là khuyến nghị mặc định, đảm bảo hoạt động ở Region NÀO cũng được ghi lại kể cả Region ít dùng, tránh trường hợp kẻ tấn công cố tình hoạt động ở Region không bị giám sát nếu chỉ bật Trail cho 1 Region.",
+          "createdAt": "2026-09-14T06:59:29.002195Z",
+          "updatedAt": "2026-09-14T06:59:29.002195Z"
         }
       ]
     },
@@ -5894,6 +5943,13 @@
           "content": "✅ Có thể override CHI TIẾT cấu hình bên dưới (vd đặt riêng CloudWatch Alarm threshold, ASG cooldown) qua Option Settings trong .ebextensions dùng đúng Namespace (aws:autoscaling:asg, aws:elb:loadbalancer...) — cho phép TÙY BIẾN SÂU vượt ra ngoài các option hiển thị sẵn trên Console UI.",
           "createdAt": "2026-09-14T06:57:32.533591Z",
           "updatedAt": "2026-09-14T06:57:32.533591Z"
+        },
+        {
+          "id": "2799d111161c",
+          "title": "BEANSTALK: LOG STREAMING TỚI CLOUDWATCH",
+          "content": "✅ Beanstalk có thể TỰ ĐỘNG stream log ứng dụng (không chỉ log deploy) TRỰC TIẾP ra CloudWatch Logs mà không cần cấu hình CloudWatch Agent thủ công — bật 1 tùy chọn đơn giản trong Software Configuration, giúp xem log tập trung ngay cả khi environment đã bị xóa (log vẫn giữ lại trong CloudWatch).",
+          "createdAt": "2026-09-14T06:59:29.002195Z",
+          "updatedAt": "2026-09-14T06:59:29.002195Z"
         }
       ]
     },
