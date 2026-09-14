@@ -464,6 +464,76 @@
           "content": "✅ Trusted Key Groups: cách QUẢN LÝ HIỆN ĐẠI để cấu hình Signed URL/Cookie — tách biệt việc quản lý public key khỏi IAM (không cần dùng CloudFront Key Pair gắn với root account như Trusted Signers kiểu cũ), cho phép TỰ XOAY VÒNG key linh hoạt hơn mà không ảnh hưởng tới root account.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "b8a41cc1cd00",
+          "title": "CLOUDFRONT: DEFAULT ROOT OBJECT",
+          "content": "📌 Tình huống: User truy cập root URL của distribution (vd https://d123.cloudfront.net/, không chỉ định file cụ thể), cần CloudFront tự động trả về 1 file mặc định thay vì lỗi/liệt kê thư mục.\n✅ Đáp án đúng: Cấu hình Default Root Object (thường là index.html) ở cấp DISTRIBUTION — chỉ áp dụng cho request vào ĐÚNG root (/), KHÔNG áp dụng cho subdirectory (vd /blog/ vẫn trả lỗi nếu không có file cụ thể, trừ khi tự xử lý bằng CloudFront Function/Lambda@Edge để rewrite URL).",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "c664528cd68c",
+          "title": "CLOUDFRONT: CACHE INVALIDATION - CHI PHÍ & KHI NÀO NÊN DÙNG",
+          "content": "📌 Tình huống: Vừa cập nhật 1 file quan trọng (vd style.css) trên origin nhưng CloudFront vẫn đang phục vụ bản CŨ từ cache (chưa hết TTL), cần cập nhật NGAY LẬP TỨC trên toàn bộ Edge Location.\n✅ Đáp án đúng: Tạo Invalidation Request cho đúng path (vd /style.css hoặc /*) — CloudFront xóa bản cache cũ khỏi MỌI Edge Location, request tiếp theo sẽ lấy bản mới từ origin.\n⚠️ Invalidation MIỄN PHÍ 1,000 path/tháng, sau đó TÍNH PHÍ theo path — với ứng dụng cập nhật liên tục, cách TỐI ƯU CHI PHÍ hơn nhiều là dùng FILE VERSIONING (đặt tên file kèm hash/version, vd style.v2.css) thay vì invalidate liên tục, vì browser/CDN tự nhiên coi đây là file MỚI không cần invalidate.",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "ce566d171ba2",
+          "title": "CLOUDFRONT: CUSTOM ERROR PAGES & ERROR CACHING",
+          "content": "📌 Tình huống: Origin trả về lỗi 404/500 (vd do S3 chưa có file, hoặc backend tạm thời down), muốn CloudFront hiển thị TRANG LỖI ĐẸP HƠN thay vì lỗi thô, và tránh liên tục dội request lỗi xuống origin đang gặp sự cố.\n✅ Đáp án đúng: Cấu hình Custom Error Response — map 1 mã lỗi cụ thể (403, 404, 500...) sang 1 file lỗi tùy chỉnh (vd /error/404.html) kèm mã HTTP status trả về TÙY CHỌN (có thể đổi 404 gốc thành 200 nếu muốn), và đặt Error Caching Minimum TTL — CloudFront CACHE LẠI response lỗi trong khoảng thời gian này, giảm tải cho origin đang gặp sự cố thay vì gọi lại liên tục.",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "02be92e12d75",
+          "title": "CLOUDFRONT: GEOGRAPHIC RESTRICTION (GEO-BLOCKING)",
+          "content": "📌 Tình huống: Nội dung chỉ được phép phân phối ở MỘT SỐ QUỐC GIA cụ thể theo yêu cầu bản quyền/pháp lý (geo-fencing), cần chặn truy cập từ các quốc gia còn lại NGAY TẠI TẦNG CDN.\n✅ Đáp án đúng: Geographic Restriction (Geo Restriction) ở cấp DISTRIBUTION — chọn Whitelist (chỉ cho phép các quốc gia liệt kê) hoặc Blacklist (chặn các quốc gia liệt kê), CloudFront dựa vào GeoIP database để xác định vị trí client.\n⚠️ Phân biệt với WAF Geo-Match Rule: Geo Restriction của CloudFront ĐƠN GIẢN & MIỄN PHÍ, áp dụng cho TOÀN BỘ distribution; WAF Geo-Match linh hoạt hơn (kết hợp được với điều kiện khác trong 1 rule) nhưng cần trả phí WAF riêng.",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "2b43bb84bf62",
+          "title": "CLOUDFRONT: TỰ ĐỘNG NÉN NỘI DUNG (COMPRESSION)",
+          "content": "📌 Tình huống: Cần giảm dung lượng response (HTML/CSS/JS/JSON) truyền qua mạng để tăng tốc độ tải trang, mà không muốn tự cấu hình nén ở phía origin server.\n✅ Đáp án đúng: Bật Compress Objects Automatically trên Cache Behavior — CloudFront TỰ ĐỘNG nén response bằng Gzip hoặc Brotli (dựa theo Accept-Encoding header của client) TRƯỚC KHI trả về, mà KHÔNG cần origin hỗ trợ nén, giảm đáng kể băng thông & thời gian tải.\n⚠️ Chỉ nén các file có kích thước và content-type phù hợp (văn bản/mã nguồn) — không nén lại các định dạng ĐÃ NÉN SẴN như ảnh JPEG/video (không hiệu quả, tốn CPU vô ích).",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "1ac9f4491379",
+          "title": "CLOUDFRONT: ORIGIN SHIELD",
+          "content": "📌 Tình huống: Ứng dụng có traffic RẤT LỚN từ nhiều Edge Location khác nhau, mỗi Edge Location cache miss đều gọi thẳng xuống origin, khiến origin (đặc biệt origin tùy chỉnh như ALB/EC2) bị QUÁ TẢI dù đã có CloudFront caching.\n✅ Đáp án đúng: Bật Origin Shield — thêm 1 TẦNG CACHE TRUNG TÂM bổ sung giữa Edge Location và Origin (đặt tại 1 Region gần origin nhất), MỌI Edge Location cache miss đều đi qua Origin Shield trước, Origin Shield gộp các request TRÙNG LẶP lại thành 1 request DUY NHẤT xuống origin — giảm mạnh tải trực tiếp lên origin, cải thiện cache hit ratio tổng thể.",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "0ac61e82e78d",
+          "title": "CLOUDFRONT: VPC ORIGINS",
+          "content": "📌 Tình huống: Origin là 1 ALB/EC2 nằm trong PRIVATE SUBNET (không có public IP), muốn CloudFront phân phối nội dung từ đó mà KHÔNG cần expose ALB ra Internet công khai.\n✅ Đáp án đúng: VPC Origins — cho phép CloudFront kết nối TRỰC TIẾP tới ALB/NLB/EC2 nằm trong VPC PRIVATE qua kết nối riêng tư (không qua Internet Gateway), origin không cần public IP hay Security Group mở rộng cho Internet — tăng bảo mật đáng kể so với cách cũ phải để origin public rồi giới hạn qua Custom Header bí mật.",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "eac6801b64d7",
+          "title": "CLOUDFRONT: HỖ TRỢ WEBSOCKET",
+          "content": "✅ CloudFront hỗ trợ NATIVE giao thức WebSocket (kết nối 2 chiều liên tục) khi origin cũng hỗ trợ — cho phép dùng CloudFront làm lớp phân phối phía trước cho ứng dụng real-time (chat, live dashboard) mà vẫn tận dụng được bảo mật (WAF, Shield) và tối ưu định tuyến toàn cầu của CloudFront, không cần bypass CDN cho traffic loại này.",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "ad7782af724c",
+          "title": "CLOUDFRONT: STATIC ANYCAST IPS ĐỂ ALLOWLIST",
+          "content": "📌 Tình huống: Origin/firewall phía sau chỉ cho phép traffic từ 1 DANH SÁCH IP CỐ ĐỊNH (allowlist), nhưng CloudFront mặc định dùng dải IP RẤT LỚN và có thể thay đổi theo Edge Location, gây khó khăn khi cấu hình allowlist.\n✅ Đáp án đúng: Request Static (Anycast) IPs cho distribution — CloudFront cấp 1 SET địa chỉ IP CỐ ĐỊNH riêng cho distribution đó, dùng để đưa vào allowlist firewall phía origin, thay vì phải mở toàn bộ dải IP CloudFront (rất rộng và hay thay đổi) — hữu ích khi origin có chính sách bảo mật nghiêm ngặt cần biết chính xác IP nguồn.",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "05db526244e3",
+          "title": "CLOUDFRONT: RANGE GETS & VIDEO STREAMING PROGRESSIVE",
+          "content": "✅ CloudFront hỗ trợ Range GET Requests (client chỉ tải 1 PHẦN file, vd byte 1000-2000) — quan trọng cho việc TUA (seek) video/audio trực tiếp mà không cần tải lại toàn bộ file, hoặc để resume download bị gián đoạn; CloudFront cache RIÊNG từng phần đã yêu cầu, không bắt buộc phải cache nguyên file trước khi phục vụ range request đầu tiên.",
+          "createdAt": "2026-09-14T08:24:40.878654Z",
+          "updatedAt": "2026-09-14T08:24:40.878654Z"
         }
       ]
     },
