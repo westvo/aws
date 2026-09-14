@@ -2006,6 +2006,13 @@
           "content": "✅ Volume Gateway hỗ trợ tối đa 32 volume/gateway, mỗi volume tối đa 32TB (Cached) hoặc 16TB (Stored) — cần tính toán đúng số lượng gateway cần triển khai nếu tổng dung lượng on-premises vượt quá giới hạn 1 gateway đơn lẻ có thể xử lý.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "e4b499860bf1",
+          "title": "STORAGE GATEWAY: CACHED VOLUME - IMPACT KHI CACHE MISS",
+          "content": "⚠️ Với Cached Volume, khi ứng dụng đọc dữ liệu KHÔNG có trong cache local, gateway phải TẢI VỀ từ S3 qua Internet/Direct Connect trước khi trả kết quả — độ trễ lần đầu đọc dữ liệu \"lạnh\" có thể CAO HƠN đáng kể so với đọc từ ổ đĩa local thông thường, cần tính toán kích thước cache đủ lớn cho working set thường dùng.",
+          "createdAt": "2026-09-14T06:58:02.361776Z",
+          "updatedAt": "2026-09-14T06:58:02.361776Z"
         }
       ]
     },
@@ -2107,6 +2114,13 @@
           "content": "✅ Tính phí gồm 2 phần: phí CỐ ĐỊNH theo giờ cho Accelerator (dù không có traffic), CỘNG THÊM phí Data Transfer-Premium theo GB truyền qua (cao hơn data transfer thông thường vì đi qua mạng backbone tối ưu) — cần cân nhắc chi phí này so với lợi ích cải thiện performance khi quyết định có dùng Global Accelerator hay không cho ứng dụng ít nhạy cảm về độ trễ.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "079fb3098f22",
+          "title": "GLOBAL ACCELERATOR: TCP/UDP LISTENER PROTOCOL SUPPORT",
+          "content": "✅ Global Accelerator hỗ trợ CẢ TCP LẪN UDP (khác ALB chỉ HTTP/HTTPS) — dùng cho ứng dụng UDP-based (gaming real-time, VoIP, IoT sensor data) cần cải thiện performance toàn cầu mà CloudFront/ALB không đáp ứng được vì chỉ hoạt động ở tầng HTTP.",
+          "createdAt": "2026-09-14T06:57:32.533591Z",
+          "updatedAt": "2026-09-14T06:57:32.533591Z"
         }
       ]
     },
@@ -2208,6 +2222,13 @@
           "content": "✅ DMS có thể chia 1 bảng LỚN thành nhiều PHÂN ĐOẠN (theo khoảng giá trị khóa chính, hoặc theo partition có sẵn của bảng nguồn) để LOAD SONG SONG nhiều luồng cùng lúc thay vì tuần tự — giảm đáng kể thời gian Full Load cho bảng hàng trăm triệu dòng.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "7b51494c600a",
+          "title": "DMS: PRE-MIGRATION ASSESSMENT",
+          "content": "✅ Trước khi chạy Task thật, DMS cung cấp Premigration Assessment — tự động kiểm tra & CẢNH BÁO các vấn đề tiềm ẩn (kiểu dữ liệu không tương thích, thiếu quyền, cấu hình sai) TRƯỚC KHI bắt đầu migration thật, giảm rủi ro phát hiện lỗi giữa chừng khi đã chạy migration lớn.",
+          "createdAt": "2026-09-14T06:57:32.533591Z",
+          "updatedAt": "2026-09-14T06:57:32.533591Z"
         }
       ]
     },
@@ -2309,6 +2330,13 @@
           "content": "✅ AWS Managed Microsoft AD tích hợp CloudWatch Metrics (CPU, memory, disk của domain controller) và có thể gửi Log Event (Security Event Log) ra CloudWatch Logs — giúp giám sát sức khỏe & audit hoạt động AD mà không cần tự triển khai công cụ giám sát Windows Server riêng.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "78f3834f327a",
+          "title": "DIRECTORY SERVICE: DELETE PROTECTION & DEREGISTER",
+          "content": "⚠️ Khi XÓA 1 Managed Microsoft AD, cần trước đó GỠ (deregister) mọi service đang dùng directory đó (RDS, WorkSpaces, Trust Relationship...) — AWS sẽ CHẶN việc xóa nếu vẫn còn dependency, đảm bảo không xóa nhầm directory đang được nhiều dịch vụ khác phụ thuộc.",
+          "createdAt": "2026-09-14T06:57:32.533591Z",
+          "updatedAt": "2026-09-14T06:57:32.533591Z"
         }
       ]
     },
@@ -3727,6 +3755,13 @@
           "content": "✅ VPN gắn vào Virtual Private Gateway: đơn giản, phù hợp kết nối 1 VPC DUY NHẤT với on-premises.\n✅ VPN gắn vào Transit Gateway: phù hợp khi cần kết nối on-premises với NHIỀU VPC cùng lúc (qua Transit Gateway làm hub), hỗ trợ ECMP để tăng băng thông, và dễ mở rộng thêm kết nối khác (VPC Peering, Direct Connect) vào cùng hub sau này.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "f5acbb06553e",
+          "title": "VPN: INSIDE IP CIDR TÙY CHỈNH",
+          "content": "✅ Mỗi VPN Tunnel dùng 1 dải IP nội bộ /30 riêng cho giao tiếp BGP (mặc định AWS tự cấp trong dải 169.254.x.x) — có thể TỰ CHỈ ĐỊNH dải IP này nếu thiết bị Customer Gateway có yêu cầu đặc biệt hoặc cần tránh trùng với cấu hình mạng nội bộ hiện có.",
+          "createdAt": "2026-09-14T06:58:02.361776Z",
+          "updatedAt": "2026-09-14T06:58:02.361776Z"
         }
       ]
     },
@@ -4058,6 +4093,13 @@
           "content": "✅ SSM Explorer: dashboard TỔNG HỢP dữ liệu vận hành (OpsItem, Patch Compliance, Config Compliance...) từ NHIỀU account/Region trong Organization vào 1 nơi — cho cái nhìn tổng quan tình trạng vận hành toàn bộ hạ tầng công ty mà không cần chuyển qua lại giữa các account.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "e1c759dc4022",
+          "title": "SSM: HYBRID ACTIVATIONS (QUẢN LÝ SERVER ON-PREMISES)",
+          "content": "📌 Tình huống: Cần dùng SSM (Run Command, Session Manager, Patch Manager) để quản lý server ON-PREMISES/máy ảo ngoài AWS, không chỉ EC2.\n✅ Đáp án đúng: SSM Hybrid Activations — tạo Activation Code + Activation ID, cài SSM Agent lên server on-premises rồi đăng ký (register) bằng code đó, server sẽ xuất hiện trong SSM Console như 1 \"managed instance\" bình thường, quản lý CHUNG với EC2 qua cùng 1 bộ công cụ.",
+          "createdAt": "2026-09-14T06:58:02.361776Z",
+          "updatedAt": "2026-09-14T06:58:02.361776Z"
         }
       ]
     },
@@ -4706,6 +4748,13 @@
           "content": "✅ Nên chọn Direct Connect Location GẦN NHẤT với data center on-premises của công ty (không nhất thiết cùng Region với VPC đích, vì có thể dùng Direct Connect Gateway để bắc cầu) — khoảng cách vật lý từ on-premises tới Direct Connect Location ảnh hưởng trực tiếp tới độ trễ và chi phí kéo cáp/cross-connect.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "6409b4f6ba14",
+          "title": "DIRECT CONNECT: BFD (BIDIRECTIONAL FORWARDING DETECTION)",
+          "content": "✅ BFD: cơ chế PHÁT HIỆN LỖI LIÊN KẾT NHANH HƠN nhiều so với chỉ dựa vào BGP timer mặc định (giây thay vì phút) — khi bật BFD trên Direct Connect, thời gian phát hiện & chuyển failover sang đường dự phòng (VPN hoặc Direct Connect khác) nhanh hơn đáng kể, giảm downtime khi kết nối vật lý gặp sự cố.",
+          "createdAt": "2026-09-14T06:57:32.533591Z",
+          "updatedAt": "2026-09-14T06:57:32.533591Z"
         }
       ]
     },
@@ -4953,6 +5002,13 @@
           "content": "✅ Khi \"xóa\" 1 secret, nó KHÔNG bị xóa ngay mà vào trạng thái chờ xóa trong Recovery Window (7-30 ngày, mặc định 30) — có thể HỦY yêu cầu xóa (RestoreSecret) trong khoảng thời gian này nếu phát hiện xóa nhầm, tương tự cơ chế Waiting Period của KMS key.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "43b86ccb522b",
+          "title": "SECRETS MANAGER: RESOURCE POLICY CHO PHÉP LAMBDA ROTATION GỌI",
+          "content": "✅ Rotation Lambda cần được cấp quyền TRONG Resource Policy của chính secret đó (secretsmanager:GetSecretValue, PutSecretValue...) NGOÀI IAM Execution Role của Lambda — 2 lớp quyền này đều cần đúng thì rotation mới hoạt động, thiếu 1 trong 2 sẽ khiến Lambda rotation fail âm thầm.",
+          "createdAt": "2026-09-14T06:57:32.533591Z",
+          "updatedAt": "2026-09-14T06:57:32.533591Z"
         }
       ]
     },
@@ -5803,6 +5859,13 @@
           "content": "✅ Beanstalk tự động gửi thông báo (qua SNS Topic) khi có sự kiện quan trọng xảy ra với environment (deploy thành công/thất bại, health thay đổi, scaling event) — đăng ký email/subscriber vào topic này để đội vận hành biết ngay khi có vấn đề mà không cần liên tục theo dõi Console.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "771f165df9a6",
+          "title": "BEANSTALK: RESOURCE NAMESPACE & OPTION SETTINGS OVERRIDE",
+          "content": "✅ Có thể override CHI TIẾT cấu hình bên dưới (vd đặt riêng CloudWatch Alarm threshold, ASG cooldown) qua Option Settings trong .ebextensions dùng đúng Namespace (aws:autoscaling:asg, aws:elb:loadbalancer...) — cho phép TÙY BIẾN SÂU vượt ra ngoài các option hiển thị sẵn trên Console UI.",
+          "createdAt": "2026-09-14T06:57:32.533591Z",
+          "updatedAt": "2026-09-14T06:57:32.533591Z"
         }
       ]
     },
@@ -5904,6 +5967,13 @@
           "content": "✅ Khi bật Inspector cho account/Organization, nó TỰ ĐỘNG quét MỌI EC2/ECR repository/Lambda function MỚI được tạo sau này mà không cần bật thủ công lại — giảm rủi ro có resource mới \"lọt lưới\" không được quét bảo mật do quên cấu hình.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "d24f0bcaf868",
+          "title": "INSPECTOR: CVSS SCORE vs INSPECTOR SCORE - PHÂN BIỆT",
+          "content": "⚠️ CVSS Score: điểm CHUẨN NGÀNH đánh giá mức độ NGHIÊM TRỌNG của lỗ hổng nói chung (không xét ngữ cảnh triển khai thực tế).\n⚠️ Inspector Score: điểm RIÊNG của Inspector, có TÍNH THÊM yếu tố NETWORK REACHABILITY thực tế (lỗ hổng có tiếp cận được từ Internet hay không) — 2 lỗ hổng cùng CVSS Score có thể có Inspector Score KHÁC NHAU tùy mức độ rủi ro thực tế trong môi trường cụ thể của bạn.",
+          "createdAt": "2026-09-14T06:58:02.361776Z",
+          "updatedAt": "2026-09-14T06:58:02.361776Z"
         }
       ]
     },
@@ -6214,6 +6284,13 @@
           "content": "✅ Cần IAM permission (xray:PutTraceSegments, xray:PutTelemetryRecords) gắn cho Role của service đang gửi trace (Lambda Execution Role, ECS Task Role...) — đây là bước CẤU HÌNH IAM cơ bản thường bị quên khi lần đầu bật X-Ray cho 1 service mới, khiến trace không hiện dù đã bật Active Tracing.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "703f73eb8037",
+          "title": "X-RAY: SEGMENT DOCUMENT STRUCTURE",
+          "content": "✅ Mỗi Segment gồm các trường chuẩn: trace_id (ID chung xuyên suốt toàn bộ request), id (ID riêng của segment này), start_time/end_time, và error/fault/throttle flag — hiểu cấu trúc này giúp debug khi cần TỰ GỬI segment thủ công (custom instrumentation) cho phần code SDK X-Ray chưa hỗ trợ tự động.",
+          "createdAt": "2026-09-14T06:58:02.361776Z",
+          "updatedAt": "2026-09-14T06:58:02.361776Z"
         }
       ]
     },
@@ -6531,6 +6608,13 @@
           "content": "⚠️ API Key (auth mode đơn giản nhất) có thời hạn TỐI ĐA 365 ngày và mặc định chỉ 7 ngày nếu không chỉ định — cần chủ động GIA HẠN/tạo API Key mới trước khi hết hạn, nếu không mọi request dùng API Key cũ sẽ bị từ chối đột ngột, phù hợp cho demo/prototype hơn là production lâu dài.",
           "createdAt": "2026-09-14T06:52:30.816405Z",
           "updatedAt": "2026-09-14T06:52:30.816405Z"
+        },
+        {
+          "id": "67630f7f02e7",
+          "title": "APPSYNC: DIRECT LAMBDA RESOLVER (BỎ QUA VTL/JS)",
+          "content": "✅ Direct Lambda Resolver: Lambda function nhận NGUYÊN VĂN GraphQL context (không qua mapping template VTL/JS) và tự trả về kết quả đúng format — đơn giản hóa khi logic phức tạp hơn khả năng của VTL, cho phép viết TOÀN BỘ logic bằng ngôn ngữ lập trình quen thuộc thay vì học thêm VTL.",
+          "createdAt": "2026-09-14T06:57:32.533591Z",
+          "updatedAt": "2026-09-14T06:57:32.533591Z"
         }
       ]
     },
@@ -6632,6 +6716,20 @@
           "content": "✅ Security Hub tính phí theo SỐ LƯỢNG SECURITY CHECK chạy (theo Standard đã bật) VÀ số lượng finding được NGHIN NHẬN từ các nguồn tích hợp — bật NHIỀU Standard (CIS + PCI + NIST cùng lúc) sẽ tăng chi phí tương ứng, nên chỉ bật Standard THỰC SỰ CẦN theo yêu cầu compliance của tổ chức.",
           "createdAt": "2026-09-14T06:53:17.729061Z",
           "updatedAt": "2026-09-14T06:53:17.729061Z"
+        },
+        {
+          "id": "b652f68e0b89",
+          "title": "SECURITY HUB: TICKETING INTEGRATION (JIRA, SERVICENOW)",
+          "content": "✅ Security Hub có tích hợp SẴN với các nền tảng ticketing phổ biến (qua AWS Service Management Connector) — tự động TẠO TICKET trong JIRA/ServiceNow khi có finding mới, đồng bộ trạng thái xử lý 2 chiều, giúp team bảo mật làm việc trong quy trình ticketing quen thuộc thay vì chỉ theo dõi trong Console.",
+          "createdAt": "2026-09-14T06:58:02.361776Z",
+          "updatedAt": "2026-09-14T06:58:02.361776Z"
+        },
+        {
+          "id": "a855192d84bb",
+          "title": "DETECTIVE: SCOPE TIME - PHẠM VI THỜI GIAN PHÂN TÍCH",
+          "content": "✅ Khi điều tra 1 entity trong Detective, có thể điều chỉnh SCOPE TIME (khoảng thời gian muốn xem) để zoom in/out hành vi trong quá khứ — hữu ích khi cần so sánh hành vi TRƯỚC và SAU 1 mốc thời gian nghi ngờ bị xâm nhập.",
+          "createdAt": "2026-09-14T06:58:02.361776Z",
+          "updatedAt": "2026-09-14T06:58:02.361776Z"
         }
       ]
     }
