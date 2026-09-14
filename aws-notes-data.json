@@ -84,6 +84,34 @@
           "content": "✅ CloudFront Functions: chạy JavaScript ĐƠN GIẢN, độ trễ cực thấp (sub-ms), dùng cho việc nhẹ như sửa header, redirect URL, kiểm tra cookie — chạy ở TẤT CẢ Edge Location.\n✅ Lambda@Edge: chạy Node.js/Python ĐẦY ĐỦ TÍNH NĂNG hơn (gọi API bên ngoài, xử lý logic phức tạp), độ trễ cao hơn CloudFront Functions, hỗ trợ can thiệp cả 4 điểm trong vòng đời request CloudFront (viewer/origin request/response).\n⚠️ Chọn CloudFront Functions khi logic đơn giản & cần tốc độ tối đa; chọn Lambda@Edge khi cần xử lý phức tạp hơn (gọi origin khác, xử lý body request lớn).",
           "createdAt": "2026-09-14T03:19:36.080749Z",
           "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "dc8f6eea414b",
+          "title": "LAMBDA FUNCTION URLS",
+          "content": "📌 Tình huống: Cần expose 1 Lambda function qua HTTPS endpoint đơn giản (webhook, API nhỏ) mà không muốn tốn công dựng API Gateway chỉ cho 1 function.\n✅ Đáp án đúng: Lambda Function URL — bật trực tiếp trên function, có ngay 1 URL HTTPS dùng được luôn, hỗ trợ IAM auth hoặc public (NONE), có CORS config sẵn — đơn giản hơn API Gateway nhưng ít tính năng hơn (không có usage plan, custom domain phức tạp, request transformation).",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "6954f8134113",
+          "title": "LAMBDA SNAPSTART",
+          "content": "📌 Tình huống: Function Java (hoặc runtime khởi động chậm) bị cold start rất lâu (vài giây), ảnh hưởng trải nghiệm mà không muốn trả thêm phí Provisioned Concurrency liên tục 24/7.\n✅ Đáp án đúng: Lambda SnapStart — chụp lại (snapshot) trạng thái bộ nhớ + đĩa của execution environment SAU KHI đã init xong 1 lần, các lần cold start tiếp theo KHÔI PHỤC từ snapshot đó thay vì init lại từ đầu, giảm cold start tới ~10 lần mà KHÔNG tính thêm phí như Provisioned Concurrency.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "72d073d6e689",
+          "title": "LAMBDA: HỖ TRỢ CONTAINER IMAGE",
+          "content": "✅ Lambda cho phép đóng gói code dưới dạng CONTAINER IMAGE (lên tới 10GB, thay vì giới hạn 250MB của zip package) — dùng khi cần đem theo dependency lớn (ML model, thư viện native phức tạp), tận dụng được quy trình CI/CD build image sẵn có của team, image phải implement Lambda Runtime Interface.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "898087f85349",
+          "title": "EVENT SOURCE MAPPING: BATCH SIZE & PARALLELIZATION",
+          "content": "✅ Với nguồn dạng STREAM (SQS, Kinesis, DynamoDB Streams), Lambda dùng Event Source Mapping để tự động POLL và gọi function theo BATCH (nhiều record 1 lần gọi, giảm số lần invoke).\n✅ Parallelization Factor (Kinesis/DynamoDB Streams): tăng số lượng Lambda xử lý ĐỒNG THỜI trên CÙNG 1 shard (mặc định 1, tối đa 10) — dùng khi xử lý 1 record mất nhiều thời gian và muốn tăng thông lượng mà không cần tăng số shard.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -289,6 +317,27 @@
           "content": "✅ Price Class All: dùng TẤT CẢ Edge Location toàn cầu, hiệu năng tốt nhất mọi nơi, chi phí cao nhất.\n✅ Price Class 200 / 100: giới hạn chỉ dùng Edge Location ở 1 số khu vực RẺ HƠN (bỏ bớt Nam Mỹ, Úc, Ấn Độ...) — chọn khi biết trước phần lớn user chỉ ở 1 số khu vực nhất định, giúp tiết kiệm chi phí mà chấp nhận độ trễ cao hơn ở khu vực bị loại.",
           "createdAt": "2026-09-14T03:23:39.666692Z",
           "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "b8f584be2447",
+          "title": "CLOUDFRONT ORIGIN FAILOVER (ORIGIN GROUP)",
+          "content": "📌 Tình huống: Origin chính (vd 1 ALB ở Region A) gặp sự cố, cần CloudFront TỰ ĐỘNG chuyển sang origin dự phòng mà không cần đổi DNS/chờ thời gian phát hiện dài.\n✅ Đáp án đúng: Origin Group — khai báo 1 Primary Origin + 1 Secondary Origin, CloudFront tự động route sang Secondary khi Primary trả về lỗi (mã lỗi định sẵn, vd 5xx) — dùng cho kiến trúc DR active-passive ở tầng CDN.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "62a8bb4c3f86",
+          "title": "FIELD-LEVEL ENCRYPTION",
+          "content": "📌 Tình huống: Form thu thập dữ liệu nhạy cảm (thẻ tín dụng) cần được mã hóa NGAY TẠI EDGE LOCATION (gần user nhất), chỉ giải mã được ở tầng ứng dụng backend cụ thể, không lộ ra ngay cả với origin server trung gian.\n✅ Đáp án đúng: CloudFront Field-Level Encryption — mã hóa CÁC TRƯỜNG DỮ LIỆU CỤ THỂ (không phải toàn bộ request) bằng public key ngay tại Edge, chỉ backend có private key tương ứng mới giải mã được các field đó.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "3bcc1f82d8c5",
+          "title": "CLOUDFRONT REAL-TIME LOGS & CONTINUOUS DEPLOYMENT",
+          "content": "✅ Real-time Logs: xuất log CloudFront gần như NGAY LẬP TỨC (khác Standard Log có độ trễ vài giờ) qua Kinesis Data Streams — dùng khi cần giám sát/phản ứng traffic bất thường theo thời gian thực.\n✅ Continuous Deployment: tạo 1 STAGING distribution để test thay đổi cấu hình (vd đổi origin, đổi cache policy) với 1 % nhỏ traffic thật TRƯỚC khi áp dụng cho 100% traffic của Primary distribution — giảm rủi ro khi thay đổi cấu hình CDN production.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -376,6 +425,34 @@
           "content": "📌 Tình huống: Ứng dụng cần đọc/ghi DynamoDB với độ trễ thấp từ nhiều Region trên thế giới, dữ liệu phải đồng bộ 2 chiều giữa các Region.\n✅ Đáp án đúng: DynamoDB Global Tables — multi-Region, multi-active (đọc/GHI được ở MỌI Region tham gia, không chỉ 1 chiều như read replica), tự động đồng bộ 2 chiều dùng DynamoDB Streams bên dưới, xử lý conflict bằng \"last writer wins\".",
           "createdAt": "2026-09-14T03:19:36.080749Z",
           "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "ee8858540f7d",
+          "title": "DYNAMODB TTL (TIME TO LIVE)",
+          "content": "📌 Tình huống: Bảng lưu session token/dữ liệu tạm cần TỰ ĐỘNG XÓA sau 1 khoảng thời gian mà không muốn tự viết job dọn dẹp định kỳ.\n✅ Đáp án đúng: Bật TTL trên 1 attribute kiểu timestamp (Unix epoch) — DynamoDB tự động XÓA item khi qua thời điểm đó (miễn phí, không tốn WCU), việc xóa diễn ra trong vòng 48h sau khi hết hạn (không chính xác tuyệt đối ngay giây đó).",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "37e80d93d416",
+          "title": "DYNAMODB TRANSACTIONS",
+          "content": "📌 Tình huống: Cần đảm bảo NHIỀU thao tác ghi/đọc trên NHIỀU item/bảng cùng THÀNH CÔNG hoặc CÙNG THẤT BẠI (all-or-nothing) — vd trừ tiền tài khoản A và cộng tiền tài khoản B phải xảy ra đồng thời.\n✅ Đáp án đúng: DynamoDB Transactions (TransactWriteItems/TransactGetItems) — đảm bảo tính ATOMIC trên tối đa 100 item/bảng khác nhau trong 1 transaction, tốn GẤP ĐÔI capacity so với thao tác thường (do phải kiểm tra + commit).",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "dce237ebbc66",
+          "title": "DYNAMODB BACKUP: PITR vs ON-DEMAND BACKUP",
+          "content": "✅ Point-In-Time Recovery (PITR): khôi phục bảng về BẤT KỲ GIÂY NÀO trong 35 ngày gần nhất, bật 1 lần là tự động chạy liên tục, không ảnh hưởng hiệu năng bảng.\n✅ On-Demand Backup: backup THỦ CÔNG tại 1 thời điểm cụ thể, LƯU VÔ THỜI HẠN (không tự xóa như PITR), dùng cho backup trước khi thay đổi lớn hoặc lưu trữ dài hạn theo compliance.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "cd3587e7c593",
+          "title": "DYNAMODB ADAPTIVE CAPACITY",
+          "content": "✅ Adaptive Capacity: TỰ ĐỘNG cân bằng lại throughput giữa các partition khi 1 vài partition bị truy cập nhiều hơn (hot partition) so với bảng có Provisioned Capacity — giúp giảm throttle mà KHÔNG cần tăng tổng capacity của cả bảng, hoạt động NGẦM & tự động, không cần bật thủ công (đã tích hợp mặc định).",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -491,6 +568,41 @@
           "content": "📌 Tình huống: Yêu cầu compliance (tài chính, y tế) bắt buộc dữ liệu KHÔNG THỂ bị sửa/xóa trong 1 khoảng thời gian nhất định, kể cả bởi chính admin có full quyền.\n✅ Đáp án đúng: S3 Object Lock (Write Once Read Many - WORM) — khóa object không cho ghi đè/xóa trong khoảng thời gian đã đặt.\n   • Governance mode: user có quyền IAM đặc biệt (s3:BypassGovernanceRetention) vẫn có thể gỡ khóa.\n   • Compliance mode: KHÔNG AI (kể cả root account) có thể gỡ khóa hay rút ngắn thời gian trước khi hết hạn — dùng cho yêu cầu compliance nghiêm ngặt nhất.",
           "createdAt": "2026-09-14T03:21:35.599417Z",
           "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "cf1a5fbe8e87",
+          "title": "S3 TRANSFER ACCELERATION",
+          "content": "📌 Tình huống: User ở xa Region chứa bucket S3 (vd bucket ở Singapore, user ở Mỹ) upload file lớn bị chậm do khoảng cách địa lý.\n✅ Đáp án đúng: S3 Transfer Acceleration — tận dụng mạng lưới CloudFront Edge Location toàn cầu làm điểm vào gần user nhất, sau đó truyền qua mạng backbone tối ưu của AWS về bucket, tăng tốc upload/download đáng kể cho khoảng cách xa mà không cần đổi endpoint code nhiều.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "14083e050733",
+          "title": "S3 MULTIPART UPLOAD",
+          "content": "✅ Với file LỚN (khuyến nghị >100MB, bắt buộc >5GB), dùng Multipart Upload — chia file thành nhiều PHẦN nhỏ upload SONG SONG, tăng tốc độ, nếu 1 phần lỗi chỉ cần upload lại phần đó (không phải upload lại từ đầu), có thể tạm dừng & tiếp tục sau.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "234a4c2af4c8",
+          "title": "S3 PRESIGNED URL",
+          "content": "📌 Tình huống: Muốn cho phép 1 user CỤ THỂ upload/download 1 file trong bucket PRIVATE trong thời gian giới hạn, mà không cần cấp IAM credential thật cho họ.\n✅ Đáp án đúng: Presigned URL — dùng credential CỦA MÌNH (hoặc IAM Role) để KÝ 1 URL có thời hạn (tối đa 7 ngày với IAM user, hoặc theo session token), chia sẻ URL đó cho user — họ truy cập được đúng object đó trong thời gian URL còn hiệu lực mà không cần tài khoản AWS riêng.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "9f1cc5641e5b",
+          "title": "S3 SELECT & GLACIER SELECT",
+          "content": "📌 Tình huống: Chỉ cần đọc 1 vài CỘT/DÒNG cụ thể trong 1 file CSV/JSON/Parquet rất lớn trên S3, không muốn tải NGUYÊN file về rồi mới lọc.\n✅ Đáp án đúng: S3 Select — dùng cú pháp SQL đơn giản để lọc dữ liệu NGAY TẠI S3, chỉ trả về phần dữ liệu cần, giảm lượng dữ liệu truyền tải và tăng tốc xử lý đáng kể so với tải hết rồi lọc ở phía client.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "6e65bc802273",
+          "title": "S3 STATIC WEBSITE HOSTING & CORS",
+          "content": "✅ Static Website Hosting: bật trực tiếp trên bucket để host website TĨNH (HTML/CSS/JS) chỉ với S3, không cần server — có URL endpoint riêng (khác endpoint API S3 thường), bucket phải để PUBLIC READ.\n✅ CORS (Cross-Origin Resource Sharing): cấu hình trên bucket để cho phép JavaScript từ 1 DOMAIN KHÁC gọi (fetch) tới object trong bucket — cần thiết khi frontend ở domain A gọi API/tải asset từ bucket S3 domain khác.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -571,6 +683,27 @@
           "content": "✅ RDS Event Notifications: gửi thông báo (qua SNS) khi có sự kiện quan trọng (failover, backup xong, low storage...).\n✅ Maintenance Window: khung giờ để AWS áp dụng patch/update engine tự động (nếu bật auto minor version upgrade) — nên đặt vào giờ traffic thấp nhất để giảm ảnh hưởng.",
           "createdAt": "2026-09-14T03:17:58.276507Z",
           "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "39e7efca4e3f",
+          "title": "RDS IAM DATABASE AUTHENTICATION",
+          "content": "📌 Tình huống: Muốn ứng dụng kết nối RDS mà KHÔNG cần lưu password DB trong code/config, tận dụng luôn IAM Role đã gán cho EC2/Lambda.\n✅ Đáp án đúng: Bật IAM Database Authentication — ứng dụng dùng IAM Role để lấy AUTH TOKEN tạm thời (hết hạn sau 15 phút) thay cho password cố định để kết nối DB, giảm rủi ro lộ password, tận dụng được audit trail của IAM.\n⚠️ Chỉ hỗ trợ MySQL & PostgreSQL trên RDS, KHÔNG phù hợp ứng dụng có số lượng kết nối/giây cực cao (do giới hạn rate của việc tạo token).",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "5d9c37aa59da",
+          "title": "RDS PERFORMANCE INSIGHTS",
+          "content": "📌 Tình huống: Database chậm nhưng không biết QUERY NÀO đang là nguyên nhân chính (top SQL tốn tài nguyên nhất) để tối ưu.\n✅ Đáp án đúng: RDS Performance Insights — trực quan hóa DB Load theo thời gian, cho phép \"nhìn xuyên\" xem query nào/user nào/wait event nào đang chiếm tải nhiều nhất tại 1 thời điểm cụ thể, không cần cài thêm công cụ giám sát ngoài.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "ea032937473d",
+          "title": "RDS CROSS-REGION READ REPLICA CHO DISASTER RECOVERY",
+          "content": "📌 Tình huống: Cần chiến lược DR cho RDS ở Region khác, với RTO/RPO thấp hơn so với chỉ dựa vào cross-region snapshot copy định kỳ.\n✅ Đáp án đúng: Tạo Read Replica ở Region khác (Cross-Region Read Replica) — dữ liệu đồng bộ gần như liên tục (async), khi Region chính gặp sự cố có thể PROMOTE Read Replica này thành DB độc lập ghi được — RPO/RTO tốt hơn nhiều so với restore từ snapshot.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -644,6 +777,27 @@
           "content": "✅ Domain Registration: đăng ký QUYỀN SỞ HỮU tên miền (mua domain) — có thể đăng ký qua Route 53 hoặc nhà cung cấp khác (GoDaddy...).\n✅ Hosted Zone: nơi LƯU CÁC DNS RECORD (A, CNAME, MX...) cho 1 domain — hoàn toàn TÁCH BIỆT với việc đăng ký domain; có thể đăng ký domain ở nơi khác nhưng vẫn dùng Route 53 Hosted Zone để quản lý DNS record (chỉ cần trỏ Name Server của domain về Route 53).",
           "createdAt": "2026-09-14T03:21:35.599417Z",
           "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "994acb0dc4fd",
+          "title": "HOSTED ZONE: PUBLIC vs PRIVATE",
+          "content": "✅ Public Hosted Zone: phân giải domain ra INTERNET công khai.\n✅ Private Hosted Zone: chỉ phân giải được TRONG 1 hoặc nhiều VPC được gắn kèm (không thấy từ Internet) — dùng cho DNS nội bộ (vd db.internal.company.com chỉ resolve được từ trong VPC), có thể gắn 1 Private Hosted Zone cho NHIỀU VPC (kể cả khác account qua Authorization).",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "3eb52172bca4",
+          "title": "ROUTE 53 TRAFFIC FLOW & DNSSEC",
+          "content": "✅ Traffic Flow: công cụ VISUAL (kéo-thả) để kết hợp NHIỀU routing policy lồng nhau (vd Geoproximity rồi tới Weighted bên trong) thành 1 policy phức tạp, quản lý version như code, dễ rollback.\n✅ DNSSEC (Domain Name System Security Extensions): ký số các DNS record để chống giả mạo/tấn công cache poisoning — client validate được response DNS đúng là từ chủ sở hữu domain thật, không bị kẻ tấn công chèn response giả.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "71db32327230",
+          "title": "DOMAIN TRANSFER & NAME SERVER DELEGATION",
+          "content": "📌 Tình huống: Domain đã mua ở nhà cung cấp khác (GoDaddy), muốn quản lý DNS record bằng Route 53 mà KHÔNG cần transfer quyền sở hữu domain sang AWS.\n✅ Đáp án đúng: Tạo Hosted Zone mới trong Route 53, lấy 4 Name Server (NS) do Route 53 cấp, cập nhật NS đó vào phần \"Nameservers\" tại nhà đăng ký domain gốc (GoDaddy) — đây gọi là DNS Delegation, không cần transfer domain, chỉ cần trỏ NS về Route 53.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -1070,6 +1224,27 @@
           "content": "📌 Tình huống: 1 instance trong Target Group sắp bị gỡ ra (do scale in hoặc unhealthy), nhưng đang xử lý dở 1 số request — cần đảm bảo không cắt ngang các request đang chạy.\n✅ Đáp án đúng: Deregistration Delay (mặc định 300s) — Load Balancer NGỪNG gửi request MỚI tới target đó ngay, nhưng vẫn cho phép các request ĐANG XỬ LÝ hoàn tất trong khoảng thời gian này trước khi target bị gỡ hẳn khỏi Target Group.",
           "createdAt": "2026-09-14T03:19:36.080749Z",
           "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "d0c1e0bb1e2f",
+          "title": "TARGET TYPES: INSTANCE, IP, LAMBDA",
+          "content": "✅ Instance: route theo EC2 Instance ID — dùng khi target là EC2 thông thường.\n✅ IP: route theo địa chỉ IP CỤ THỂ (kể cả IP ngoài VPC qua peering, hoặc on-premises qua Direct Connect/VPN) — dùng khi target không phải EC2 trong cùng VPC hoặc cần route tới container (IP của từng Task trong ECS awsvpc mode).\n✅ Lambda: route TRỰC TIẾP request HTTP tới Lambda function (ALB tự convert request thành event JSON) — dùng để expose Lambda qua ALB thay vì API Gateway khi không cần các tính năng nâng cao của API Gateway.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "3bafbca9d14f",
+          "title": "LISTENER RULES: PRIORITY & CONDITION",
+          "content": "✅ ALB Listener có nhiều Rule, mỗi rule có PRIORITY (số càng NHỎ càng ưu tiên trước) + Condition (path pattern, host header, HTTP method, query string, source IP) + Action (forward tới Target Group, redirect, fixed response).\n⚠️ Rule mặc định (default) luôn có priority thấp nhất, chỉ áp dụng khi KHÔNG rule nào khác match — dùng để định nghĩa hành vi \"catch-all\" (vd trả 404 cho path không xác định).",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "9e03270a5cd2",
+          "title": "SSL/TLS TERMINATION & SECURITY POLICY TRÊN ALB/NLB",
+          "content": "✅ SSL Termination tại Load Balancer: giải mã HTTPS NGAY TẠI ALB/NLB (gắn chứng chỉ ACM), traffic từ LB tới target có thể là HTTP thường (giảm tải mã hóa/giải mã cho backend) hoặc tiếp tục HTTPS (re-encrypt) nếu cần mã hóa end-to-end.\n✅ Security Policy: chọn bộ cipher suite + phiên bản TLS tối thiểu được chấp nhận (vd chặn TLS 1.0/1.1 cũ không an toàn) — cần cập nhật định kỳ theo khuyến nghị bảo mật mới.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -1699,6 +1874,27 @@
           "content": "✅ Cooldown: khoảng thời gian ASG \"nghỉ\", KHÔNG thực hiện thêm hành động scale nào sau 1 lần scale (mặc định 300s cho Simple/Step Scaling), tránh scale liên tục dồn dập trong khi metric mới vừa thay đổi chưa kịp phản ánh đúng tải thực tế.\n⚠️ Target Tracking Policy tự quản lý cooldown thông minh hơn (dùng warm-up time riêng), ít khi cần chỉnh tay so với Step/Simple Scaling.",
           "createdAt": "2026-09-14T03:19:36.080749Z",
           "updatedAt": "2026-09-14T03:19:36.080749Z"
+        },
+        {
+          "id": "d607a8dd7d6e",
+          "title": "PREDICTIVE SCALING",
+          "content": "📌 Tình huống: Traffic ứng dụng có pattern LẶP LẠI THEO CHU KỲ rõ ràng (vd tăng vọt mỗi 9h sáng thứ 2 hàng tuần), muốn ASG scale out TRƯỚC KHI traffic thực sự tăng thay vì phản ứng sau khi CPU đã cao (reactive).\n✅ Đáp án đúng: Predictive Scaling — dùng Machine Learning phân tích LỊCH SỬ traffic (tối thiểu vài ngày dữ liệu) để DỰ ĐOÁN nhu cầu tương lai, tự động scale TRƯỚC thời điểm dự kiến traffic tăng, kết hợp với Target Tracking để vẫn phản ứng được các biến động ngoài dự đoán.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "37d258be6055",
+          "title": "INSTANCE REFRESH",
+          "content": "📌 Tình huống: Cần cập nhật TOÀN BỘ instance trong ASG sang Launch Template version mới (vd đổi AMI đã patch bảo mật) mà không downtime, không cần tự tay terminate từng instance.\n✅ Đáp án đúng: Instance Refresh — ASG tự động thay thế DẦN các instance cũ bằng instance mới theo Launch Template version mới nhất, theo tỷ lệ % kiểm soát được (Minimum Healthy Percentage) để đảm bảo luôn còn đủ capacity phục vụ trong lúc refresh.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "e2d517f78693",
+          "title": "TERMINATION POLICIES",
+          "content": "✅ Khi Scale In (giảm số instance), ASG cần quyết định TERMINATE INSTANCE NÀO TRƯỚC — Termination Policy định nghĩa thứ tự ưu tiên: OldestLaunchTemplate (ưu tiên xóa instance dùng template CŨ trước, hữu ích khi đang rolling update), ClosestToNextInstanceHour (tối ưu chi phí, xóa instance gần hết chu kỳ tính giờ trước), AllocationStrategy (với Spot, xóa instance ở pool có giá cao/rủi ro nhất trước), OldestInstance/NewestInstance.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -1890,6 +2086,20 @@
           "content": "✅ Bật Cache ở cấp Stage — lưu lại response trong khoảng TTL định sẵn (mặc định 300s, tối đa 1h), giảm số lần gọi thật xuống backend (Lambda/HTTP) cho các request GIỐNG NHAU, giảm chi phí + tăng tốc độ phản hồi.\n⚠️ Có thể invalidate cache thủ công (client gửi header Cache-Control: max-age=0 kèm quyền IAM phù hợp) khi cần dữ liệu mới ngay lập tức mà không đợi hết TTL.",
           "createdAt": "2026-09-14T03:21:35.599417Z",
           "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "60ec0d3786f6",
+          "title": "PRIVATE API & VPC LINK",
+          "content": "📌 Tình huống: Cần expose API Gateway CHỈ truy cập được TỪ BÊN TRONG VPC công ty (không public ra Internet), đồng thời API đó cần gọi tới 1 ALB/NLB private bên trong VPC khác.\n✅ Đáp án đúng:\n   • Private API: chỉ truy cập được qua Interface VPC Endpoint, không có endpoint public — dùng cho API nội bộ.\n   • VPC Link: cho phép API Gateway (kể cả Public/Regional API) kết nối TỚI resource PRIVATE trong VPC (ALB/NLB) mà không cần expose resource đó ra Internet.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "91ef2ee7f89b",
+          "title": "API GATEWAY CANARY DEPLOYMENT",
+          "content": "📌 Tình huống: Cần release version mới của API cho 1 PHẦN NHỎ traffic để test trước khi áp dụng cho toàn bộ, giảm rủi ro khi deploy.\n✅ Đáp án đúng: Canary Release Deployment (trên REST API) — định nghĩa % traffic đi tới version MỚI (canary) trong khi phần lớn vẫn dùng version cũ (base), theo dõi log/metric riêng cho canary, tăng dần % hoặc rollback ngay nếu phát hiện lỗi.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -2302,6 +2512,20 @@
           "content": "✅ Aurora Cloning: tạo bản sao database MỚI cực nhanh (copy-on-write, chỉ tốn thêm dung lượng cho phần dữ liệu THAY ĐỔI so với gốc) — dùng cho testing/staging từ production mà không tốn thời gian/chi phí copy toàn bộ.\n✅ Backtrack (chỉ Aurora MySQL): \"tua ngược thời gian\" database về 1 thời điểm trong quá khứ RẤT NHANH mà không cần restore từ snapshot — hữu ích khi cần undo nhanh 1 thao tác lỗi (vd DELETE nhầm).",
           "createdAt": "2026-09-14T03:17:58.276507Z",
           "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "715e44d341bf",
+          "title": "AURORA CUSTOM ENDPOINTS",
+          "content": "📌 Tình huống: Trong 1 Aurora Cluster có nhiều Replica với cấu hình instance KHÁC NHAU (1 số dùng cho reporting nặng, 1 số cho ứng dụng thường), muốn route đúng loại truy vấn tới đúng nhóm replica phù hợp.\n✅ Đáp án đúng: Custom Endpoint — tự định nghĩa 1 nhóm CON các Replica cụ thể (thay vì dùng chung Reader Endpoint mặc định trỏ tới TẤT CẢ replica), route riêng traffic reporting/BI tới nhóm replica mạnh hơn mà không ảnh hưởng traffic ứng dụng chính.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "9d5cb63b00de",
+          "title": "AURORA MACHINE LEARNING",
+          "content": "✅ Aurora ML: cho phép gọi TRỰC TIẾP model Machine Learning (Amazon SageMaker hoặc Amazon Comprehend) NGAY TRONG CÂU LỆNH SQL (vd SELECT kèm hàm dự đoán fraud detection) — không cần export dữ liệu ra ngoài rồi gọi API ML riêng, giảm độ trễ & độ phức tạp pipeline.",
+          "createdAt": "2026-09-14T03:48:21.612587Z",
+          "updatedAt": "2026-09-14T03:48:21.612587Z"
         }
       ]
     },
@@ -3148,6 +3372,116 @@
           "content": "✅ Vì trace TOÀN BỘ request sẽ tốn kém & không cần thiết ở hệ thống traffic lớn, X-Ray dùng Sampling Rule để chỉ trace 1 TỶ LỆ request nhất định (vd 5% + luôn trace ít nhất 1 request/giây) — vẫn đủ đại diện để phát hiện vấn đề mà không tốn chi phí trace 100%.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        }
+      ]
+    },
+    {
+      "id": "afa76e2aade6",
+      "name": "Amazon EKS & ECR",
+      "category": "Containers",
+      "region": "",
+      "description": "EKS: managed Kubernetes. ECR: registry lưu trữ container image.",
+      "createdAt": "2026-09-14T03:46:04.020850Z",
+      "notes": [
+        {
+          "id": "571a9ad48add",
+          "title": "AMAZON EKS: MANAGED CONTROL PLANE",
+          "content": "📌 Tình huống: Team đã quen dùng Kubernetes (kubectl, Helm...), muốn chạy trên AWS mà không phải tự cài đặt/vá lỗi/scale Control Plane (etcd, API server) của Kubernetes.\n✅ Đáp án đúng: Amazon EKS — AWS quản lý HOÀN TOÀN Control Plane (chạy trên nhiều AZ, tự động vá lỗi/backup), bạn chỉ cần quản lý Worker Node (EC2 hoặc Fargate) và deploy ứng dụng bằng công cụ Kubernetes chuẩn (kubectl) như bình thường.",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "05b07f2c5dc3",
+          "title": "EKS: EC2 vs FARGATE WORKER NODE",
+          "content": "✅ EKS trên EC2 (Managed Node Group hoặc Self-managed): kiểm soát được instance type/AMI, có thể dùng GPU/Spot, phù hợp workload cần tối ưu chi phí/kiểm soát sâu.\n✅ EKS trên Fargate: KHÔNG cần quản lý EC2 worker node, mỗi Pod chạy trên hạ tầng serverless riêng biệt — đơn giản hóa vận hành nhưng KHÔNG hỗ trợ DaemonSet, không dùng được GPU, ít linh hoạt hơn khi cần tuning network/storage sâu.",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "2321a295c8bd",
+          "title": "ECS vs EKS: KHI NÀO DÙNG CÁI NÀO",
+          "content": "✅ ECS: đơn giản hơn, tích hợp SÂU & GỌN với hệ sinh thái AWS (IAM, CloudWatch, ALB...), phù hợp team KHÔNG có kinh nghiệm Kubernetes hoặc muốn vận hành đơn giản.\n✅ EKS: dùng chuẩn Kubernetes MỞ (portable, tránh vendor lock-in, dùng lại được kiến thức/tool Kubernetes có sẵn, dễ chuyển sang cloud khác/on-premises), phù hợp team ĐÃ CÓ kinh nghiệm Kubernetes hoặc cần hệ sinh thái Kubernetes phong phú (Helm, Operator...).",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "8389bd0ede7d",
+          "title": "AMAZON ECR: IMAGE SCANNING & LIFECYCLE POLICY",
+          "content": "✅ ECR: private registry lưu container image, tích hợp IAM để kiểm soát quyền push/pull, hỗ trợ Image Scanning (dùng chung engine với Amazon Inspector) tự động quét lỗ hổng (CVE) mỗi khi push image mới.\n✅ Lifecycle Policy: tự động XÓA image CŨ theo quy tắc (vd chỉ giữ 10 image mới nhất, hoặc xóa image untagged sau 14 ngày) — tránh phình dung lượng lưu trữ vô hạn theo thời gian.",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        }
+      ]
+    },
+    {
+      "id": "5ba059fa3259",
+      "name": "Amazon DocumentDB",
+      "category": "Database",
+      "region": "",
+      "description": "Managed database tương thích MongoDB (document/NoSQL).",
+      "createdAt": "2026-09-14T03:46:04.020850Z",
+      "notes": [
+        {
+          "id": "e66c5d15cade",
+          "title": "DOCUMENTDB: TƯƠNG THÍCH MONGODB",
+          "content": "📌 Tình huống: Ứng dụng đang dùng MongoDB, muốn migrate lên AWS managed service mà KHÔNG cần viết lại code (driver, query API vẫn giữ nguyên).\n✅ Đáp án đúng: Amazon DocumentDB — tương thích API MongoDB (dùng chung driver/query syntax), managed hoàn toàn (backup, patch, failover tự động), kiến trúc tách compute/storage tương tự Aurora (storage tự scale, replicate nhiều AZ).",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "e51ef3733e9d",
+          "title": "DOCUMENTDB vs DYNAMODB: KHI NÀO DÙNG CÁI NÀO",
+          "content": "✅ DynamoDB: key-value/document serverless, scale VÔ HẠN, phù hợp ứng dụng MỚI xây trên AWS cần hiệu năng cực cao & đơn giản vận hành.\n✅ DocumentDB: phù hợp khi ĐÃ CÓ ứng dụng dùng MongoDB (migrate mà giữ nguyên code/query phức tạp như aggregation pipeline) — DynamoDB không hỗ trợ query linh hoạt kiểu MongoDB aggregation.",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        }
+      ]
+    },
+    {
+      "id": "e2ff0105c178",
+      "name": "AWS AppSync",
+      "category": "Application Integration",
+      "region": "",
+      "description": "Managed GraphQL API, real-time data sync cho ứng dụng web/mobile.",
+      "createdAt": "2026-09-14T03:46:04.020850Z",
+      "notes": [
+        {
+          "id": "fd3a67826acd",
+          "title": "APPSYNC: GRAPHQL API & DATA SOURCE",
+          "content": "✅ AppSync: managed GraphQL API, cho phép client (web/mobile) gọi 1 endpoint DUY NHẤT để lấy CHÍNH XÁC dữ liệu cần (tránh over-fetching/under-fetching như REST), tự động kết nối nhiều Data Source phía sau (DynamoDB, Lambda, RDS, HTTP endpoint khác) qua Resolver.\n✅ Real-time Subscriptions: hỗ trợ SẴN cơ chế real-time (qua WebSocket) để client tự động nhận cập nhật khi dữ liệu thay đổi, không cần tự polling hay tự dựng WebSocket server riêng.\n✅ Offline Sync: SDK client hỗ trợ cache dữ liệu local + tự đồng bộ lại khi có mạng trở lại — phù hợp ứng dụng mobile cần hoạt động offline.",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        }
+      ]
+    },
+    {
+      "id": "cb58e8679b34",
+      "name": "AWS Security Hub, Detective & Firewall Manager",
+      "category": "Security",
+      "region": "",
+      "description": "Bộ công cụ tổng hợp & điều tra bảo mật xuyên account/Organization.",
+      "createdAt": "2026-09-14T03:46:04.020850Z",
+      "notes": [
+        {
+          "id": "1fadf973e0c1",
+          "title": "AWS SECURITY HUB: TỔNG HỢP FINDING",
+          "content": "📌 Tình huống: Có nhiều dịch vụ bảo mật (GuardDuty, Inspector, Macie, IAM Access Analyzer...) mỗi cái tạo finding riêng ở dashboard riêng, khó theo dõi TỔNG QUAN toàn bộ tình trạng bảo mật của Organization.\n✅ Đáp án đúng: AWS Security Hub — gom finding từ MỌI dịch vụ bảo mật AWS + đối tác bên thứ 3 vào 1 nơi DUY NHẤT, chuẩn hóa theo format chung (ASFF), tự động chấm điểm tuân thủ theo chuẩn (CIS Benchmark, PCI-DSS, AWS Foundational Security Best Practices), hỗ trợ xem xuyên toàn bộ Organization qua Delegated Administrator.",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "1bc58c9c09e7",
+          "title": "AMAZON DETECTIVE: ĐIỀU TRA NGUYÊN NHÂN GỐC RỄ (ROOT CAUSE)",
+          "content": "📌 Tình huống: GuardDuty báo 1 EC2 instance có hành vi đáng ngờ, cần điều tra SÂU xem chuỗi sự kiện dẫn tới đó là gì (ai login, IP nào, API call nào trước đó) để hiểu toàn cảnh cuộc tấn công.\n✅ Đáp án đúng: Amazon Detective — tự động thu thập & liên kết log (VPC Flow Logs, CloudTrail, GuardDuty finding) thành BIỂU ĐỒ TRỰC QUAN mối quan hệ (giữa IP, user, resource, thời gian), giúp điều tra nhanh hơn nhiều so với tự đọc log thô.",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "ba024bc570ed",
+          "title": "AWS FIREWALL MANAGER",
+          "content": "📌 Tình huống: Tổ chức có hàng trăm account, cần đảm bảo TẤT CẢ VPC/CloudFront đều áp dụng CÙNG 1 bộ rule WAF, Security Group, và Shield Advanced chuẩn, không để account nào \"quên\" cấu hình.\n✅ Đáp án đúng: AWS Firewall Manager — quản lý & áp dụng TẬP TRUNG chính sách bảo mật (WAF rule, Security Group, Shield Advanced, Network Firewall) xuyên suốt TOÀN BỘ account trong Organization từ 1 nơi, tự động phát hiện & sửa account nào chưa tuân thủ chính sách.",
+          "createdAt": "2026-09-14T03:46:04.020850Z",
+          "updatedAt": "2026-09-14T03:46:04.020850Z"
         }
       ]
     }
