@@ -656,6 +656,132 @@
           "content": "✅ Eventually Consistent Read (mặc định, RẺ HƠN): có thể đọc dữ liệu CHƯA CẬP NHẬT KỊP (vài mili giây sau khi ghi) do dữ liệu đang đồng bộ giữa các bản sao.\n✅ Strongly Consistent Read (tốn GẤP ĐÔI RCU): LUÔN đọc được dữ liệu MỚI NHẤT đã ghi thành công — dùng khi ứng dụng cần đảm bảo đọc ngay sau ghi phải thấy dữ liệu mới (vd kiểm tra số dư ngay sau giao dịch), GSI KHÔNG hỗ trợ Strongly Consistent Read (chỉ Eventually Consistent).",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "663cb3f804de",
+          "title": "DYNAMODB: QUERY vs SCAN",
+          "content": "⚠️ Query: tìm item dựa trên GIÁ TRỊ CHÍNH XÁC của Partition Key (+ điều kiện tùy chọn trên Sort Key) — chỉ đọc ĐÚNG partition liên quan, HIỆU QUẢ, tốn ít RCU, nên LUÔN ưu tiên thiết kế truy vấn theo Query.\n⚠️ Scan: đọc TOÀN BỘ item trong bảng (hoặc index) rồi mới LỌC theo điều kiện phía client — duyệt QUA TẤT CẢ partition, RẤT TỐN capacity & chậm với bảng lớn, chỉ nên dùng khi thực sự cần đọc toàn bộ dữ liệu (báo cáo, migration) — có thể dùng Parallel Scan (chia scan thành nhiều segment chạy song song) để tăng tốc khi bắt buộc phải Scan.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "0d0745cbd912",
+          "title": "DYNAMODB: TÍNH TOÁN RCU/WCU (PROVISIONED CAPACITY)",
+          "content": "✅ 1 WCU (Write Capacity Unit) = 1 write/giây cho item ≤1KB (item lớn hơn tính thêm WCU theo bội số 1KB).\n✅ 1 RCU (Read Capacity Unit) = 1 STRONGLY consistent read/giây cho item ≤4KB, HOẶC 2 EVENTUALLY consistent read/giây cho cùng kích thước item (eventually consistent rẻ hơn 50%).\n📌 Ví dụ: đọc item 6KB bằng strongly consistent read cần ceil(6/4) = 2 RCU; cùng item đó bằng eventually consistent chỉ cần 1 RCU (2 RCU / 2).",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "e61358b0026b",
+          "title": "DYNAMODB: BATCHGETITEM & BATCHWRITEITEM",
+          "content": "✅ BatchGetItem: đọc NHIỀU item (tối đa 100 item hoặc 16MB) từ 1 hoặc NHIỀU bảng khác nhau trong 1 lời gọi API — giảm số round-trip network so với gọi GetItem từng cái.\n✅ BatchWriteItem: ghi/xóa NHIỀU item (tối đa 25 item hoặc 16MB) trong 1 lời gọi — KHÔNG hỗ trợ update từng phần (chỉ PutItem/DeleteItem), KHÔNG đảm bảo ATOMIC giữa các item (khác Transactions) — item nào lỗi sẽ trả về trong UnprocessedItems để retry riêng.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "61f30c7530ed",
+          "title": "DYNAMODB: CONDITIONAL WRITES & OPTIMISTIC LOCKING",
+          "content": "📌 Tình huống: 2 người dùng CÙNG LÚC sửa 1 item, cần đảm bảo người ghi SAU không vô tình GHI ĐÈ thay đổi của người ghi TRƯỚC mà không hay biết (lost update).\n✅ Đáp án đúng: Conditional Write — thêm ConditionExpression vào PutItem/UpdateItem (vd chỉ ghi nếu attribute \"version\" vẫn đúng giá trị đã đọc trước đó), nếu điều kiện KHÔNG khớp (item đã bị người khác sửa), request bị TỪ CHỐI với lỗi ConditionalCheckFailedException — đây là cơ chế OPTIMISTIC LOCKING chuẩn của DynamoDB, không cần khóa (lock) tường minh.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "2b14aac573b7",
+          "title": "DYNAMODB: MÃ HÓA AT-REST",
+          "content": "✅ MỌI bảng DynamoDB đều được MÃ HÓA AT-REST MẶC ĐỊNH & BẮT BUỘC (không thể tắt) — chọn giữa AWS Owned Key (miễn phí, mặc định), AWS Managed Key (aws/dynamodb trong KMS, miễn phí, có thể xem trong Console), hoặc Customer Managed Key (CMK tự tạo, tính phí KMS theo request, kiểm soát & audit được chi tiết nhất qua CloudTrail).",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "c9af61a02ef1",
+          "title": "DYNAMODB: VPC GATEWAY ENDPOINT",
+          "content": "📌 Tình huống: EC2/Lambda trong PRIVATE SUBNET cần truy cập DynamoDB mà KHÔNG muốn traffic đi qua NAT Gateway/Internet.\n✅ Đáp án đúng: Tạo VPC Gateway Endpoint cho DynamoDB (giống S3) — traffic đi qua ĐƯỜNG RIÊNG TƯ trong mạng AWS, MIỄN PHÍ, chỉ cần thêm route trong Route Table — giảm chi phí NAT Gateway & tăng bảo mật khi ứng dụng gọi DynamoDB nhiều.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "d18fe3619623",
+          "title": "DYNAMODB: GIỚI HẠN KÍCH THƯỚC ITEM (400KB)",
+          "content": "⚠️ Mỗi ITEM (bao gồm tên attribute + giá trị) tối đa 400KB — với dữ liệu LỚN HƠN (vd file đính kèm, ảnh), KHÔNG lưu trực tiếp trong DynamoDB mà lưu file thật trong S3, chỉ lưu S3 OBJECT KEY (đường dẫn) trong item DynamoDB — pattern phổ biến kết hợp DynamoDB (metadata, truy vấn nhanh) + S3 (blob storage, rẻ, không giới hạn kích thước).",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "08cb9218dadb",
+          "title": "DYNAMODB: AUTO SCALING CHO PROVISIONED CAPACITY",
+          "content": "✅ Application Auto Scaling: TỰ ĐỘNG điều chỉnh WCU/RCU của bảng (và GSI) dựa trên % TARGET UTILIZATION (mặc định 70%) theo dõi qua CloudWatch — tăng capacity khi traffic tăng, giảm khi traffic giảm, tránh phải tự tính & set capacity thủ công.\n⚠️ Auto Scaling có ĐỘ TRỄ phản ứng (vài phút) — với traffic SPIKE ĐỘT NGỘT & KHÓ DỰ ĐOÁN, On-Demand Capacity Mode phù hợp hơn nhiều vì phản ứng NGAY LẬP TỨC không cần chờ scaling.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "47c76cbe799b",
+          "title": "DYNAMODB: SECONDARY INDEX PROJECTION TYPES",
+          "content": "✅ Khi tạo GSI/LSI, chọn attribute nào được SAO CHÉP (project) vào index: KEYS_ONLY (chỉ Partition Key + Sort Key của bảng gốc và index — TIẾT KIỆM storage/capacity nhất), INCLUDE (Keys + 1 danh sách attribute cụ thể chọn thêm), ALL (toàn bộ attribute của item gốc — tốn storage nhất nhưng Query trên index không cần thêm lần đọc phụ để lấy đủ dữ liệu).\n⚠️ Nếu Query trên index cần attribute KHÔNG được project, DynamoDB phải đọc PHỤ THÊM từ bảng gốc (tốn thêm RCU đáng kể) — cần cân nhắc kỹ projection type theo pattern truy vấn thực tế.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "593ba81a2eaa",
+          "title": "DYNAMODB: SPARSE INDEX",
+          "content": "✅ Sparse Index: GSI chỉ chứa item nào CÓ tồn tại attribute dùng làm Key của index đó (item THIẾU attribute này sẽ KHÔNG xuất hiện trong index) — dùng để tạo \"bộ lọc\" hiệu quả, vd chỉ index các đơn hàng CHƯA XỬ LÝ bằng cách chỉ gán attribute `PendingStatus` cho các item đó, GSI tự động chỉ chứa đúng nhóm cần truy vấn mà không cần Scan + filter toàn bảng.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "3e6dca449843",
+          "title": "DYNAMODB: SINGLE-TABLE DESIGN",
+          "content": "📌 Tình huống: Ứng dụng có NHIỀU loại entity liên quan (User, Order, Product) cần truy vấn theo nhiều quan hệ khác nhau, nếu tách mỗi entity thành 1 bảng riêng sẽ phải JOIN thủ công qua nhiều lần gọi API (chậm, tốn nhiều RCU).\n✅ Đáp án đúng: Single-Table Design — gộp NHIỀU loại entity khác nhau vào CHUNG 1 bảng DynamoDB, dùng Partition Key/Sort Key theo pattern có tiền tố (vd PK=\"USER#123\", SK=\"ORDER#456\") để mô phỏng quan hệ 1-nhiều, cho phép LẤY NHIỀU LOẠI dữ liệu liên quan trong 1 LẦN Query DUY NHẤT (cùng partition) — là best practice thiết kế NoSQL hiệu năng cao, đánh đổi độ phức tạp thiết kế ban đầu lấy hiệu năng truy vấn tối ưu.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "8eb194880eb5",
+          "title": "DYNAMODB STREAMS: VIEW TYPE",
+          "content": "✅ Khi bật Streams, chọn loại dữ liệu ghi vào stream mỗi khi item thay đổi: KEYS_ONLY (chỉ Key của item bị đổi — nhỏ gọn nhất), NEW_IMAGE (toàn bộ item SAU khi thay đổi), OLD_IMAGE (toàn bộ item TRƯỚC khi thay đổi), NEW_AND_OLD_IMAGES (cả 2 — dùng khi cần SO SÁNH giá trị cũ/mới, vd audit log chi tiết hoặc đồng bộ CDC sang hệ thống khác).",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "c5d215b11d3f",
+          "title": "DYNAMODB GLOBAL TABLES: CƠ CHẾ GIẢI QUYẾT XUNG ĐỘT",
+          "content": "⚠️ Global Tables dùng kiến trúc MULTI-ACTIVE (multi-master) — mọi Region đều ghi được ĐỒNG THỜI, khi 2 Region CÙNG SỬA 1 item gần như cùng lúc, DynamoDB giải quyết xung đột bằng \"LAST WRITER WINS\" dựa trên TIMESTAMP (bản ghi mới nhất theo thời gian thắng) — ứng dụng cần THIẾT KẾ chấp nhận được khả năng mất 1 trong 2 thay đổi xung đột (không có cơ chế merge tự động phức tạp hơn), phù hợp với dữ liệu ít khi bị sửa đồng thời từ nhiều Region.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "857c49c6ae16",
+          "title": "DAX: KIẾN TRÚC CLUSTER (PRIMARY + REPLICA)",
+          "content": "✅ DAX Cluster gồm 1 PRIMARY NODE (xử lý write, đồng bộ cache) và NHIỀU READ REPLICA NODE (phân tán trên nhiều AZ) — cache MISS sẽ tự động gọi xuống DynamoDB thật rồi lưu vào cache cho lần sau; hỗ trợ 2 loại cache riêng biệt: Item Cache (cache theo GetItem/BatchGetItem) và Query Cache (cache theo kết quả Query/Scan, TTL riêng, mặc định 5 phút).",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "e60e91521911",
+          "title": "DYNAMODB: PARTIQL",
+          "content": "✅ PartiQL: ngôn ngữ truy vấn TƯƠNG TỰ SQL (SELECT/INSERT/UPDATE/DELETE) cho phép thao tác với DynamoDB bằng CÚ PHÁP QUEN THUỘC thay vì phải dùng API thuần (GetItem/Query/PutItem...) — hữu ích cho việc TEST NHANH trong Console/CLI hoặc khi team quen SQL cần làm việc với DynamoDB mà không học lại toàn bộ API, tuy nhiên về bản chất PartiQL vẫn dịch xuống các API thao tác item bình thường, KHÔNG biến DynamoDB thành relational database (không hỗ trợ JOIN thật).",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "3de49e92cf09",
+          "title": "DYNAMODB: FINE-GRAINED ACCESS CONTROL (IAM CONDITION dynamodb:LeadingKeys)",
+          "content": "📌 Tình huống: Ứng dụng multi-tenant cần đảm bảo MỖI USER chỉ đọc/ghi được ĐÚNG item của CHÍNH MÌNH trong 1 bảng dùng chung (Partition Key = UserID), không được truy cập item của user khác.\n✅ Đáp án đúng: Fine-Grained Access Control qua IAM Policy Condition dynamodb:LeadingKeys — giới hạn IAM Role/User chỉ được thao tác trên item có Partition Key TRÙNG với 1 giá trị động (thường dùng ${cognito-identity.amazonaws.com:sub} khi kết hợp Cognito Identity Pool) — cho phép hàng nghìn user dùng CHUNG 1 IAM Role nhưng vẫn CÁCH LY dữ liệu ở CẤP ITEM mà không cần tạo bảng riêng cho từng user.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "bd444e2f99fc",
+          "title": "DYNAMODB: EXPORT TO S3 & IMPORT FROM S3",
+          "content": "✅ Export to S3: xuất TOÀN BỘ dữ liệu bảng (hoặc theo mốc thời gian point-in-time nếu bật PITR) ra S3 dạng JSON/Parquet — thực hiện qua SNAPSHOT nội bộ nên KHÔNG TIÊU TỐN RCU của bảng đang chạy production, dùng cho phân tích bằng Athena/EMR hoặc backup nguội.\n✅ Import from S3: tạo bảng DynamoDB MỚI trực tiếp từ file dữ liệu (CSV/JSON/Parquet) có sẵn trong S3 — không tốn WCU trong quá trình import, dùng để migrate dữ liệu hàng loạt vào DynamoDB nhanh & rẻ hơn so với BatchWriteItem thủ công.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "ade1bb98d717",
+          "title": "DYNAMODB: CONTRIBUTOR INSIGHTS",
+          "content": "✅ Contributor Insights: tự động phân tích traffic pattern của bảng/GSI, xác định TOP-N Partition Key nào đang chiếm nhiều request nhất (most accessed/throttled keys) — công cụ trực tiếp giúp PHÁT HIỆN Hot Partition hoặc access pattern bất thường mà không cần tự phân tích log thủ công, hữu ích để CHẨN ĐOÁN nguyên nhân bị throttle.",
+          "createdAt": "2026-09-14T14:53:08.244476Z",
+          "updatedAt": "2026-09-14T14:53:08.244476Z"
         }
       ]
     },
