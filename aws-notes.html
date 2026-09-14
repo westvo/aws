@@ -686,22 +686,30 @@
   const ICON_STOP = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>';
 
   let audioBtnState = 'idle'; // idle | loading | playing
+  let audioBtnCached = false; // note hiện tại đã có audio lưu sẵn hay chưa
   let pendingAudioNoteId = null;
   const ttsPlayer = document.getElementById('ttsAudioPlayer');
   const audioBtn = document.getElementById('viewNoteAudioBtn');
+  const AUDIO_BTN_CLS_DEFAULT = 'border-white/10 hover:bg-white/5 text-slate-300';
+  const AUDIO_BTN_CLS_CACHED = 'border-emerald-500/40 hover:bg-emerald-500/10 text-emerald-400';
 
   function ttsTextFor(n){
     return `${n.title}. ${n.content || ''}`.trim();
   }
+  function renderAudioBtn(){
+    audioBtn.innerHTML = audioBtnState === 'loading' ? ICON_LOADING : (audioBtnState === 'playing' ? ICON_STOP : ICON_SPEAKER);
+    audioBtn.className = 'p-2 rounded-lg border transition' + (audioBtnState === 'loading' ? ' opacity-60' : '')
+      + ' ' + (audioBtnCached ? AUDIO_BTN_CLS_CACHED : AUDIO_BTN_CLS_DEFAULT);
+  }
   function setAudioBtnState(s, title){
     audioBtnState = s;
-    audioBtn.innerHTML = s === 'loading' ? ICON_LOADING : (s === 'playing' ? ICON_STOP : ICON_SPEAKER);
-    audioBtn.classList.toggle('opacity-60', s === 'loading');
     if(title) audioBtn.title = title;
+    renderAudioBtn();
   }
   function updateAudioBtnIdleTitle(n){
     const hash = hashText(ttsTextFor(n));
-    const cached = n.audio && n.audio.hash === hash && n.audio.data;
+    const cached = !!(n.audio && n.audio.hash === hash && n.audio.data);
+    audioBtnCached = cached;
     setAudioBtnState('idle', cached ? 'Nghe lại (đã lưu, không tốn API)' : 'Đọc ghi chú bằng AI (OpenRouter)');
   }
   function stopAudioPlayback(){
@@ -777,7 +785,10 @@
       n.audio = { data: base64, format: 'wav', hash };
       const saved = save();
       if(!saved) toast('Đã tạo audio nhưng không cache được (bộ nhớ trình duyệt đầy) — lần sau sẽ phải tạo lại.');
-      if(currentViewNoteId === noteId) playAudioData(n.audio.data, n.audio.format);
+      if(currentViewNoteId === noteId){
+        audioBtnCached = true;
+        playAudioData(n.audio.data, n.audio.format);
+      }
     }catch(err){
       if(currentViewNoteId === noteId) updateAudioBtnIdleTitle(n); else setAudioBtnState('idle');
       if(err && err.status === 401){
