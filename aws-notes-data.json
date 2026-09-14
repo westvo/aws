@@ -119,6 +119,27 @@
           "content": "⚠️ Reserved Concurrency: GIỚI HẠN số execution environment TỐI ĐA cho 1 function (không phải giữ sẵn) — vẫn có cold start bình thường.\n⚠️ Provisioned Concurrency: GIỮ SẴN N execution environment LUÔN Ở TRẠNG THÁI ẤM (đã init), loại bỏ cold start cho N request đầu tiên đồng thời — 2 khái niệm khác nhau hoàn toàn dù tên gọi dễ nhầm, có thể DÙNG CHUNG (đặt Provisioned ≤ Reserved).",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "64e86128f03e",
+          "title": "QUICK: LAMBDA COLD START",
+          "content": "Cold Start => tạo execution environment mới => chạy init code & load dependency => chậm hơn khi có VPC/package lớn => giảm bằng Provisioned Concurrency",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "2f2905f6d91f",
+          "title": "QUICK: LAMBDA CONCURRENCY",
+          "content": "Reserved Concurrency => giới hạn cứng riêng cho 1 function => Provisioned Concurrency => pre-warm sẵn => tránh cold start => chia sẻ chung account concurrency limit",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "7851b58c8dfb",
+          "title": "QUICK: KHI NÀO DÙNG LAMBDA",
+          "content": "Unpredictable event-driven workload => traffic không đoán trước, chạy ngắn => Lambda có thể phù hợp => trả tiền theo lần gọi, không cần quản lý server",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -311,6 +332,20 @@
           "content": "✅ SQS tính phí theo SỐ LƯỢNG REQUEST (không theo số message nếu dùng batch — 1 batch request tối đa 10 message vẫn tính là 1 request), có FREE TIER 1 TRIỆU request/tháng miễn phí VĨNH VIỄN (không giới hạn 12 tháng như nhiều dịch vụ khác).\n⚠️ Dùng Batch API (SendMessageBatch/ReceiveMessage nhiều message/lần) là cách TỐI ƯU CHI PHÍ quan trọng nhất — gộp 10 message vào 1 batch chỉ tính phí bằng 1/10 so với gửi từng message riêng lẻ.",
           "createdAt": "2026-09-14T15:34:08.296152Z",
           "updatedAt": "2026-09-14T15:34:08.296152Z"
+        },
+        {
+          "id": "5e8b60ce2e41",
+          "title": "QUICK: DECOUPLE => SQS",
+          "content": "Decouple microservices => xử lý bất đồng bộ => buffer traffic spike => tách producer/consumer => SQS",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "605c7f86f9ce",
+          "title": "QUICK: SQS STANDARD vs FIFO",
+          "content": "Standard => throughput gần vô hạn => at-least-once => không đảm bảo thứ tự; FIFO => đảm bảo thứ tự => exactly-once => giới hạn throughput => hậu tố .fifo",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -419,6 +454,20 @@
           "content": "✅ Propagated Route: TỰ ĐỘNG học route từ Attachment (VPC CIDR, VPN BGP route) mà không cần khai báo thủ công.\n✅ Static Route: khai báo THỦ CÔNG (vd Blackhole route, hoặc route đặc biệt không tự propagate được) — kết hợp cả 2 loại trong 1 Route Table để vừa tự động vừa kiểm soát chi tiết khi cần.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "e581d04ead41",
+          "title": "QUICK: TRANSIT GATEWAY",
+          "content": "Hub-and-spoke => kết nối nhiều VPC/VPN/Direct Connect => 1 attachment/VPC => transitive routing => thay thế full-mesh VPC Peering",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "7d1b406d66ba",
+          "title": "QUICK: TGW ROUTE TABLE",
+          "content": "Route table riêng của TGW => kiểm soát traffic giữa các attachment => propagation tự động hoặc static route",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -604,6 +653,27 @@
           "content": "✅ CloudFront hỗ trợ Range GET Requests (client chỉ tải 1 PHẦN file, vd byte 1000-2000) — quan trọng cho việc TUA (seek) video/audio trực tiếp mà không cần tải lại toàn bộ file, hoặc để resume download bị gián đoạn; CloudFront cache RIÊNG từng phần đã yêu cầu, không bắt buộc phải cache nguyên file trước khi phục vụ range request đầu tiên.",
           "createdAt": "2026-09-14T08:24:40.878654Z",
           "updatedAt": "2026-09-14T08:24:40.878654Z"
+        },
+        {
+          "id": "f46c00d4ed96",
+          "title": "QUICK: CLOUDFRONT",
+          "content": "CDN => edge cache => HTTP/HTTPS => static/dynamic content => origin",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "ab2d4df3d0a9",
+          "title": "QUICK: STATIC CONTENT GLOBAL => CLOUDFRONT",
+          "content": "Static content + global users => độ trễ cao nếu phục vụ trực tiếp từ 1 Region => CloudFront cache tại edge location => giảm độ trễ, giảm tải origin",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "f6989d7a5a48",
+          "title": "QUICK: CLOUDFRONT OAC",
+          "content": "Origin Access Control => S3 origin private => chỉ CloudFront truy cập được => chặn truy cập trực tiếp qua S3 URL",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -852,6 +922,41 @@
           "content": "✅ Contributor Insights: tự động phân tích traffic pattern của bảng/GSI, xác định TOP-N Partition Key nào đang chiếm nhiều request nhất (most accessed/throttled keys) — công cụ trực tiếp giúp PHÁT HIỆN Hot Partition hoặc access pattern bất thường mà không cần tự phân tích log thủ công, hữu ích để CHẨN ĐOÁN nguyên nhân bị throttle.",
           "createdAt": "2026-09-14T14:53:08.244476Z",
           "updatedAt": "2026-09-14T14:53:08.244476Z"
+        },
+        {
+          "id": "eedc473ba89b",
+          "title": "QUICK: DYNAMODB KEY DESIGN",
+          "content": "Partition Key => hash => phân phối dữ liệu đều => Sort Key => composite key => truy vấn theo range trong 1 partition",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "6dbed93a2b6f",
+          "title": "QUICK: DYNAMODB CAPACITY MODE",
+          "content": "On-Demand => trả theo request => traffic không dự đoán được; Provisioned => đặt RCU/WCU trước => traffic ổn định, rẻ hơn khi kết hợp Auto Scaling",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "95b8ddd793e3",
+          "title": "QUICK: DAX",
+          "content": "In-memory cache => chỉ dành cho DynamoDB => giảm độ trễ đọc từ mili-giây xuống micro-giây => read-heavy workload",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "e3e0bc7a61d2",
+          "title": "QUICK: KEY-VALUE + SCALE LỚN + LOW LATENCY",
+          "content": "Key-value + scale lớn + low latency => không cần join/schema cố định => DynamoDB",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "2399787956af",
+          "title": "QUICK: DYNAMODB-SPECIFIC CACHE => DAX",
+          "content": "DynamoDB-specific cache => tương thích API sẵn có, không cần code cache-aside => DAX",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -1156,6 +1261,27 @@
           "content": "📌 Tình huống: Ứng dụng cần lưu trữ S3 nhưng dữ liệu PHẢI Ở TẠI DATA CENTER ON-PREMISES (yêu cầu độ trễ cực thấp hoặc data residency pháp lý không cho phép rời khỏi cơ sở vật lý cụ thể), không thể dùng S3 Region chuẩn.\n✅ Đáp án đúng: S3 on Outposts — cung cấp S3 API/storage NGAY TẠI thiết bị AWS Outposts đặt tại on-premises, dữ liệu KHÔNG rời khỏi Outposts trừ khi chủ động replicate, dùng API và công cụ giống hệt S3 chuẩn nhưng vận hành hoàn toàn tại chỗ.",
           "createdAt": "2026-09-14T09:14:25.863447Z",
           "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "4808f60ea2a4",
+          "title": "QUICK: S3 STORAGE CLASS",
+          "content": "Standard => Standard-IA/One Zone-IA => Glacier Instant/Flexible => Glacier Deep Archive => giảm chi phí lưu trữ, tăng thời gian & phí truy xuất",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "37d481bb9349",
+          "title": "QUICK: S3 VERSIONING",
+          "content": "Bật Versioning => giữ mọi phiên bản object => xóa = tạo delete marker => khôi phục được => bảo vệ chống ghi đè/xóa nhầm",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "4223430e7b37",
+          "title": "QUICK: S3 REPLICATION",
+          "content": "CRR/SRR => yêu cầu bật Versioning cả 2 bên => Cross-Region cho compliance/DR => Same-Region để gộp log => không tự replicate object cũ (cần Batch Replication)",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -1369,6 +1495,34 @@
           "content": "⚠️ Số lượng connection tối đa tới database KHÔNG phải cấu hình tùy ý — mặc định được tính TỰ ĐỘNG dựa trên DUNG LƯỢNG RAM của instance class (instance càng lớn, max_connections mặc định càng cao) qua Parameter Group.\n📌 Tình huống: Ứng dụng báo lỗi \"too many connections\" dù server chưa quá tải CPU.\n✅ Đáp án đúng: Kiểm tra & tăng instance class (tăng RAM → tăng max_connections mặc định), HOẶC điều chỉnh thủ công giá trị max_connections trong Parameter Group, HOẶC dùng RDS Proxy để pooling connection hiệu quả hơn thay vì mỗi client mở connection riêng trực tiếp tới DB.",
           "createdAt": "2026-09-14T08:52:44.314986Z",
           "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "17fbcd84ce7c",
+          "title": "QUICK: RDS MULTI-AZ",
+          "content": "HA => standby => automatic failover => không dùng để scale read",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "75975bc52d6e",
+          "title": "QUICK: RDS READ REPLICA",
+          "content": "Read scaling => asynchronous replication => có thể promote",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "e231a20d3993",
+          "title": "QUICK: READ-HEAVY DATABASE",
+          "content": "Read-heavy database => Read Replica / Cache => giảm tải instance chính, tăng khả năng đọc song song",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "0c3044cb5864",
+          "title": "QUICK: RELATIONAL + SQL + TRANSACTION",
+          "content": "Relational + SQL + transaction (ACID) => cần schema cố định, join giữa bảng => RDS / Aurora",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -1617,6 +1771,20 @@
           "content": "✅ Trong Geoproximity Routing (yêu cầu dùng qua Traffic Flow), tham số BIAS cho phép MỞ RỘNG (giá trị dương) hoặc THU HẸP (giá trị âm) phạm vi địa lý mà 1 endpoint phục vụ MÀ KHÔNG CẦN di chuyển hạ tầng vật lý thật — vd tăng bias cho Region A để nó \"kéo\" thêm traffic từ khu vực lân cận Region B đang quá tải, hữu ích khi cần cân bằng tải giữa các Region theo địa lý mà vẫn giữ nguyên vị trí server.",
           "createdAt": "2026-09-14T09:08:58.756655Z",
           "updatedAt": "2026-09-14T09:08:58.756655Z"
+        },
+        {
+          "id": "e102d234db1b",
+          "title": "QUICK: ROUTE 53 ROUTING POLICY",
+          "content": "Simple => Weighted => Latency => Failover => Geolocation => Geoproximity => Multi-Value => chọn theo mục tiêu điều phối traffic",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "ff9d3020cb6d",
+          "title": "QUICK: ALIAS RECORD",
+          "content": "Zone apex domain => CNAME không dùng được ở root => Alias Record => trỏ tài nguyên AWS => miễn phí query",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -1963,6 +2131,34 @@
           "content": "📌 Tình huống: Cần thiết kế kiến trúc tối ưu chi phí (cost-optimized) khi có nhiều EC2/service giao tiếp với nhau qua lại liên tục, khối lượng data transfer lớn.\n\n✅ Nguyên tắc chi phí data transfer cần nhớ (Domain 4 - Cost Optimization hay khai thác):\n   • Traffic giữa 2 instance CÙNG Availability Zone, dùng private IP: MIỄN PHÍ (nếu cùng subnet) hoặc rất rẻ.\n   • Traffic giữa 2 AZ KHÁC NHAU trong cùng Region: tính phí data transfer theo GB cho CẢ 2 CHIỀU (in & out).\n   • Traffic qua VPC Peering: tính phí data transfer giống như traffic khác AZ/khác Region tương ứng (peering trong cùng Region rẻ hơn peering khác Region).\n   • Traffic qua Transit Gateway: tính thêm phí xử lý theo GB đi qua Transit Gateway, CỘNG THÊM phí data transfer thông thường ➜ đắt hơn Peering trực tiếp nếu chỉ có 2 VPC, nhưng RẺ HƠN & DỄ QUẢN LÝ hơn khi có NHIỀU VPC cần kết nối chéo (tránh phải tạo peering full-mesh).\n\n⚠️ Đáp án sai thường gặp: chọn Transit Gateway khi chỉ có 2 VPC cần kết nối đơn giản ➜ VPC Peering rẻ hơn và đủ dùng; Transit Gateway chỉ thực sự tối ưu khi số lượng VPC cần kết nối chéo nhau từ 3 trở lên.",
           "createdAt": "2026-09-14T00:32:46.843027Z",
           "updatedAt": "2026-09-14T00:32:46.843027Z"
+        },
+        {
+          "id": "4612dcd13621",
+          "title": "QUICK: SG vs NACL",
+          "content": "Security Group => stateful => cấp instance/ENI => chỉ ALLOW; NACL => stateless => cấp subnet => ALLOW & DENY",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "193959e4efa5",
+          "title": "QUICK: PRIVATE EC2 CẦN OUTBOUND INTERNET",
+          "content": "Private EC2 cần outbound internet => không có public IP => NAT Gateway => cho phép ra ngoài, chặn inbound từ Internet",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "5e79b32a7675",
+          "title": "QUICK: PRIVATE ACCESS TỚI AWS SERVICE",
+          "content": "Private access tới AWS service => tránh đi qua Internet/NAT => VPC Endpoint (Gateway cho S3/DynamoDB, miễn phí) / Interface Endpoint-PrivateLink (các service khác, tính phí) tùy trường hợp",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "efc786c59718",
+          "title": "QUICK: VPC PEERING vs TRANSIT GATEWAY",
+          "content": "Peering => kết nối 1-1 => không transitive => phức tạp khi nhiều VPC; Transit Gateway => hub trung tâm => transitive => scale tốt hơn nhiều VPC",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -2085,6 +2281,20 @@
           "content": "✅ ALB Listener Rule hỗ trợ điều kiện match theo Query String (vd chỉ route request có ?version=beta sang Target Group riêng) — hữu ích cho A/B testing hoặc canary release dựa trên tham số URL thay vì chỉ path/host.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "aa5eeb72cea1",
+          "title": "QUICK: ALB vs NLB vs GWLB",
+          "content": "ALB => Layer 7 => routing theo path/host HTTP(S); NLB => Layer 4 => hiệu năng cực cao, static IP; GWLB => Layer 3 => chèn virtual appliance inline",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "3c01940ce4d7",
+          "title": "QUICK: ELB HEALTH CHECK",
+          "content": "Target unhealthy => tự động loại khỏi routing => target khỏe lại => tự động thêm lại, không cần can thiệp thủ công",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -2333,6 +2543,20 @@
           "content": "📌 Tình huống: Cần launch 1 instance dùng tính năng bảo mật boot hiện đại (vd UEFI Secure Boot để chống rootkit/bootkit tấn công vào quá trình khởi động OS), nhưng AMI/instance type phải tương thích.\n\n✅ Đáp án đúng: Chọn AMI có Boot Mode = UEFI (thay vì Legacy BIOS mặc định của AMI cũ), và instance type phải thuộc dòng hỗ trợ UEFI (đa số instance Nitro-based hiện đại). UEFI cho phép bật thêm UEFI Secure Boot — chỉ cho phép chạy bootloader/kernel/driver đã được ký số hợp lệ, chặn mã độc chèn vào quá trình boot.\n\n⚠️ Lưu ý: Boot Mode được xác định TỪ AMI (thuộc tính cố định khi tạo AMI), không thể đổi boot mode của 1 instance đang chạy — muốn đổi phải build lại AMI mới với boot mode mong muốn.",
           "createdAt": "2026-09-14T03:15:49.874330Z",
           "updatedAt": "2026-09-14T03:15:49.874330Z"
+        },
+        {
+          "id": "fd1015c72ed0",
+          "title": "QUICK: EC2 PURCHASE OPTIONS",
+          "content": "On-Demand => linh hoạt, đắt nhất; Reserved => cam kết 1-3 năm, rẻ hơn; Spot => rẻ nhất, có thể bị thu hồi; Savings Plans => cam kết mức chi tiêu, linh hoạt instance family",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "5706518ae8a9",
+          "title": "QUICK: EC2 PLACEMENT GROUP",
+          "content": "Cluster => hiệu năng mạng cao nhất, cùng AZ; Spread => tách biệt hardware, giảm rủi ro cùng lúc fail; Partition => nhóm lớn, cách ly theo partition",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -2441,6 +2665,20 @@
           "content": "✅ Task Definition có thể inject Environment Variable TRỰC TIẾP TỪ SSM Parameter Store hoặc Secrets Manager (qua trường \"secrets\" trong container definition) — giá trị được lấy TỰ ĐỘNG lúc container khởi động mà KHÔNG hiển thị plaintext trong Task Definition, an toàn hơn nhiều so với hardcode giá trị nhạy cảm trực tiếp.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "f913729a042a",
+          "title": "QUICK: ECS LAUNCH TYPE",
+          "content": "EC2 => tự quản lý server bên dưới, kiểm soát nhiều hơn; Fargate => serverless, không quản lý server, trả theo task",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "e3e7631a9203",
+          "title": "QUICK: ECS TASK DEFINITION",
+          "content": "Blueprint cho container => CPU/memory => network mode => IAM task role => container definition",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -2549,6 +2787,20 @@
           "content": "✅ EFS File System Policy: tương tự S3 Bucket Policy — kiểm soát AI (IAM principal, account khác) được MOUNT/đọc/ghi vào file system này, có thể bắt buộc mount phải qua IAM Authorization (thay vì chỉ dựa vào Security Group), tăng thêm 1 lớp kiểm soát truy cập độc lập.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "b1530f384eaa",
+          "title": "QUICK: EFS",
+          "content": "NFS => hệ điều hành Linux => multi-AZ => nhiều EC2 mount cùng lúc => scale dung lượng tự động",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "b6039b481fd4",
+          "title": "QUICK: EFS vs EBS",
+          "content": "EFS => shared, nhiều instance cùng đọc/ghi; EBS => gắn 1 instance (trừ Multi-Attach io1/io2), cần format theo OS",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -2657,6 +2909,13 @@
           "content": "⚠️ Với Cached Volume, khi ứng dụng đọc dữ liệu KHÔNG có trong cache local, gateway phải TẢI VỀ từ S3 qua Internet/Direct Connect trước khi trả kết quả — độ trễ lần đầu đọc dữ liệu \"lạnh\" có thể CAO HƠN đáng kể so với đọc từ ổ đĩa local thông thường, cần tính toán kích thước cache đủ lớn cho working set thường dùng.",
           "createdAt": "2026-09-14T06:58:02.361776Z",
           "updatedAt": "2026-09-14T06:58:02.361776Z"
+        },
+        {
+          "id": "12b9574bde1f",
+          "title": "QUICK: STORAGE GATEWAY TYPES",
+          "content": "File Gateway => NFS/SMB; Volume Gateway (Cached/Stored) => iSCSI block; Tape Gateway => virtual tape library backup",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -2772,6 +3031,13 @@
           "content": "✅ 1 Listener có thể định nghĩa DẢI PORT (port range) thay vì chỉ 1 port đơn lẻ — hữu ích cho ứng dụng dùng nhiều port động (vd game server cấp port ngẫu nhiên trong 1 dải cho từng phiên chơi), không cần tạo Listener riêng cho từng port.",
           "createdAt": "2026-09-14T06:59:29.002195Z",
           "updatedAt": "2026-09-14T06:59:29.002195Z"
+        },
+        {
+          "id": "1ff72b2a0aa2",
+          "title": "QUICK: GLOBAL ACCELERATOR vs CLOUDFRONT",
+          "content": "Global Accelerator => Anycast IP tĩnh, Layer 4, non-HTTP (TCP/UDP); CloudFront => cache nội dung, Layer 7, HTTP/HTTPS",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -2887,6 +3153,13 @@
           "content": "✅ Trước khi tạo Task, nên dùng nút \"Test Connection\" cho cả Source và Target Endpoint — DMS thử kết nối thực tế (network, credential, quyền) và báo lỗi CỤ THỂ ngay (vd Security Group chưa mở đúng port) thay vì để tới lúc chạy Task thật mới phát hiện lỗi kết nối.",
           "createdAt": "2026-09-14T06:59:29.002195Z",
           "updatedAt": "2026-09-14T06:59:29.002195Z"
+        },
+        {
+          "id": "0ad6364024c5",
+          "title": "QUICK: DMS",
+          "content": "Migrate database => nguồn sang đích => Schema Conversion Tool cho heterogeneous migration => Continuous Replication (CDC) cho đồng bộ liên tục",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3002,6 +3275,13 @@
           "content": "✅ AWS Managed Microsoft AD có thể đồng bộ (qua Azure AD Connect) với Azure AD để cung cấp Single Sign-On cho Microsoft 365 — cho phép user dùng CHUNG credential AD trên AWS để đăng nhập cả ứng dụng AWS lẫn Office 365, giảm số lượng identity phải quản lý riêng biệt.",
           "createdAt": "2026-09-14T06:59:29.002195Z",
           "updatedAt": "2026-09-14T06:59:29.002195Z"
+        },
+        {
+          "id": "92ec3913ecbb",
+          "title": "QUICK: DIRECTORY SERVICE OPTIONS",
+          "content": "Simple AD => nhỏ, cơ bản; AD Connector => proxy trỏ về AD on-premises; Managed Microsoft AD => full-feature, hỗ trợ trust relationship",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3110,6 +3390,20 @@
           "content": "✅ Cache Subnet Group: định nghĩa danh sách SUBNET (thường trải nhiều AZ) mà ElastiCache node được phép đặt vào — tương tự khái niệm DB Subnet Group của RDS, cần tạo TRƯỚC khi launch cluster để đảm bảo node được đặt đúng vị trí mạng mong muốn (thường là private subnet).",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "b135bab08123",
+          "title": "QUICK: REDIS vs MEMCACHED",
+          "content": "Redis => persistence, replication, Multi-AZ, pub/sub, data structure phong phú; Memcached => đơn giản, multi-thread, KHÔNG persistence/replication",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "7957845b9365",
+          "title": "QUICK: GENERAL DATABASE CACHING",
+          "content": "General database caching (không riêng DynamoDB) => cache-aside pattern, tự code logic cache => ElastiCache (Redis/Memcached)",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3225,6 +3519,13 @@
           "content": "📌 Tình huống: Cần thực hiện bảo trì thủ công trên 1 số instance trong ASG mà KHÔNG muốn ASG tự động can thiệp (thay thế instance do health check fail, hoặc scale in/out) trong lúc đang thao tác.\n✅ Đáp án đúng: Suspend cụ thể 1 hoặc nhiều Process (vd HealthCheck, ReplaceUnhealthy, AZRebalance, Launch, Terminate) — ASG tạm dừng ĐÚNG hành vi đó trong khi vẫn giữ nguyên các process khác hoạt động bình thường, sau khi xong thì Resume lại.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "1c4b99dac7d6",
+          "title": "QUICK: AUTO SCALING POLICY",
+          "content": "Target Tracking => giữ metric ở mức target (đơn giản nhất); Step Scaling => scale theo bậc dựa mức vượt ngưỡng; Scheduled => scale theo lịch cố định biết trước",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3340,6 +3641,20 @@
           "content": "✅ Trust Policy (assume role policy): định nghĩa AI được phép ASSUME role này (principal nào) — gắn TRÊN chính role đó.\n✅ Permission Policy: định nghĩa role đó được LÀM GÌ sau khi đã assume thành công — đây là 2 khái niệm KHÁC NHAU hoàn toàn dễ nhầm lẫn: Trust Policy trả lời \"ai vào được\", Permission Policy trả lời \"vào rồi làm được gì\".",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "4df59a4b5154",
+          "title": "QUICK: IAM POLICY EVALUATION",
+          "content": "Explicit Deny thắng tất cả => sau đó xét Explicit Allow => mặc định Deny nếu không có Allow nào => SCP giới hạn quyền tối đa của cả account",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "a49c02c8c3b3",
+          "title": "QUICK: IAM ROLE vs USER",
+          "content": "Role => credential tạm thời, assume được bởi service/user khác; User => credential lâu dài, gắn cố định 1 identity",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3455,6 +3770,13 @@
           "content": "📌 Tình huống: Vừa tạo 1 Grant để cấp quyền dùng key, nhưng GỌI NGAY LẬP TỨC action đó bị từ chối do KMS Grant có độ trễ eventual consistency (vài giây) lan truyền.\n✅ Đáp án đúng: Dùng Grant Token trả về TỪ chính lời gọi CreateGrant, đính kèm Grant Token đó vào lời gọi action tiếp theo ngay lập tức — cho phép SỬ DỤNG GRANT NGAY dù chưa kịp lan truyền đầy đủ trong hệ thống KMS.",
           "createdAt": "2026-09-14T06:59:29.002195Z",
           "updatedAt": "2026-09-14T06:59:29.002195Z"
+        },
+        {
+          "id": "04cb59e39653",
+          "title": "QUICK: KMS KEY TYPES",
+          "content": "AWS Owned Key => miễn phí, không kiểm soát/audit; AWS Managed Key => miễn phí, xem được, AWS tự xoay vòng; Customer Managed Key => trả phí, kiểm soát & audit đầy đủ, tự đặt rotation",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3577,6 +3899,20 @@
           "content": "✅ Ngoài Usage Plan riêng từng khách hàng, API Gateway có giới hạn THROTTLE mặc định ở cấp TÀI KHOẢN cho toàn Region (10,000 request/giây, burst 5,000) — đây là \"trần cứng\" bảo vệ hạ tầng chung, áp dụng CHO DÙ Usage Plan riêng có đặt cao hơn cũng không vượt qua được giới hạn account-level này.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "33cbef6a6451",
+          "title": "QUICK: API GATEWAY THROTTLING",
+          "content": "Rate limit + burst => bảo vệ backend khỏi quá tải => Usage Plan + API Key => giới hạn riêng theo từng client",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "e96818282669",
+          "title": "QUICK: API GATEWAY CACHING",
+          "content": "Cache response tại API Gateway => giảm số lần gọi backend => TTL tùy chỉnh => giảm độ trễ + chi phí",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3685,6 +4021,13 @@
           "content": "✅ 1 Agent chỉ chạy được 1 Task tại 1 thời điểm (các Task khác tự động XẾP HÀNG) — nếu cần chạy NHIỀU Task song song thực sự (vd đồng bộ nhiều NAS khác nhau cùng lúc), cần triển khai NHIỀU Agent riêng biệt thay vì dùng chung 1 Agent.",
           "createdAt": "2026-09-14T06:58:48.828864Z",
           "updatedAt": "2026-09-14T06:58:48.828864Z"
+        },
+        {
+          "id": "a06a3d1bab46",
+          "title": "QUICK: DATASYNC",
+          "content": "Agent cài on-premises => transfer nhanh (song song, nén, mã hóa in-transit) => tới S3/EFS/FSx => khác Storage Gateway (transfer 1 lần/định kỳ, không phải mount liên tục)",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3793,6 +4136,13 @@
           "content": "✅ Tất cả loại FSx hỗ trợ Automatic Daily Backup (retention tùy chỉnh) tích hợp AWS Backup, và có thể Copy Backup sang Region khác phục vụ Disaster Recovery — tương tự cơ chế snapshot của EBS/RDS nhưng áp dụng cho file system.",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "b83cc655ddf1",
+          "title": "QUICK: FSX VARIANTS",
+          "content": "FSx for Windows => SMB, tích hợp AD; FSx for Lustre => HPC, high performance compute; FSx for NetApp ONTAP/OpenZFS => tương thích filer on-premises",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -3901,6 +4251,13 @@
           "content": "✅ Có thể ARCHIVE 1 finding (khác Suppression Rule áp dụng theo điều kiện tự động) — archive thủ công TỪNG finding cụ thể đã xác nhận là false positive/đã xử lý, finding archived vẫn xem lại được nhưng không hiện trong danh sách active mặc định.",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "3b10f9017cd1",
+          "title": "QUICK: GUARDDUTY",
+          "content": "Threat detection => phân tích VPC Flow Logs/CloudTrail/DNS logs => machine learning => không cần cài agent",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4009,6 +4366,13 @@
           "content": "✅ Khi tạo Custom Data Identifier, có thể gán SEVERITY riêng (Low/Medium/High) cho từng loại dữ liệu phát hiện được — cho phép công ty tự ĐỊNH NGHĨA mức độ nghiêm trọng theo NGỮ CẢNH RIÊNG (vd mã khách hàng nội bộ có thể quan trọng hơn với công ty dù không phải PII chuẩn quốc tế).",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "cbd19bce97fe",
+          "title": "QUICK: MACIE",
+          "content": "Phát hiện dữ liệu nhạy cảm (PII) => trong S3 => machine learning + pattern matching => báo cáo phục vụ compliance",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4117,6 +4481,13 @@
           "content": "✅ Ngoài Managed Rule Group hiện đại, WAF vẫn hỗ trợ Rule Statement kiểu cũ chuyên biệt: XssMatchStatement (phát hiện script injection trong request), SqliMatchStatement (phát hiện SQL injection pattern) — có thể dùng riêng lẻ khi chỉ cần bảo vệ 1 loại tấn công cụ thể mà không muốn tốn WCU cho cả Managed Rule Group đầy đủ.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "6c3421a72dfb",
+          "title": "QUICK: WAF vs SHIELD",
+          "content": "WAF => Layer 7, rule-based (SQL injection, XSS, rate limit) => gắn CloudFront/ALB/API Gateway; Shield => bảo vệ DDoS Layer 3/4",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4232,6 +4603,13 @@
           "content": "⚠️ Khi deploy stack có TẠO IAM Resource (Role/Policy), CloudFormation YÊU CẦU xác nhận rõ ràng qua Capabilities flag (CAPABILITY_IAM hoặc CAPABILITY_NAMED_IAM nếu đặt tên tùy chỉnh) — cơ chế BẢO VỆ chống việc 1 template độc hại/nhầm lẫn tự động tạo ra IAM permission nguy hiểm mà người deploy không hay biết.",
           "createdAt": "2026-09-14T06:58:48.828864Z",
           "updatedAt": "2026-09-14T06:58:48.828864Z"
+        },
+        {
+          "id": "994ec3453970",
+          "title": "QUICK: CLOUDFORMATION",
+          "content": "Infrastructure as Code => template YAML/JSON => Stack => rollback tự động khi lỗi => StackSets triển khai multi-account/multi-region",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4347,6 +4725,13 @@
           "content": "⚠️ AWS Organizations giới hạn độ SÂU tối đa của cây OU (5 tầng tính từ root) và số lượng account tối đa mặc định (thường vài trăm, xin tăng được) — cần THIẾT KẾ cấu trúc OU hợp lý ngay từ đầu (theo môi trường: prod/dev, hoặc theo business unit) để tránh phải tái cấu trúc phức tạp sau này khi tổ chức phát triển lớn.",
           "createdAt": "2026-09-14T06:59:29.002195Z",
           "updatedAt": "2026-09-14T06:59:29.002195Z"
+        },
+        {
+          "id": "e4425f151242",
+          "title": "QUICK: ORGANIZATIONS SCP",
+          "content": "Service Control Policy => giới hạn quyền TỐI ĐA => không tự cấp quyền (vẫn cần IAM Policy) => áp dụng cho toàn OU/account",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4455,6 +4840,13 @@
           "content": "✅ Mỗi VPN Tunnel dùng 1 dải IP nội bộ /30 riêng cho giao tiếp BGP (mặc định AWS tự cấp trong dải 169.254.x.x) — có thể TỰ CHỈ ĐỊNH dải IP này nếu thiết bị Customer Gateway có yêu cầu đặc biệt hoặc cần tránh trùng với cấu hình mạng nội bộ hiện có.",
           "createdAt": "2026-09-14T06:58:02.361776Z",
           "updatedAt": "2026-09-14T06:58:02.361776Z"
+        },
+        {
+          "id": "1cb61a454e46",
+          "title": "QUICK: SITE-TO-SITE VPN",
+          "content": "IPSec => đi qua Internet công khai => 2 tunnel redundant => triển khai nhanh => độ ổn định thấp hơn Direct Connect",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4577,6 +4969,20 @@
           "content": "✅ Aurora MySQL hỗ trợ Binary Log (Binlog) — cho phép công cụ CDC bên ngoài (Debezium, DMS...) đọc thay đổi dữ liệu theo THỜI GIAN THỰC để đồng bộ sang hệ thống khác (Kafka, data lake) mà không ảnh hưởng hiệu năng truy vấn chính, tương tự khái niệm DynamoDB Streams nhưng cho relational database.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "0038c19f8129",
+          "title": "QUICK: AURORA STORAGE",
+          "content": "Tự động scale 10GB-128TB => 6 bản sao dữ liệu trên 3 AZ => tách biệt compute/storage => tự phục hồi lỗi",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "a42fe9f922de",
+          "title": "QUICK: AURORA SERVERLESS",
+          "content": "Tự động scale capacity theo traffic thực tế => trả tiền theo mức dùng => phù hợp traffic không dự đoán được/gián đoạn",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4685,6 +5091,13 @@
           "content": "✅ Standard Resolution: granularity tối thiểu 1 phút (mặc định cho hầu hết AWS service metric).\n✅ High Resolution: granularity xuống tới 1 GIÂY (custom metric tự push), dùng khi cần phản ứng CỰC NHANH với biến động (vd auto scaling phản ứng trong vài giây thay vì phải chờ đủ 1 phút mới có data point mới).",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "a29da56356b8",
+          "title": "QUICK: CLOUDWATCH ALARM",
+          "content": "Theo dõi metric => vượt ngưỡng cấu hình => trigger action (SNS/Auto Scaling) => 3 trạng thái: OK / ALARM / INSUFFICIENT_DATA",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4793,6 +5206,13 @@
           "content": "📌 Tình huống: Cần dùng SSM (Run Command, Session Manager, Patch Manager) để quản lý server ON-PREMISES/máy ảo ngoài AWS, không chỉ EC2.\n✅ Đáp án đúng: SSM Hybrid Activations — tạo Activation Code + Activation ID, cài SSM Agent lên server on-premises rồi đăng ký (register) bằng code đó, server sẽ xuất hiện trong SSM Console như 1 \"managed instance\" bình thường, quản lý CHUNG với EC2 qua cùng 1 bộ công cụ.",
           "createdAt": "2026-09-14T06:58:02.361776Z",
           "updatedAt": "2026-09-14T06:58:02.361776Z"
+        },
+        {
+          "id": "22d9ae64a04d",
+          "title": "QUICK: SSM SESSION MANAGER",
+          "content": "Truy cập EC2 => không cần SSH/bastion host => không cần mở port 22 => mọi hành động được audit qua CloudTrail",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -4901,6 +5321,13 @@
           "content": "✅ On-Demand Mode: TỰ ĐỘNG scale shard theo traffic, không cần tự resharding, tính phí theo lượng dữ liệu thực tế — phù hợp traffic khó dự đoán.\n✅ Provisioned Mode: TỰ chọn số shard cố định, RẺ HƠN nếu traffic ỔN ĐỊNH và dự đoán được, nhưng phải TỰ resharding khi cần scale — tương tự lựa chọn giữa DynamoDB On-Demand và Provisioned Capacity.",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "d1ed557784b9",
+          "title": "QUICK: DATA STREAMS vs FIREHOSE",
+          "content": "Data Streams => real-time, tự quản lý shard, custom consumer, retention tùy chỉnh; Firehose => fully managed, tự động load vào S3/Redshift/OpenSearch, gần real-time",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5009,6 +5436,13 @@
           "content": "📌 Tình huống: Snapshot đã mã hóa bằng CMK ở Region A, cần copy sang Region B nhưng CMK gốc KHÔNG TỒN TẠI ở Region B (KMS key là tài nguyên theo Region).\n✅ Đáp án đúng: Khi Copy Snapshot sang Region khác, PHẢI chỉ định 1 CMK KHÁC đã tồn tại SẴN ở Region đích để re-encrypt — không thể dùng lại CMK ID của Region nguồn vì KMS key không tồn tại xuyên Region (trừ Multi-Region Key).",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "d8b5eb0e15e7",
+          "title": "QUICK: EBS SNAPSHOT",
+          "content": "Point-in-time => lưu trên S3 => incremental (chỉ lưu phần thay đổi) => tạo volume mới từ snapshot => copy được cross-region",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5117,6 +5551,13 @@
           "content": "📌 Tình huống: Ứng dụng event-driven đa Region cần Event Bus KHÔNG BỊ GIÁN ĐOẠN nếu 1 Region gặp sự cố.\n✅ Đáp án đúng: EventBridge Global Endpoint — TỰ ĐỘNG failover việc gửi event sang Event Bus ở Region phụ nếu Region chính gặp sự cố (dựa trên Health Check), replicate event 2 chiều giữa 2 Region, ứng dụng chỉ gọi 1 endpoint duy nhất mà không cần tự xử lý logic failover.",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "d0e87543fe79",
+          "title": "QUICK: EVENTBRIDGE",
+          "content": "Event bus => định tuyến event theo rule => nhiều source (AWS service, SaaS partner, custom app) => decoupling kiến trúc serverless",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5225,6 +5666,13 @@
           "content": "✅ Với model RDF, Neptune lưu dữ liệu dạng TRIPLE (subject-predicate-object) và hỗ trợ đầy đủ chuẩn SPARQL 1.1 — dùng cho ontology phức tạp, knowledge graph theo chuẩn ngành (vd dữ liệu y sinh, dữ liệu chính phủ liên kết) cần tuân thủ chuẩn semantic web quốc tế.",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "a3cf2c4bcb33",
+          "title": "QUICK: NEPTUNE",
+          "content": "Graph database => quan hệ phức tạp giữa entity => Gremlin/SPARQL => social network, fraud detection, recommendation engine",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5340,6 +5788,13 @@
           "content": "✅ Budgets Reports: gửi email TỰ ĐỘNG ĐỊNH KỲ (hàng ngày/tuần/tháng) tổng hợp tình trạng NHIỀU Budget cùng lúc dưới dạng báo cáo dễ đọc — khác Budget Alert (chỉ gửi khi VƯỢT ngưỡng), Report gửi ĐỀU ĐẶN dù có vượt ngưỡng hay không, giúp theo dõi xu hướng chi tiêu định kỳ chủ động hơn.",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "c9afb9b7060f",
+          "title": "QUICK: COMPUTE OPTIMIZER",
+          "content": "Phân tích usage thực tế => đề xuất right-sizing => EC2/EBS/Lambda/ASG => dựa trên machine learning",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5455,6 +5910,13 @@
           "content": "✅ Với Dedicated Connection, bạn cần tự sắp xếp \"cross-connect\" (kéo cáp vật lý) tại đúng Direct Connect Location — có thể tự làm nếu công ty đã có thiết bị đặt tại đó, hoặc thuê qua Colocation Provider tại facility đó nếu chưa có presence vật lý sẵn.",
           "createdAt": "2026-09-14T06:59:29.002195Z",
           "updatedAt": "2026-09-14T06:59:29.002195Z"
+        },
+        {
+          "id": "970bd76da653",
+          "title": "QUICK: DIRECT CONNECT",
+          "content": "Kết nối vật lý riêng tới AWS => bandwidth ổn định, độ trễ thấp => không đi qua Internet công khai => nên có VPN backup cho HA",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5601,6 +6063,13 @@
           "content": "✅ Standard Topic: throughput GẦN NHƯ VÔ HẠN, không đảm bảo thứ tự.\n✅ FIFO Topic: giới hạn throughput (300 msg/s, hoặc cao hơn với batching), đảm bảo THỨ TỰ + EXACTLY-ONCE, chỉ subscribe được bởi SQS FIFO Queue — cân nhắc dùng FIFO Topic khi thứ tự xử lý sự kiện QUAN TRỌNG (vd trạng thái đơn hàng phải đúng tuần tự: tạo → thanh toán → giao hàng).",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "350b0117c283",
+          "title": "QUICK: FAN-OUT => SNS",
+          "content": "Fan-out => 1 topic => nhiều subscriber (SQS, Lambda, email, HTTP/S, SMS) => pub/sub => decoupling 1-nhiều",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5709,6 +6178,13 @@
           "content": "✅ Rotation Lambda cần được cấp quyền TRONG Resource Policy của chính secret đó (secretsmanager:GetSecretValue, PutSecretValue...) NGOÀI IAM Execution Role của Lambda — 2 lớp quyền này đều cần đúng thì rotation mới hoạt động, thiếu 1 trong 2 sẽ khiến Lambda rotation fail âm thầm.",
           "createdAt": "2026-09-14T06:57:32.533591Z",
           "updatedAt": "2026-09-14T06:57:32.533591Z"
+        },
+        {
+          "id": "00c59daf62a7",
+          "title": "QUICK: SECRETS MANAGER vs PARAMETER STORE",
+          "content": "Secrets Manager => auto rotation tích hợp, trả phí theo secret; Parameter Store (Standard) => miễn phí, không auto rotation built-in",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5817,6 +6293,13 @@
           "content": "✅ InputPath: chọn PHẦN NÀO của input sẽ được đưa vào state xử lý (lọc bớt field không cần).\n✅ ResultPath: quyết định KẾT QUẢ của state được GHI ĐÈ toàn bộ input hay CHÈN THÊM vào 1 field cụ thể trong input gốc (giữ nguyên phần còn lại) — kiểm soát chính xác cấu trúc dữ liệu truyền qua các bước, tránh mất dữ liệu cần dùng ở bước sau.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "e8a4100d159f",
+          "title": "QUICK: STEP FUNCTIONS",
+          "content": "Orchestration => state machine => điều phối Lambda/ECS/nhiều service => visual workflow => retry/catch built-in",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -5925,6 +6408,13 @@
           "content": "✅ Device Tracking: Cognito ghi nhớ THIẾT BỊ đã đăng nhập trước đó — có thể cấu hình BỎ QUA MFA cho thiết bị đã \"remember\" (giảm ma sát trải nghiệm) trong khi vẫn yêu cầu MFA đầy đủ cho thiết bị MỚI/LẠ, cân bằng giữa bảo mật và trải nghiệm người dùng.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "9c8d2aade277",
+          "title": "QUICK: USER POOL vs IDENTITY POOL",
+          "content": "User Pool => authentication, quản lý user directory; Identity Pool => authorization, cấp AWS credential tạm thời (kể cả cho guest)",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6040,6 +6530,13 @@
           "content": "✅ 1 Trail có thể cấu hình ghi log cho TẤT CẢ Region (Apply trail to all regions) — đây là khuyến nghị mặc định, đảm bảo hoạt động ở Region NÀO cũng được ghi lại kể cả Region ít dùng, tránh trường hợp kẻ tấn công cố tình hoạt động ở Region không bị giám sát nếu chỉ bật Trail cho 1 Region.",
           "createdAt": "2026-09-14T06:59:29.002195Z",
           "updatedAt": "2026-09-14T06:59:29.002195Z"
+        },
+        {
+          "id": "b2b6453f3772",
+          "title": "QUICK: CLOUDTRAIL",
+          "content": "Ghi log API call => ai làm gì, khi nào, từ đâu => Management Events + Data Events => phục vụ audit & compliance",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6148,6 +6645,13 @@
           "content": "✅ Delivery Channel: nơi Config gửi Configuration Snapshot & History (S3 bucket) VÀ tùy chọn thông báo qua SNS Topic mỗi khi có Configuration Item mới hoặc compliance state thay đổi — cho phép trigger xử lý real-time (Lambda) khi phát hiện thay đổi cấu hình quan trọng thay vì chỉ xem báo cáo định kỳ.",
           "createdAt": "2026-09-14T06:58:48.828864Z",
           "updatedAt": "2026-09-14T06:58:48.828864Z"
+        },
+        {
+          "id": "d1ab7c76a9e6",
+          "title": "QUICK: AWS CONFIG",
+          "content": "Theo dõi cấu hình resource theo thời gian => compliance rule tự động đánh giá => snapshot lịch sử => phát hiện configuration drift",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6256,6 +6760,13 @@
           "content": "📌 Tình huống: Trong CÙNG 1 Redshift cluster có NHIỀU DATABASE riêng biệt (vd theo team), cần JOIN dữ liệu GIỮA các database đó trong CÙNG 1 câu query.\n✅ Đáp án đúng: Cross-Database Query — truy vấn TRỰC TIẾP xuyên nhiều database trong CÙNG cluster mà không cần data sharing hay tạo external schema phức tạp, đơn giản hóa việc kết hợp dữ liệu từ nhiều database nội bộ.",
           "createdAt": "2026-09-14T06:56:14.322729Z",
           "updatedAt": "2026-09-14T06:56:14.322729Z"
+        },
+        {
+          "id": "91e9298a611f",
+          "title": "QUICK: REDSHIFT",
+          "content": "Data warehouse => columnar storage => OLAP, phân tích dữ liệu lớn => petabyte-scale => Redshift Spectrum query trực tiếp trên S3",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6364,6 +6875,13 @@
           "content": "✅ Glue Trigger khởi chạy Job theo nhiều cách: Schedule (cron), On-Demand (thủ công), EventBridge Event (khi 1 sự kiện AWS xảy ra), Conditional (chạy Job B SAU KHI Job A hoàn tất thành công) — cho phép xây dựng PIPELINE ETL nhiều bước phụ thuộc lẫn nhau mà không cần công cụ orchestration ngoài như Step Functions cho trường hợp đơn giản.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "5beeb1336f7f",
+          "title": "QUICK: ATHENA",
+          "content": "Serverless query => chạy trực tiếp trên S3 => SQL chuẩn => trả phí theo dữ liệu scan => cần Glue Data Catalog định nghĩa schema",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6479,6 +6997,13 @@
           "content": "⚠️ NLB (Network Load Balancer) hoạt động Layer 4, KHÔNG tự làm SSL Termination như ALB — muốn dùng chứng chỉ ACM với NLB, phải cấu hình TLS Listener (NLB hỗ trợ TLS termination từ 2018) hoặc để traffic pass-through TCP nguyên vẹn tới backend tự xử lý TLS bằng chứng chỉ riêng của nó.",
           "createdAt": "2026-09-14T06:58:48.828864Z",
           "updatedAt": "2026-09-14T06:58:48.828864Z"
+        },
+        {
+          "id": "c351b017aacb",
+          "title": "QUICK: ACM",
+          "content": "Miễn phí SSL/TLS certificate => tự động gia hạn (auto renew) => gắn ALB/CloudFront/API Gateway => KHÔNG export được private key",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6594,6 +7119,13 @@
           "content": "✅ Beanstalk có thể TỰ ĐỘNG stream log ứng dụng (không chỉ log deploy) TRỰC TIẾP ra CloudWatch Logs mà không cần cấu hình CloudWatch Agent thủ công — bật 1 tùy chọn đơn giản trong Software Configuration, giúp xem log tập trung ngay cả khi environment đã bị xóa (log vẫn giữ lại trong CloudWatch).",
           "createdAt": "2026-09-14T06:59:29.002195Z",
           "updatedAt": "2026-09-14T06:59:29.002195Z"
+        },
+        {
+          "id": "df8e19841ec0",
+          "title": "QUICK: ELASTIC BEANSTALK",
+          "content": "PaaS => tự động provision hạ tầng (EC2, ALB, ASG...) => vẫn truy cập được resource bên dưới => triển khai web app nhanh",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6702,6 +7234,13 @@
           "content": "⚠️ CVSS Score: điểm CHUẨN NGÀNH đánh giá mức độ NGHIÊM TRỌNG của lỗ hổng nói chung (không xét ngữ cảnh triển khai thực tế).\n⚠️ Inspector Score: điểm RIÊNG của Inspector, có TÍNH THÊM yếu tố NETWORK REACHABILITY thực tế (lỗ hổng có tiếp cận được từ Internet hay không) — 2 lỗ hổng cùng CVSS Score có thể có Inspector Score KHÁC NHAU tùy mức độ rủi ro thực tế trong môi trường cụ thể của bạn.",
           "createdAt": "2026-09-14T06:58:02.361776Z",
           "updatedAt": "2026-09-14T06:58:02.361776Z"
+        },
+        {
+          "id": "972fe6fa0eef",
+          "title": "QUICK: INSPECTOR",
+          "content": "Tự động quét lỗ hổng bảo mật => EC2/ECR image/Lambda => liên tục, không cần lên lịch thủ công => chấm điểm CVSS",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6810,6 +7349,13 @@
           "content": "✅ Shield Advanced Subscription cam kết tối thiểu 1 NĂM, tự động gia hạn (auto-renew) trừ khi hủy trước — cần lên kế hoạch ngân sách dài hạn khi quyết định bật Shield Advanced, khác các dịch vụ pay-as-you-go thông thường có thể tắt bất kỳ lúc nào không cam kết.",
           "createdAt": "2026-09-14T06:58:48.828864Z",
           "updatedAt": "2026-09-14T06:58:48.828864Z"
+        },
+        {
+          "id": "48ca33b27505",
+          "title": "QUICK: SHIELD STANDARD vs ADVANCED",
+          "content": "Standard => miễn phí, tự động, áp dụng mọi account; Advanced => trả phí, hỗ trợ DRT 24/7, có cost protection khi bị DDoS",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -6925,6 +7471,13 @@
           "content": "✅ AWS Backup tích hợp với AWS Control Tower — khi thiết lập landing zone đa account, có thể áp dụng Backup Policy CHUẨN ngay từ đầu cho account MỚI tạo qua Control Tower, đảm bảo MỌI account mới trong tổ chức đều có backup baseline ngay từ lúc khởi tạo.",
           "createdAt": "2026-09-14T06:58:48.828864Z",
           "updatedAt": "2026-09-14T06:58:48.828864Z"
+        },
+        {
+          "id": "49ae5416499a",
+          "title": "QUICK: AWS BACKUP",
+          "content": "Centralized backup => nhiều service (EBS, RDS, DynamoDB, EFS, FSx...) => Backup Plan chung => policy-based, hỗ trợ cross-region/cross-account",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -7033,6 +7586,13 @@
           "content": "✅ Mỗi Segment gồm các trường chuẩn: trace_id (ID chung xuyên suốt toàn bộ request), id (ID riêng của segment này), start_time/end_time, và error/fault/throttle flag — hiểu cấu trúc này giúp debug khi cần TỰ GỬI segment thủ công (custom instrumentation) cho phần code SDK X-Ray chưa hỗ trợ tự động.",
           "createdAt": "2026-09-14T06:58:02.361776Z",
           "updatedAt": "2026-09-14T06:58:02.361776Z"
+        },
+        {
+          "id": "35fcc587b257",
+          "title": "QUICK: X-RAY",
+          "content": "Distributed tracing => phân tích độ trễ end-to-end => service map trực quan => debug kiến trúc microservices",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -7141,6 +7701,20 @@
           "content": "✅ EKS Add-ons: AWS quản lý VÒNG ĐỜI của các thành phần cốt lõi cluster cần (VPC CNI, CoreDNS, kube-proxy, EBS/EFS CSI Driver) — tự động cập nhật version tương thích, giảm gánh nặng phải TỰ THEO DÕI & vá các thành phần hạ tầng Kubernetes quan trọng này thủ công.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "643c094156c7",
+          "title": "QUICK: EKS",
+          "content": "Managed Kubernetes => AWS quản lý control plane => worker node tự quản lý hoặc Fargate serverless",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "075ece7c215b",
+          "title": "QUICK: ECR",
+          "content": "Container registry => lưu trữ Docker image => tích hợp IAM cho quyền truy cập => hỗ trợ image scanning tự động",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -7249,6 +7823,13 @@
           "content": "✅ Audit Logging của DocumentDB PHẢI được bật qua Cluster Parameter Group (mặc định TẮT) rồi mới xuất được ra CloudWatch Logs — đây là bước cấu hình dễ bị quên, khác với 1 số dịch vụ khác có audit log bật sẵn mặc định.",
           "createdAt": "2026-09-14T06:55:39.679205Z",
           "updatedAt": "2026-09-14T06:55:39.679205Z"
+        },
+        {
+          "id": "39a513cd4108",
+          "title": "QUICK: DOCUMENTDB",
+          "content": "MongoDB-compatible => document database (JSON) => tách biệt compute/storage giống kiến trúc Aurora",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -7364,6 +7945,13 @@
           "content": "📌 Tình huống: Client chỉ muốn nhận Subscription cho MỘT PHẦN dữ liệu cụ thể (vd chỉ nhận thông báo đơn hàng của ĐÚNG customer đó), không muốn nhận TẤT CẢ event của Mutation.\n✅ Đáp án đúng: Enhanced Subscription Filtering — định nghĩa điều kiện lọc NGAY TRONG Subscription request (vd theo customerId), AppSync chỉ đẩy event khớp điều kiện đó tới ĐÚNG client đang subscribe, giảm traffic không cần thiết xuống client.",
           "createdAt": "2026-09-14T06:58:48.828864Z",
           "updatedAt": "2026-09-14T06:58:48.828864Z"
+        },
+        {
+          "id": "cfcb4ab590b3",
+          "title": "QUICK: APPSYNC",
+          "content": "Managed GraphQL => 1 query lấy dữ liệu từ nhiều nguồn => hỗ trợ real-time subscription => resolver kết nối DynamoDB/Lambda/RDS",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     },
@@ -7479,6 +8067,20 @@
           "content": "✅ Khi điều tra 1 entity trong Detective, có thể điều chỉnh SCOPE TIME (khoảng thời gian muốn xem) để zoom in/out hành vi trong quá khứ — hữu ích khi cần so sánh hành vi TRƯỚC và SAU 1 mốc thời gian nghi ngờ bị xâm nhập.",
           "createdAt": "2026-09-14T06:58:02.361776Z",
           "updatedAt": "2026-09-14T06:58:02.361776Z"
+        },
+        {
+          "id": "ecff10de2baa",
+          "title": "QUICK: SECURITY HUB",
+          "content": "Tổng hợp finding => từ GuardDuty/Inspector/Macie => 1 dashboard duy nhất => tự động check theo compliance standard",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "9ee0984c95fa",
+          "title": "QUICK: FIREWALL MANAGER",
+          "content": "Quản lý WAF/Security Group tập trung => áp dụng cho nhiều account => qua AWS Organizations => policy tự động enforce",
+          "createdAt": "2026-09-14T16:15:46.495515Z",
+          "updatedAt": "2026-09-14T16:15:46.495515Z"
         }
       ]
     }
