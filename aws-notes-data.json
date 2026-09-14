@@ -1134,6 +1134,76 @@
           "content": "⚠️ Simple Routing với nhiều giá trị IP: Route 53 trả về TẤT CẢ IP (client tự chọn), KHÔNG có health check, không loại bỏ IP lỗi.\n✅ Multi-Value Answer Routing: cũng trả nhiều IP (tối đa 8) nhưng CÓ gắn Health Check — tự động LOẠI BỎ record của endpoint unhealthy khỏi danh sách trả về, gần giống load balancing đơn giản ở tầng DNS.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "89520f5ffe2a",
+          "title": "ROUTE 53: CÁC LOẠI DNS RECORD PHỔ BIẾN",
+          "content": "✅ A: trỏ domain tới địa chỉ IPv4. AAAA: trỏ domain tới địa chỉ IPv6.\n✅ CNAME: trỏ 1 domain/subdomain tới 1 domain KHÁC (không dùng được ở zone apex).\n✅ MX (Mail Exchange): định tuyến EMAIL tới mail server, có priority (số càng nhỏ càng ưu tiên).\n✅ TXT: lưu văn bản tùy ý — dùng phổ biến để XÁC MINH QUYỀN SỞ HỮU domain (SPF chống giả mạo email, verify domain cho ACM/Google/Office365...).\n✅ CAA (Certificate Authority Authorization): CHỈ ĐỊNH CA nào được phép cấp chứng chỉ SSL/TLS cho domain — nếu không khớp CAA, CA phải TỪ CHỐI cấp chứng chỉ, giúp chống việc bên thứ 3 xin cấp chứng chỉ giả mạo cho domain của bạn.\n✅ SRV: định nghĩa vị trí (host + port) cho các dịch vụ cụ thể (vd SIP, XMPP). NAPTR: dùng cho các ứng dụng VoIP/ENUM phức tạp hơn.",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "bb4259a6c2b3",
+          "title": "ROUTE 53: CALCULATED HEALTH CHECK",
+          "content": "📌 Tình huống: Muốn 1 Health Check tổng hợp coi endpoint là healthy CHỈ KHI phần lớn (vd tối thiểu 2/3) trong NHIỀU thành phần con cùng khỏe mạnh, thay vì chỉ kiểm tra 1 endpoint đơn lẻ.\n✅ Đáp án đúng: Calculated Health Check — gộp NHIỀU Health Check con (child health checks) lại thành 1 Health Check cha, cấu hình ngưỡng số lượng child health check tối thiểu phải PASS để cha được coi là Healthy — hữu ích khi hệ thống có kiến trúc nhiều thành phần phụ thuộc lẫn nhau (vd cần cả web server VÀ database đều sống mới coi là healthy).",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "98fee7688393",
+          "title": "ROUTE 53 APPLICATION RECOVERY CONTROLLER (ARC)",
+          "content": "📌 Tình huống: Kiến trúc multi-region/multi-AZ phức tạp cần kiểm soát failover CHỦ ĐỘNG, NHANH & AN TOÀN hơn cơ chế Health Check + Failover Routing thông thường, tránh failover sai do split-brain hoặc thao tác nhầm.\n✅ Đáp án đúng: Route 53 Application Recovery Controller (ARC) gồm 3 thành phần: (1) Readiness Check — LIÊN TỤC kiểm tra hạ tầng ở Region/AZ dự phòng có ĐỦ CAPACITY & cấu hình đúng để sẵn sàng nhận traffic hay chưa; (2) Routing Control — công tắc BẬT/TẮT thủ công (hoặc qua API) để CHỦ ĐỘNG chuyển traffic giữa các Region, có Safety Rule ngăn tắt TẤT CẢ routing control cùng lúc (tránh mất toàn bộ traffic); (3) Zonal Autoshift/Zonal Shift — TỰ ĐỘNG (hoặc thủ công) dịch chuyển traffic RA KHỎI 1 AZ đang gặp sự cố trong VPC/ELB mà không cần chờ toàn bộ Region failover.",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "f529693073e5",
+          "title": "ROUTE 53 PROFILES: QUẢN LÝ CẤU HÌNH DNS CHO NHIỀU VPC QUY MÔ LỚN",
+          "content": "📌 Tình huống: Tổ chức có HÀNG TRĂM VPC (nhiều account, nhiều Region) cần áp dụng CÙNG 1 bộ cấu hình DNS (Private Hosted Zone, Resolver Rule, DNS Firewall) — làm thủ công từng association cho từng VPC rất tốn công và dễ lệch cấu hình.\n✅ Đáp án đúng: Route 53 Profiles — tạo 1 \"Profile\" chứa SẴN bộ cấu hình DNS chuẩn (Private Hosted Zone association, Resolver Rule, DNS Firewall rule group), sau đó ASSOCIATE Profile đó với NHIỀU VPC cùng lúc (kể cả qua nhiều account qua AWS RAM) — đảm bảo mọi VPC dùng đúng 1 cấu hình DNS thống nhất, dễ quản lý ở quy mô lớn.",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "ce039dfefe2d",
+          "title": "ROUTE 53: TTL & NEGATIVE CACHING (SOA RECORD)",
+          "content": "✅ TTL (Time to Live) trên mỗi record quyết định RESOLVER/CLIENT cache kết quả bao lâu trước khi hỏi lại Route 53 — TTL THẤP (vd 60s) giúp thay đổi lan truyền NHANH nhưng tăng số lượng query (chi phí cao hơn, tải cao hơn); TTL CAO giảm tải/chi phí nhưng thay đổi lan truyền CHẬM.\n✅ Negative Caching: khi truy vấn 1 record KHÔNG TỒN TẠI, thời gian cache kết quả \"không tìm thấy\" này được cấu hình qua trường MINIMUM trong SOA (Start of Authority) record của Hosted Zone — ảnh hưởng tới việc 1 record MỚI TẠO có thể mất thời gian mới được resolver nhận ra nếu trước đó đã bị cache là \"không tồn tại\".",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "ac2323647656",
+          "title": "DOMAIN REGISTRATION: WHOIS PRIVACY PROTECTION & TRANSFER LOCK",
+          "content": "✅ WHOIS Privacy Protection: MẶC ĐỊNH BẬT MIỄN PHÍ khi đăng ký domain qua Route 53 (với hầu hết TLD) — ẩn thông tin cá nhân (tên, email, địa chỉ) khỏi WHOIS công khai, thay bằng thông tin proxy, chống spam/thu thập dữ liệu.\n✅ Transfer Lock (Registrar Lock): MẶC ĐỊNH BẬT — ngăn domain bị CHUYỂN SANG NHÀ ĐĂNG KÝ KHÁC trái phép; muốn transfer domain đi nơi khác cần chủ động TẮT lock + lấy Authorization Code (EPP Code) trước.",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "ba1bf5c515c0",
+          "title": "ROUTE 53 RESOLVER: INBOUND & OUTBOUND ENDPOINT",
+          "content": "✅ Inbound Endpoint: cho phép DNS server ON-PREMISES gửi truy vấn VÀO VPC để Route 53 Resolver phân giải các Private Hosted Zone/record nội bộ AWS — dùng khi mạng on-premises cần resolve domain private trong AWS.\n✅ Outbound Endpoint: cho phép Route 53 Resolver trong VPC CHUYỂN TIẾP truy vấn RA NGOÀI tới DNS server on-premises (kết hợp với Resolver Rule) — dùng khi VPC cần resolve domain nội bộ công ty không nằm trong AWS.\n📌 Cả 2 endpoint đều cần Security Group kiểm soát traffic DNS (port 53) qua Direct Connect/VPN/VPC Peering giữa on-premises và VPC.",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "597006bf4fce",
+          "title": "ROUTE 53 RESOLVER DNS FIREWALL",
+          "content": "📌 Tình huống: Cần CHẶN các truy vấn DNS tới domain độc hại (malware, phishing, command-and-control) ngay từ tầng DNS resolver trong VPC, trước khi kết nối thực sự được thiết lập.\n✅ Đáp án đúng: Route 53 Resolver DNS Firewall — định nghĩa Rule Group chứa danh sách domain ALLOW/BLOCK (tự viết hoặc dùng AWS Managed Domain List cho malware/botnet đã biết), gắn Rule Group vào VPC — mọi truy vấn DNS từ VPC khớp domain trong blocklist sẽ bị CHẶN NGAY LẬP TỨC, ngăn traffic độc hại sớm hơn so với chỉ dựa vào Security Group/NACL (vốn không lọc được theo domain name).",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "f5217088fc56",
+          "title": "ROUTE 53: ALIAS RECORD - GIỚI HẠN & LƯU Ý",
+          "content": "⚠️ Alias Record KHÔNG cho phép đặt TTL tùy chỉnh (TTL được Route 53 tự quản lý theo target) — khác hoàn toàn với A/CNAME record thường nơi bạn tự đặt TTL.\n⚠️ Alias chỉ trỏ được tới các TÀI NGUYÊN AWS được hỗ trợ (CloudFront, ALB/NLB, API Gateway, S3 Website Endpoint, VPC Interface Endpoint, Global Accelerator, hoặc record khác TRONG CÙNG Hosted Zone) — KHÔNG dùng Alias để trỏ tới 1 IP tùy ý hoặc domain ngoài AWS, trường hợp đó vẫn phải dùng A/CNAME record thông thường.",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
+        },
+        {
+          "id": "f2ac26077c64",
+          "title": "ROUTE 53: SPLIT-VIEW DNS (CÙNG DOMAIN, KHÁC KẾT QUẢ TRONG/NGOÀI VPC)",
+          "content": "📌 Tình huống: Muốn CÙNG 1 domain (vd api.company.com) trả về IP KHÁC NHAU tùy client truy vấn từ BÊN TRONG VPC nội bộ (trỏ tới ALB internal) hay từ INTERNET công khai (trỏ tới ALB internet-facing).\n✅ Đáp án đúng: Split-View DNS (Split-Horizon DNS) — tạo 2 Hosted Zone CÙNG TÊN DOMAIN: 1 Public Hosted Zone (trả IP/endpoint public cho Internet) và 1 Private Hosted Zone gắn với VPC (trả IP/endpoint internal cho traffic nội bộ) — Route 53 tự động trả kết quả ĐÚNG NGỮ CẢNH tùy truy vấn đến từ đâu, không cần đổi tên domain giữa môi trường internal/external.",
+          "createdAt": "2026-09-14T09:04:10.758217Z",
+          "updatedAt": "2026-09-14T09:04:10.758217Z"
         }
       ]
     },
