@@ -112,6 +112,13 @@
           "content": "✅ Với nguồn dạng STREAM (SQS, Kinesis, DynamoDB Streams), Lambda dùng Event Source Mapping để tự động POLL và gọi function theo BATCH (nhiều record 1 lần gọi, giảm số lần invoke).\n✅ Parallelization Factor (Kinesis/DynamoDB Streams): tăng số lượng Lambda xử lý ĐỒNG THỜI trên CÙNG 1 shard (mặc định 1, tối đa 10) — dùng khi xử lý 1 record mất nhiều thời gian và muốn tăng thông lượng mà không cần tăng số shard.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "e29b8fe84b72",
+          "title": "LAMBDA: RESERVED CONCURRENCY vs PROVISIONED CONCURRENCY - PHÂN BIỆT RÕ",
+          "content": "⚠️ Reserved Concurrency: GIỚI HẠN số execution environment TỐI ĐA cho 1 function (không phải giữ sẵn) — vẫn có cold start bình thường.\n⚠️ Provisioned Concurrency: GIỮ SẴN N execution environment LUÔN Ở TRẠNG THÁI ẤM (đã init), loại bỏ cold start cho N request đầu tiên đồng thời — 2 khái niệm khác nhau hoàn toàn dù tên gọi dễ nhầm, có thể DÙNG CHUNG (đặt Provisioned ≤ Reserved).",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -227,6 +234,13 @@
           "content": "✅ Có thể gắn Tag lên Queue để phân bổ chi phí theo team/dự án trong Cost Explorer.\n✅ Cross-Account Access: dùng Queue Policy (resource-based policy) để cho phép account KHÁC gửi/nhận message vào queue của mình mà không cần chia sẻ credential, tương tự cơ chế resource policy của S3/SNS.",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "832a51d5a63e",
+          "title": "SQS: DLQ REDRIVE - DI CHUYỂN MESSAGE NGƯỢC LẠI QUEUE CHÍNH",
+          "content": "📌 Tình huống: Sau khi đã sửa lỗi khiến message bị đẩy vào DLQ trước đó, cần XỬ LÝ LẠI các message đó bằng cách đưa chúng VỀ LẠI queue chính.\n✅ Đáp án đúng: Dùng tính năng DLQ Redrive (có sẵn trong Console/API StartMessageMoveTask) — di chuyển HÀNG LOẠT message từ DLQ về lại Source Queue để consumer xử lý lại, không cần tự viết script đọc-ghi thủ công từng message.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -436,6 +450,13 @@
           "content": "📌 Tình huống: CloudFront Function cần TRA CỨU dữ liệu (vd ánh xạ URL redirect, feature flag) ngay tại Edge mà không thể gọi API bên ngoài (do giới hạn CloudFront Functions).\n✅ Đáp án đúng: CloudFront KeyValueStore — kho key-value GLOBAL, đọc được với độ trễ CỰC THẤP ngay trong CloudFront Function, cập nhật dữ liệu tập trung 1 nơi rồi tự động lan truyền ra mọi Edge Location.",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "7a83911c177e",
+          "title": "CLOUDFRONT: TRUSTED KEY GROUPS (THAY THẾ TRUSTED SIGNERS)",
+          "content": "✅ Trusted Key Groups: cách QUẢN LÝ HIỆN ĐẠI để cấu hình Signed URL/Cookie — tách biệt việc quản lý public key khỏi IAM (không cần dùng CloudFront Key Pair gắn với root account như Trusted Signers kiểu cũ), cho phép TỰ XOAY VÒNG key linh hoạt hơn mà không ảnh hưởng tới root account.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -551,6 +572,13 @@
           "content": "✅ Adaptive Capacity: TỰ ĐỘNG cân bằng lại throughput giữa các partition khi 1 vài partition bị truy cập nhiều hơn (hot partition) so với bảng có Provisioned Capacity — giúp giảm throttle mà KHÔNG cần tăng tổng capacity của cả bảng, hoạt động NGẦM & tự động, không cần bật thủ công (đã tích hợp mặc định).",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "f3d7ce9f487f",
+          "title": "DYNAMODB: CONSISTENT READ - STRONGLY vs EVENTUALLY",
+          "content": "✅ Eventually Consistent Read (mặc định, RẺ HƠN): có thể đọc dữ liệu CHƯA CẬP NHẬT KỊP (vài mili giây sau khi ghi) do dữ liệu đang đồng bộ giữa các bản sao.\n✅ Strongly Consistent Read (tốn GẤP ĐÔI RCU): LUÔN đọc được dữ liệu MỚI NHẤT đã ghi thành công — dùng khi ứng dụng cần đảm bảo đọc ngay sau ghi phải thấy dữ liệu mới (vd kiểm tra số dư ngay sau giao dịch), GSI KHÔNG hỗ trợ Strongly Consistent Read (chỉ Eventually Consistent).",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -816,6 +844,13 @@
           "content": "✅ Maintenance Window: khung giờ AWS được phép áp dụng patch (có thể gây restart ngắn) — nên đặt vào giờ traffic thấp.\n✅ Auto Minor Version Upgrade: tự động cập nhật lên MINOR VERSION mới của engine (bản vá bug/bảo mật) trong maintenance window — KHÔNG áp dụng cho MAJOR VERSION (phải chủ động nâng cấp thủ công/qua Blue/Green vì có thể breaking change).",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "7273574afe50",
+          "title": "RDS: OPTION GROUP - VÍ DỤ CỤ THỂ (ORACLE TDE, SQL SERVER TDE)",
+          "content": "✅ Ví dụ Option Group hay gặp: Oracle Transparent Data Encryption (TDE, mã hóa dữ liệu ở tầng engine độc lập với KMS encryption at rest), SQL Server Native Backup/Restore (cho phép backup/restore DB SQL Server trực tiếp qua S3), MariaDB Audit Plugin (ghi log truy vấn chi tiết) — mỗi engine có bộ Option riêng phù hợp tính năng đặc thù của nó.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -924,6 +959,13 @@
           "content": "✅ Route 53 Query Logging: ghi lại MỌI truy vấn DNS gửi tới Hosted Zone (ai hỏi domain gì, từ đâu) ra CloudWatch Logs — dùng để phân tích traffic pattern, phát hiện truy vấn bất thường (dấu hiệu domain bị lợi dụng cho DNS tunneling/C2 malware).",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "964bd24f1771",
+          "title": "ROUTE 53: MULTIVALUE ANSWER vs SIMPLE VỚI NHIỀU IP",
+          "content": "⚠️ Simple Routing với nhiều giá trị IP: Route 53 trả về TẤT CẢ IP (client tự chọn), KHÔNG có health check, không loại bỏ IP lỗi.\n✅ Multi-Value Answer Routing: cũng trả nhiều IP (tối đa 8) nhưng CÓ gắn Health Check — tự động LOẠI BỎ record của endpoint unhealthy khỏi danh sách trả về, gần giống load balancing đơn giản ở tầng DNS.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -1385,6 +1427,13 @@
           "content": "✅ ALB tự động thêm header X-Forwarded-For (IP client gốc, vì backend chỉ thấy IP của ALB), X-Forwarded-Proto (giao thức gốc HTTP/HTTPS trước khi tới ALB) — quan trọng khi backend cần biết IP THẬT của client (vd để logging/rate-limit) hoặc biết request gốc là HTTPS dù ALB đã terminate SSL rồi forward HTTP nội bộ.",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "9a803203ac45",
+          "title": "ELB: MULTI-VALUE HEADERS & ROUTING BASED ON QUERY STRING",
+          "content": "✅ ALB Listener Rule hỗ trợ điều kiện match theo Query String (vd chỉ route request có ?version=beta sang Target Group riêng) — hữu ích cho A/B testing hoặc canary release dựa trên tham số URL thay vì chỉ path/host.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -2448,6 +2497,13 @@
           "content": "📌 Tình huống: Traffic ứng dụng có pattern DỰ ĐOÁN CHẮC CHẮN theo lịch cố định (vd hệ thống nội bộ chỉ dùng giờ hành chính 8h-18h, cuối tuần không ai dùng).\n✅ Đáp án đúng: Scheduled Action — đặt LỊCH CỐ ĐỊNH để thay đổi Min/Max/Desired Capacity tại thời điểm biết trước (vd tăng capacity lúc 7h sáng, giảm về 0 lúc 19h) — đơn giản & chắc chắn hơn Predictive Scaling khi pattern đã biết rõ 100% thay vì cần dự đoán.",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "ce39c2c845ac",
+          "title": "AUTO SCALING: SUSPEND & RESUME PROCESSES",
+          "content": "📌 Tình huống: Cần thực hiện bảo trì thủ công trên 1 số instance trong ASG mà KHÔNG muốn ASG tự động can thiệp (thay thế instance do health check fail, hoặc scale in/out) trong lúc đang thao tác.\n✅ Đáp án đúng: Suspend cụ thể 1 hoặc nhiều Process (vd HealthCheck, ReplaceUnhealthy, AZRebalance, Launch, Terminate) — ASG tạm dừng ĐÚNG hành vi đó trong khi vẫn giữ nguyên các process khác hoạt động bình thường, sau khi xong thì Resume lại.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -2556,6 +2612,13 @@
           "content": "✅ Service-Linked Role: loại Role ĐẶC BIỆT được 1 AWS service TỰ TẠO SẴN (khi bạn bật tính năng đó lần đầu, vd Auto Scaling, ElastiCache), có Trust Policy & Permission cố định do AWS định nghĩa, KHÔNG chỉnh sửa được permission tùy ý (để tránh phá vỡ cách service đó vận hành) — chỉ có thể xóa khi không còn resource nào dùng.",
           "createdAt": "2026-09-14T06:26:11.067628Z",
           "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "fe02fba63d77",
+          "title": "IAM: TRUST POLICY vs PERMISSION POLICY CỦA ROLE",
+          "content": "✅ Trust Policy (assume role policy): định nghĩa AI được phép ASSUME role này (principal nào) — gắn TRÊN chính role đó.\n✅ Permission Policy: định nghĩa role đó được LÀM GÌ sau khi đã assume thành công — đây là 2 khái niệm KHÁC NHAU hoàn toàn dễ nhầm lẫn: Trust Policy trả lời \"ai vào được\", Permission Policy trả lời \"vào rồi làm được gì\".",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -2657,6 +2720,13 @@
           "content": "✅ Alias: tên THÂN THIỆN (vd alias/my-app-key) trỏ tới 1 CMK — cho phép ĐỔI key vật lý bên dưới (vd sau khi tạo key mới) mà KHÔNG cần sửa code ứng dụng (code chỉ tham chiếu alias, không hardcode Key ID), tương tự khái niệm DNS Alias record cho địa chỉ IP.",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "c78531d2440f",
+          "title": "KMS: CROSS-ACCOUNT KEY USAGE",
+          "content": "📌 Tình huống: Account A có dữ liệu mã hóa bằng CMK của account A, cần cho phép account B (đối tác) giải mã dữ liệu đó khi được chia sẻ.\n✅ Đáp án đúng: Sửa Key Policy của CMK ở account A để cho phép PRINCIPAL của account B (ARN cụ thể) dùng key — account B vẫn cần thêm IAM Policy phía họ cho phép gọi kms:Decrypt trên đúng key ARN đó, quyền cuối cùng vẫn là GIAO giữa Key Policy và IAM Policy của account B.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -2772,6 +2842,13 @@
           "content": "✅ WebSocket API dùng Route Selection Expression để quyết định route nào xử lý message dựa trên nội dung message gửi lên (không chỉ dựa vào \\$connect/\\$disconnect/\\$default cố định).\n✅ API Gateway lưu Connection ID cho mỗi client đang kết nối — backend (Lambda) dùng Connection ID này gọi API @connections để CHỦ ĐỘNG GỬI dữ liệu XUỐNG client bất kỳ lúc nào (server-push), không chỉ phản hồi request.",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "164d7554d480",
+          "title": "API GATEWAY: ACCOUNT-LEVEL THROTTLE LIMITS & BURST",
+          "content": "✅ Ngoài Usage Plan riêng từng khách hàng, API Gateway có giới hạn THROTTLE mặc định ở cấp TÀI KHOẢN cho toàn Region (10,000 request/giây, burst 5,000) — đây là \"trần cứng\" bảo vệ hạ tầng chung, áp dụng CHO DÙ Usage Plan riêng có đặt cao hơn cũng không vượt qua được giới hạn account-level này.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -3371,6 +3448,13 @@
           "content": "⚠️ Template có giới hạn kích thước khi upload trực tiếp (51,200 byte qua Console, 460,800 byte nếu qua S3 URL) — với template LỚN (nhiều resource phức tạp), cần upload template lên S3 trước rồi trỏ CloudFormation đọc từ đó, thay vì paste trực tiếp.",
           "createdAt": "2026-09-14T06:49:29.551737Z",
           "updatedAt": "2026-09-14T06:49:29.551737Z"
+        },
+        {
+          "id": "d046e58b85d4",
+          "title": "CLOUDFORMATION: ROLLBACK TRIGGERS & MONITORING TIME",
+          "content": "✅ Rollback Triggers: gắn CloudWatch Alarm vào 1 stack update — nếu Alarm chuyển ALARM state trong khoảng Monitoring Time SAU KHI update hoàn tất, CloudFormation TỰ ĐỘNG ROLLBACK toàn bộ stack về trạng thái trước đó, ngay cả khi resource được tạo/update THÀNH CÔNG về mặt kỹ thuật nhưng gây lỗi vận hành thực tế (vd tăng tỷ lệ lỗi ứng dụng).",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -3688,6 +3772,13 @@
           "content": "✅ Backtrack (chỉ Aurora MySQL) có giới hạn THỜI GIAN TỐI ĐA có thể tua ngược (target backtrack window, tối đa 72h) — càng đặt window dài, chi phí lưu trữ log thay đổi càng cao; Backtrack KHÔNG thay thế hoàn toàn cho backup/snapshot (không phục hồi được nếu vượt quá window hoặc gặp sự cố hạ tầng nghiêm trọng).",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "02ba83baf35e",
+          "title": "AURORA: BINLOG REPLICATION (KAFKA/CDC INTEGRATION)",
+          "content": "✅ Aurora MySQL hỗ trợ Binary Log (Binlog) — cho phép công cụ CDC bên ngoài (Debezium, DMS...) đọc thay đổi dữ liệu theo THỜI GIAN THỰC để đồng bộ sang hệ thống khác (Kafka, data lake) mà không ảnh hưởng hiệu năng truy vấn chính, tương tự khái niệm DynamoDB Streams nhưng cho relational database.",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
@@ -3789,6 +3880,13 @@
           "content": "✅ Metric Math: kết hợp NHIỀU metric có sẵn thành 1 metric MỚI bằng công thức toán học (vd tính tỷ lệ lỗi = SUM(Errors)/SUM(Invocations)*100 cho Lambda) — tạo alarm/dashboard trên chỉ số TÍNH TOÁN thay vì chỉ dựa vào metric thô có sẵn.",
           "createdAt": "2026-09-14T06:35:38.019984Z",
           "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "28d681726e8b",
+          "title": "CLOUDWATCH: METRIC RESOLUTION - STANDARD vs HIGH RESOLUTION",
+          "content": "✅ Standard Resolution: granularity tối thiểu 1 phút (mặc định cho hầu hết AWS service metric).\n✅ High Resolution: granularity xuống tới 1 GIÂY (custom metric tự push), dùng khi cần phản ứng CỰC NHANH với biến động (vd auto scaling phản ứng trong vài giây thay vì phải chờ đủ 1 phút mới có data point mới).",
+          "createdAt": "2026-09-14T06:54:50.429991Z",
+          "updatedAt": "2026-09-14T06:54:50.429991Z"
         }
       ]
     },
