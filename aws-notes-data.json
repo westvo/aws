@@ -1713,6 +1713,20 @@
           "content": "📌 Tình huống: Cần deploy version mới của ECS Service theo kiểu Blue/Green (tạo Target Group MỚI hoàn toàn, test xong mới chuyển traffic) thay vì Rolling Update mặc định.\n✅ Đáp án đúng: Tích hợp ECS với CodeDeploy (Deployment Controller = CODE_DEPLOY) — CodeDeploy tạo Task Set MỚI song song, dùng ALB Listener Rule để chuyển traffic dần/toàn bộ sang version mới, hỗ trợ rollback tự động nếu CloudWatch Alarm phát hiện lỗi sau khi chuyển.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "8d3c340bce36",
+          "title": "ECS: TASK NETWORKING MODES",
+          "content": "✅ awsvpc (khuyến nghị, bắt buộc với Fargate): mỗi Task có ENI RIÊNG với private IP riêng biệt — cô lập network tốt nhất, mỗi Task có Security Group riêng.\n✅ bridge/host (chỉ EC2 launch type): Task dùng chung network namespace của EC2 host — ít cô lập hơn, dùng cho workload cần hiệu năng network cao nhất hoặc tương thích ứng dụng cũ không hỗ trợ awsvpc.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "c3a65b4c5e28",
+          "title": "ECS: SPOT INTERRUPTION HANDLING",
+          "content": "📌 Tình huống: Task chạy trên Fargate Spot/EC2 Spot bị AWS thu hồi capacity, cần xử lý GRACEFUL (không mất dữ liệu/gián đoạn dịch vụ) trước khi bị terminate.\n✅ Đáp án đúng: ECS tự động nhận Spot Interruption Notice và gửi SIGTERM cho container TRƯỚC (thường 2 phút cảnh báo), cho phép ứng dụng tự dọn dẹp (graceful shutdown) trước khi bị kill hẳn — code ứng dụng nên LẮNG NGHE SIGTERM để hoàn tất request đang xử lý dở.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
         }
       ]
     },
@@ -1800,6 +1814,20 @@
           "content": "✅ EFS tích hợp SẴN với AWS Backup — bật Automatic Backup ngay khi tạo file system là có backup định kỳ ngay, không cần tự cấu hình Lifecycle/script riêng, hỗ trợ luôn cả restore selective (chỉ khôi phục 1 vài file/folder thay vì toàn bộ file system).",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "b11c2f62d76d",
+          "title": "EFS: MOUNT HELPER & EFS-UTILS",
+          "content": "✅ EFS Mount Helper (amazon-efs-utils): công cụ CLI khuyến nghị để mount EFS thay vì lệnh mount NFS thuần túy — tự động xử lý TLS encryption in-transit, retry logic khi mất kết nối tạm thời, và tích hợp IAM Authorization cho Access Point mà mount thủ công không hỗ trợ đầy đủ.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "2588a43f5eec",
+          "title": "EFS: REPLICATION FAILBACK",
+          "content": "📌 Tình huống: Sau khi failover DR sang file system REPLICA ở Region phụ, giờ Region chính đã khôi phục, cần CHUYỂN NGƯỢC LẠI (failback) mà giữ nguyên dữ liệu mới nhất đã ghi ở Region phụ trong lúc DR.\n✅ Đáp án đúng: Tạo lại Replication Configuration THEO CHIỀU NGƯỢC LẠI (từ Region phụ hiện đang active về Region chính đã phục hồi), đồng bộ dữ liệu mới nhất trước khi chính thức chuyển traffic ứng dụng về Region chính.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
         }
       ]
     },
@@ -2263,6 +2291,20 @@
           "content": "📌 Tình huống: Dataset Redis LỚN HƠN nhiều so với RAM có thể chi trả, nhưng phần lớn dữ liệu ÍT ĐƯỢC TRUY CẬP (cold data).\n✅ Đáp án đúng: Data Tiering (chỉ node type r6gd) — tự động đẩy dữ liệu ÍT DÙNG xuống ổ SSD local (rẻ hơn RAM nhiều), giữ dữ liệu HAY DÙNG trên RAM — cho phép mở rộng dataset tới 20x so với chỉ dùng RAM, giảm chi phí đáng kể so với phải chọn node RAM cực lớn.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "5d6097f57615",
+          "title": "ELASTICACHE: MEMCACHED SCALE OUT/IN",
+          "content": "✅ Memcached scale bằng cách THÊM/BỚT NODE trong cluster (horizontal), client tự phân phối key qua các node dùng thuật toán hash — KHÁC Redis Cluster Mode (cần resharding/rebalance slot khi thêm node), Memcached đơn giản hơn để scale ngang nhưng KHÔNG giữ được dữ liệu cũ khi thêm node mới (cache miss tăng tạm thời sau scale).",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "6c2e9822e609",
+          "title": "ELASTICACHE: PARAMETER GROUPS TÙY CHỈNH ENGINE BEHAVIOR",
+          "content": "✅ Parameter Group (Redis/Memcached) cho phép tùy chỉnh hành vi engine (vd maxmemory-policy cho eviction, timeout cho idle connection) — tương tự Parameter Group của RDS nhưng áp dụng riêng cho cache engine, cần tạo Parameter Group TÙY CHỈNH (custom) nếu muốn sửa giá trị mặc định.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
         }
       ]
     },
@@ -2869,6 +2911,20 @@
           "content": "✅ Scratch: hiệu năng CAO NHẤT, chi phí thấp, nhưng KHÔNG có replication (mất dữ liệu nếu node lỗi) — dùng cho workload TẠM THỜI, dữ liệu có thể tái tạo lại được (checkpoint training tạm, xử lý batch ngắn hạn).\n✅ Persistent: có replication trong AZ, độ bền cao hơn, phù hợp dữ liệu QUAN TRỌNG cần giữ lâu dài mà vẫn cần hiệu năng cao của Lustre.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "27cd536835b4",
+          "title": "FSx for WINDOWS: MULTI-AZ & SELF-MANAGED AD SUPPORT",
+          "content": "✅ FSx for Windows File Server hỗ trợ Multi-AZ (có standby tự động failover, giống RDS Multi-AZ) — có thể join vào AWS Managed Microsoft AD HOẶC Self-Managed AD (on-premises qua trust, hoặc Simple AD), linh hoạt tùy hạ tầng AD hiện có của công ty.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "1a0cc16f7960",
+          "title": "FSx: SHADOW COPIES (VSS) CHO WINDOWS FILE SERVER",
+          "content": "📌 Tình huống: User vô tình xóa/sửa nhầm file trên file share Windows, cần cho phép TỰ KHÔI PHỤC phiên bản cũ mà không cần liên hệ admin restore từ backup.\n✅ Đáp án đúng: FSx for Windows hỗ trợ Shadow Copies (VSS - Volume Shadow Copy Service) — chụp snapshot ĐỊNH KỲ ở cấp file, user tự vào tab \"Previous Versions\" trên Windows Explorer để khôi phục file/thư mục về phiên bản trước đó ngay, giống trải nghiệm quen thuộc với Windows Server on-premises.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
         }
       ]
     },
@@ -2956,6 +3012,20 @@
           "content": "✅ GuardDuty có 30 ngày dùng thử miễn phí khi bật lần đầu (đủ để ước tính chi phí thực tế dựa trên khối lượng log thực của account trước khi cam kết) — chi phí tính theo khối lượng VPC Flow Logs/CloudTrail/DNS log được PHÂN TÍCH (không phải theo số finding tạo ra), cần cân nhắc khi bật thêm Protection Plan mở rộng (S3/EKS/Malware...) vì mỗi cái tính phí riêng.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "7e4683ba83c9",
+          "title": "GUARDDUTY: TRUSTED IP LIST vs THREAT LIST - THỨ TỰ ƯU TIÊN",
+          "content": "⚠️ Nếu 1 địa chỉ IP vừa nằm trong Trusted IP List VỪA nằm trong Threat List (tự thêm hoặc từ threat intel), GuardDuty ƯU TIÊN Trusted IP List (không tạo finding) — cần cẩn thận khi quản lý danh sách để tránh vô tình \"whitelist\" nhầm 1 IP thực sự nguy hiểm.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "d06b8b40d8c8",
+          "title": "GUARDDUTY: INTEGRATION VỚI AWS SYSTEMS MANAGER CHO AUTO-REMEDIATION",
+          "content": "✅ Ngoài Lambda, có thể dùng SSM Automation Document làm hành động khắc phục tự động khi có GuardDuty finding (vd chạy Automation Document cách ly instance, chạy antivirus scan qua Run Command) — tận dụng thư viện Automation Document có sẵn của SSM thay vì tự viết Lambda từ đầu cho mọi kịch bản remediation.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
         }
       ]
     },
@@ -3924,6 +3994,20 @@
           "content": "📌 Tình huống: Có snapshot cũ hiếm khi cần restore nhưng vẫn phải giữ lại lâu dài (compliance), muốn giảm chi phí lưu trữ.\n✅ Đáp án đúng: EBS Snapshot Archive Tier — chuyển snapshot sang tier LƯU TRỮ RẺ HƠN tới 75% so với Standard, đổi lại thời gian RESTORE lâu hơn (24-72h) — tương tự khái niệm archive tier của S3 nhưng áp dụng cho EBS snapshot.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "1ae753a52a4a",
+          "title": "EBS: GP3 - IOPS/THROUGHPUT ĐỘC LẬP VỚI DUNG LƯỢNG (SO SÁNH CHI PHÍ CỤ THỂ)",
+          "content": "✅ gp3: dung lượng bất kỳ đi kèm 3,000 IOPS + 125MB/s throughput BASELINE MIỄN PHÍ — muốn IOPS/throughput cao hơn (tới 16,000 IOPS/1,000MB/s) thì TRẢ THÊM riêng, hoàn toàn tách biệt khỏi giá dung lượng — khác gp2 (IOPS tỷ lệ CỨNG theo dung lượng: 3 IOPS/GB, muốn nhiều IOPS phải mua nhiều dung lượng dù không cần).",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "d7f2b680a6d6",
+          "title": "EBS: DIRECT API ACCESS (EBS DIRECT APIS)",
+          "content": "📌 Tình huống: Cần ĐỌC dữ liệu snapshot EBS TRỰC TIẾP (từng block) để phân tích/backup tùy chỉnh mà KHÔNG cần tạo volume mới rồi mount vào EC2.\n✅ Đáp án đúng: EBS direct APIs (ListSnapshotBlocks, GetSnapshotBlock) — truy cập TRỰC TIẾP nội dung snapshot ở mức block qua API, dùng để xây công cụ backup/phân tích tùy chỉnh của bên thứ 3 mà không cần thao tác qua EC2 trung gian.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
         }
       ]
     },
@@ -4011,6 +4095,20 @@
           "content": "✅ Schema Discovery: tự động BẬT trên 1 Event Bus để EventBridge tự PHÂN TÍCH & LƯU LẠI cấu trúc (schema) của MỌI loại event thực tế đã đi qua — giúp developer tra cứu \"event này có field gì\" ngay trong console mà không cần hỏi team khác hay đọc code nguồn phát event.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "ae01a5af5003",
+          "title": "EVENTBRIDGE: DEAD LETTER QUEUE CHO RULE TARGET",
+          "content": "✅ Mỗi Target của 1 Rule có thể gắn riêng Dead Letter Queue (SQS) — nếu EventBridge gửi event tới Target đó THẤT BẠI nhiều lần (Lambda lỗi, service đích không phản hồi), event được lưu vào DLQ thay vì mất vĩnh viễn, cho phép retry thủ công/debug sau.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "ee3f79ae42fb",
+          "title": "EVENTBRIDGE: RETRY POLICY & MAXIMUM EVENT AGE",
+          "content": "✅ Retry Policy: cấu hình số lần thử lại tối đa (Maximum Retry Attempts) và thời gian tối đa 1 event còn HIỆU LỰC để retry (Maximum Event Age, tối đa 24h) — sau khi vượt quá 1 trong 2 điều kiện này, event bị coi là thất bại và chuyển vào DLQ (nếu có cấu hình).",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
         }
       ]
     },
@@ -4199,6 +4297,20 @@
           "content": "✅ Enhanced Infrastructure Metrics: mở rộng thời gian phân tích lịch sử LÊN TỚI 3 THÁNG (mặc định 14 ngày) để đưa ra khuyến nghị CHÍNH XÁC HƠN cho workload có tính chu kỳ dài (theo tháng/quý).\n✅ Inferred Workload Types: Compute Optimizer tự ĐOÁN loại workload đang chạy (database, web server, big data...) dựa trên process/pattern sử dụng, giúp khuyến nghị instance phù hợp hơn với ĐẶC THÙ workload thay vì chỉ dựa thuần túy vào chỉ số CPU/RAM.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "a467fc6c3899",
+          "title": "COST OPTIMIZATION HUB: PRIORITIZATION THEO EFFORT & IMPACT",
+          "content": "✅ Cost Optimization Hub sắp xếp khuyến nghị theo cả MỨC ĐỘ TIẾT KIỆM ($ ước tính) LẪN MỨC ĐỘ RỦI RO/CÔNG SỨC thực hiện (vd đổi instance type dễ hơn nhiều so với migrate sang kiến trúc khác) — giúp team ưu tiên xử lý \"quick win\" (tiết kiệm nhiều, công sức ít) trước.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "e92f09f3727c",
+          "title": "AWS PRICING CALCULATOR",
+          "content": "📌 Tình huống: Cần ƯỚC TÍNH chi phí TRƯỚC KHI triển khai 1 kiến trúc mới (chưa có usage thực tế để Cost Explorer/Compute Optimizer phân tích).\n✅ Đáp án đúng: AWS Pricing Calculator — công cụ ĐỘC LẬP (không cần đăng nhập account) để MÔ PHỎNG chi phí dự kiến của 1 kiến trúc theo cấu hình dự kiến (số EC2, loại RDS, dung lượng S3...) TRƯỚC khi thực sự deploy, dùng cho việc lập ngân sách/so sánh phương án kiến trúc khác nhau.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
         }
       ]
     },
@@ -4418,6 +4530,20 @@
           "content": "📌 Tình huống: S3 Event Notification hoặc CloudWatch Alarm cần PUBLISH message vào 1 SNS Topic để thông báo.\n✅ Đáp án đúng: Gắn Topic Policy (resource-based policy) cho phép service principal tương ứng (s3.amazonaws.com, cloudwatch.amazonaws.com) publish vào topic — đây là bước THƯỜNG BỊ QUÊN khiến notification không hoạt động dù đã cấu hình đúng phía S3/CloudWatch.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "bde9d8b300d4",
+          "title": "SNS: MOBILE PUSH - PLATFORM APPLICATION & ENDPOINT",
+          "content": "✅ Platform Application: đại diện cho 1 APP CỤ THỂ trên 1 nền tảng (vd app iOS kết nối APNs) — chứa credential (certificate/key) để SNS giao tiếp được với dịch vụ push của Apple/Google.\n✅ Platform Endpoint: đại diện cho 1 THIẾT BỊ CỤ THỂ đã cài app đó (device token) — publish message tới Endpoint để gửi push notification riêng cho đúng thiết bị đó.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
+        },
+        {
+          "id": "ef9e1094ce5e",
+          "title": "SNS: RAW MESSAGE DELIVERY",
+          "content": "📌 Tình huống: SQS Queue subscribe SNS Topic, nhưng ứng dụng consumer muốn nhận NGUYÊN VĂN message body gốc, không muốn phải tự parse thêm 1 lớp JSON envelope mà SNS mặc định bọc quanh message khi gửi vào SQS.\n✅ Đáp án đúng: Bật Raw Message Delivery cho Subscription — SNS gửi message TRỰC TIẾP (không bọc thêm metadata JSON của SNS) vào SQS, giúp consumer code đơn giản hơn, đặc biệt hữu ích khi hệ thống downstream đã có sẵn logic parse message theo format riêng không phải của SNS.",
+          "createdAt": "2026-09-14T06:51:05.511889Z",
+          "updatedAt": "2026-09-14T06:51:05.511889Z"
         }
       ]
     },
@@ -4693,6 +4819,20 @@
           "content": "📌 Tình huống: Đang có hệ thống user cũ (tự xây hoặc dùng nhà cung cấp khác), muốn chuyển dần sang Cognito mà KHÔNG bắt user phải đăng ký lại/đặt lại password ngay từ đầu.\n✅ Đáp án đúng: User Migration Lambda Trigger — khi user CHƯA CÓ trong Cognito cố đăng nhập lần đầu, Cognito gọi Lambda này để XÁC THỰC NGƯỢC với hệ thống cũ, nếu đúng thì TỰ ĐỘNG TẠO user đó trong Cognito ngay lúc đó — di trú user DẦN DẦN theo từng lượt đăng nhập thay vì phải migrate hàng loạt 1 lần.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "ca983f357a2e",
+          "title": "COGNITO: CUSTOM AUTH FLOW (CHALLENGE-BASED)",
+          "content": "📌 Tình huống: Cần xây dựng luồng xác thực HOÀN TOÀN TÙY CHỈNH (vd đăng nhập bằng OTP SMS tự viết logic, hoặc CAPTCHA riêng) thay vì dùng password chuẩn.\n✅ Đáp án đúng: Custom Authentication Flow — kết hợp 3 Lambda Trigger (DefineAuthChallenge, CreateAuthChallenge, VerifyAuthChallengeResponse) để tự định nghĩa TOÀN BỘ chuỗi \"thử thách\" xác thực theo ý muốn, Cognito chỉ đóng vai trò điều phối luồng và quản lý session/token.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "a924e8c30a51",
+          "title": "COGNITO: PRE TOKEN GENERATION - TÙY BIẾN CLAIM TRONG TOKEN",
+          "content": "✅ Pre Token Generation Trigger: cho phép CHÈN THÊM/SỬA claim tùy chỉnh vào JWT token TRƯỚC KHI Cognito phát hành (vd thêm role/permission lấy từ DB ngoài) — hữu ích khi cần đưa thông tin PHỨC TẠP HƠN group đơn giản vào token để backend/API Gateway dùng phân quyền chi tiết.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
         }
       ]
     },
@@ -5048,6 +5188,20 @@
           "content": "✅ CTAS: chạy 1 query rồi LƯU KẾT QUẢ thành 1 bảng MỚI (định dạng Parquet, có thể partition/bucket lại) — dùng để biến đổi dữ liệu thô (CSV) thành dạng tối ưu cho query sau này.\n✅ UNLOAD: tương tự CTAS nhưng chỉ ghi RA FILE trên S3 (không tạo bảng catalog mới) — dùng khi chỉ cần export kết quả, không cần track như 1 bảng riêng.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "87be2c2e4806",
+          "title": "GLUE: DEVELOPMENT ENDPOINTS & INTERACTIVE SESSIONS",
+          "content": "✅ Interactive Sessions: môi trường Spark TẠM THỜI (serverless) cho phép data engineer viết & test code ETL interactive (qua Jupyter Notebook) TRƯỚC khi đóng gói thành Glue Job chính thức — nhanh hơn nhiều so với chờ mỗi lần chạy full Glue Job để test logic.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "5125bc88ff21",
+          "title": "ATHENA: PARTITION PROJECTION",
+          "content": "📌 Tình huống: Bảng có RẤT NHIỀU partition (hàng triệu, vd theo giờ/ngày/năm), việc Glue Crawler quét & load hết metadata partition vào Catalog trở nên CHẬM và tốn kém.\n✅ Đáp án đúng: Partition Projection — khai báo QUY LUẬT tính partition (vd theo range ngày tháng) TRỰC TIẾP trong table property, Athena TỰ TÍNH partition cần quét dựa trên điều kiện WHERE mà KHÔNG cần tra cứu Glue Catalog cho từng partition, tăng tốc query đáng kể với bảng partition khổng lồ.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
         }
       ]
     },
@@ -5678,6 +5832,20 @@
           "content": "📌 Tình huống: Ứng dụng dùng nhiều image công khai từ Docker Hub/Quay.io, lo ngại rủi ro rate-limit hoặc image bị gỡ khỏi registry gốc.\n✅ Đáp án đúng: ECR Pull Through Cache — cấu hình ECR tự động CACHE LẠI image từ registry public NGAY LẦN ĐẦU pull, các lần sau lấy từ cache nội bộ ECR (nhanh hơn, không phụ thuộc registry ngoài), đồng thời tự động quét bảo mật cho cả image bên ngoài này.",
           "createdAt": "2026-09-14T06:37:52.690628Z",
           "updatedAt": "2026-09-14T06:37:52.690628Z"
+        },
+        {
+          "id": "7e73b0bd97a9",
+          "title": "EKS: CLUSTER ENDPOINT ACCESS - PUBLIC vs PRIVATE",
+          "content": "✅ Public Endpoint: kubectl truy cập Control Plane qua Internet (mặc định, có thể giới hạn theo CIDR whitelist).\n✅ Private Endpoint: Control Plane CHỈ truy cập được từ TRONG VPC (qua ENI riêng) — có thể bật CẢ 2 cùng lúc (Public+Private) để vừa quản trị từ ngoài vừa cho Worker Node giao tiếp Control Plane hoàn toàn nội bộ không qua Internet.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
+        },
+        {
+          "id": "0ffc9122353a",
+          "title": "ECR: LIFECYCLE POLICY RULE PRIORITY & TAG PREFIX MATCHING",
+          "content": "✅ Lifecycle Policy có thể áp dụng theo TAG PREFIX cụ thể (vd chỉ xóa image tag bắt đầu bằng \"dev-\" sau 7 ngày, giữ nguyên tag \"prod-\" vô thời hạn) — cho phép chính sách dọn dẹp KHÁC NHAU cho từng loại image (dev/staging/production) trong CÙNG 1 repository.",
+          "createdAt": "2026-09-14T06:50:22.526625Z",
+          "updatedAt": "2026-09-14T06:50:22.526625Z"
         }
       ]
     },
