@@ -928,6 +928,97 @@
           "content": "✅ Ví dụ Option Group hay gặp: Oracle Transparent Data Encryption (TDE, mã hóa dữ liệu ở tầng engine độc lập với KMS encryption at rest), SQL Server Native Backup/Restore (cho phép backup/restore DB SQL Server trực tiếp qua S3), MariaDB Audit Plugin (ghi log truy vấn chi tiết) — mỗi engine có bộ Option riêng phù hợp tính năng đặc thù của nó.",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "8031a5dcf409",
+          "title": "RDS: STORAGE TYPES - GP2/GP3 vs PROVISIONED IOPS (IO1/IO2)",
+          "content": "📌 Tình huống: Database cần chọn loại storage phù hợp — ứng dụng thông thường (web app, dev/test) vs ứng dụng OLTP cần IOPS cao & ổn định (banking, high-transaction).\n✅ Đáp án đúng: General Purpose SSD (gp3 khuyến nghị hơn gp2) — CHI PHÍ THẤP, IOPS baseline theo dung lượng (gp2) hoặc CẤU HÌNH ĐỘC LẬP IOPS/throughput (gp3, không cần tăng dung lượng để tăng IOPS) — phù hợp đa số workload. Provisioned IOPS (io1/io2) — cho phép ĐẶT IOPS CỐ ĐỊNH RẤT CAO (lên tới hàng chục nghìn), độ trễ thấp & ổn định, dùng cho database production tải nặng, chi phí cao hơn.\n⚠️ Không thể ĐỔI NGƯỢC từ io1/io2 xuống gp2/gp3 trực tiếp qua modify đơn giản trong mọi trường hợp — cần kiểm tra kỹ trước khi hạ cấp.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "7c48303ca6ed",
+          "title": "RDS: STORAGE AUTOSCALING",
+          "content": "✅ Storage Autoscaling: bật tùy chọn để RDS TỰ ĐỘNG tăng dung lượng storage khi gần đầy (dựa trên ngưỡng % free space và dự đoán tốc độ tăng), tránh downtime do hết dung lượng đĩa mà không cần theo dõi thủ công.\n⚠️ Cần đặt Maximum Storage Threshold để tránh tăng KHÔNG GIỚI HẠN gây phát sinh chi phí ngoài ý muốn; storage scale UP được nhưng KHÔNG scale down tự động.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "a233acaace2f",
+          "title": "RDS CUSTOM: TRUY CẬP HỆ ĐIỀU HÀNH & DATABASE ENGINE (ORACLE/SQL SERVER)",
+          "content": "📌 Tình huống: Ứng dụng legacy cần CÀI ĐẶT tùy chỉnh trên OS hoặc database engine (custom patch, thư viện đặc biệt) mà RDS chuẩn (managed hoàn toàn, không cho truy cập OS) không cho phép.\n✅ Đáp án đúng: RDS Custom (cho Oracle & SQL Server) — cho phép truy cập & tùy chỉnh CẢ underlying OS lẫn database engine (SSH/RDP vào instance), khác RDS thông thường hoàn toàn managed/đóng hộp — đánh đổi: một số tính năng tự động hóa managed bị TẮT (backup/patch tự động cần cấu hình lại), trách nhiệm vận hành gần với tự quản lý trên EC2 hơn.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "62b07f88e942",
+          "title": "RDS: MULTI-AZ DB CLUSTER (KHÁC MULTI-AZ INSTANCE)",
+          "content": "⚠️ Multi-AZ DB Instance (truyền thống): 1 Primary + 1 Standby KHÔNG ĐỌC ĐƯỢC (standby chỉ dùng cho failover), failover mất khoảng 60-120s.\n✅ Multi-AZ DB Cluster (mới hơn, MySQL/PostgreSQL/MariaDB): 1 Writer + 2 Readable Standby instance ở 2 AZ khác nhau — CÓ THỂ ĐỌC từ standby (giảm tải read), dùng storage-level replication nhanh hơn nên failover CHỈ MẤT DƯỚI 35 GIÂY (nhanh hơn đáng kể Multi-AZ Instance truyền thống), phù hợp ứng dụng cần RTO cực thấp mà chưa cần chuyển hẳn sang Aurora.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "5333d77d4891",
+          "title": "RDS: DB SUBNET GROUP - YÊU CẦU BẮT BUỘC",
+          "content": "✅ Mọi RDS instance (kể cả Single-AZ) đều PHẢI được đặt vào 1 DB Subnet Group — tập hợp CÁC SUBNET (tối thiểu 2, thuộc ÍT NHẤT 2 AZ khác nhau) trong VPC, dù đang chạy Single-AZ. Yêu cầu tối thiểu 2 AZ trong Subnet Group là để CHUẨN BỊ SẴN cho khả năng chuyển sang Multi-AZ sau này mà không cần thay đổi network layout.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "23d87b667804",
+          "title": "RDS: DELETION PROTECTION",
+          "content": "📌 Tình huống: Cần tránh việc DB Production bị XÓA NHẦM (do thao tác sai của người vận hành hoặc script tự động lỗi).\n✅ Đáp án đúng: Bật Deletion Protection trên DB Instance/Cluster — khi bật, lệnh XÓA sẽ bị TỪ CHỐI cho tới khi tắt tùy chọn này trước, thêm 1 lớp bảo vệ thủ công bắt buộc trước khi có thể xóa database quan trọng.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "62bc00db50ed",
+          "title": "RDS: RESTORE FROM SNAPSHOT TẠO INSTANCE MỚI",
+          "content": "⚠️ Restore từ Snapshot (hoặc Point-in-Time Recovery) LUÔN tạo ra 1 DB INSTANCE MỚI với ENDPOINT MỚI (khác hoàn toàn endpoint gốc) — KHÔNG ghi đè lên instance hiện tại. Sau khi restore xong, cần CẬP NHẬT connection string của ứng dụng trỏ sang endpoint mới, hoặc dùng kỹ thuật đổi tên/DNS (CNAME) để chuyển traffic mà không sửa code ứng dụng.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "439e1a630484",
+          "title": "RDS: SNAPSHOT SHARING & COPY CROSS-ACCOUNT/CROSS-REGION",
+          "content": "✅ Snapshot có thể CHIA SẺ trực tiếp với account AWS khác (share snapshot, không cần copy trước) hoặc COPY sang Region khác để backup đa vùng/disaster recovery.\n⚠️ Snapshot ĐÃ MÃ HÓA (encrypted bằng KMS Key) khi share cross-account, account nhận PHẢI được cấp quyền dùng đúng KMS Key đó; khi copy cross-region, snapshot được MÃ HÓA LẠI bằng KMS Key CỦA REGION ĐÍCH (KMS key không dùng chung được giữa các Region).\n📌 Muốn MÃ HÓA 1 snapshot vốn KHÔNG mã hóa: KHÔNG sửa trực tiếp được — phải COPY snapshot đó sang 1 snapshot MỚI và chỉ định KMS Key lúc copy, AWS sẽ tạo ra bản sao đã mã hóa.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "52972cb07813",
+          "title": "RDS: ENHANCED MONITORING vs PERFORMANCE INSIGHTS",
+          "content": "⚠️ Performance Insights: tập trung vào TẦNG DATABASE — phân tích Database Load (DB Load), xác định TRUY VẤN (query) nào đang gây nghẽn, chờ đợi (wait event) ở đâu.\n✅ Enhanced Monitoring: tập trung vào TẦNG HỆ ĐIỀU HÀNH (OS-level) — CPU, memory, file system, process list của instance bên dưới, thu thập metric với độ chi tiết tới 1 GIÂY (chi tiết hơn nhiều CloudWatch chuẩn chỉ 1 phút) — dùng ĐỒNG THỜI cả hai để có bức tranh đầy đủ: Enhanced Monitoring cho biết OS có vấn đề gì, Performance Insights cho biết QUERY nào là nguyên nhân.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "d45a41b69e68",
+          "title": "RDS: FAILOVER MULTI-AZ HOẠT ĐỘNG QUA DNS",
+          "content": "✅ Khi Primary gặp sự cố (AZ down, patching, thay đổi instance class...), RDS TỰ ĐỘNG failover sang Standby — cơ chế là CẬP NHẬT DNS CNAME của endpoint trỏ sang IP của Standby (giờ trở thành Primary mới), KHÔNG cần ứng dụng đổi connection string.\n⚠️ Ứng dụng vẫn có thể gặp GIÁN ĐOẠN NGẮN (60-120s với Multi-AZ Instance) do thời gian DNS propagate + database khởi động lại kết nối — cần code ứng dụng có RETRY LOGIC hợp lý để chịu được khoảng downtime failover này.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "e270a0261d57",
+          "title": "RDS: READ REPLICA - PROMOTE & CHAIN REPLICATION",
+          "content": "✅ Read Replica có thể PROMOTE thành DB instance ĐỘC LẬP (đứng riêng, ngừng nhận replication từ source) — dùng khi cần tách database ra (vd chia tách team/dự án) hoặc dùng làm disaster recovery failover thủ công khi Region/instance gốc gặp sự cố nghiêm trọng.\n✅ MySQL/MariaDB hỗ trợ REPLICA CỦA REPLICA (chain replication, tối đa vài cấp) — giảm tải cho Read Replica gốc khi cần rất nhiều read replica, nhưng độ trễ replication LAG sẽ CỘNG DỒN qua từng cấp.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "6f3f2fb6a88c",
+          "title": "RDS: LICENSE MODEL - BYOL vs LICENSE INCLUDED",
+          "content": "⚠️ Với Oracle & SQL Server, khi tạo RDS cần chọn License Model: License Included (AWS đã bao gồm phí license trong giá RDS, không cần lo compliance license) hoặc Bring Your Own License - BYOL (dùng license doanh nghiệp đã mua sẵn, RẺ HƠN nếu công ty đã có sẵn license dư thừa nhưng phải TỰ ĐẢM BẢO tuân thủ điều khoản license của Oracle/Microsoft).\n✅ MySQL, PostgreSQL, MariaDB là mã nguồn mở nên KHÔNG có khái niệm license model này.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
+        },
+        {
+          "id": "17cb8cdb730b",
+          "title": "RDS: GIỚI HẠN MAX_CONNECTIONS THEO INSTANCE CLASS",
+          "content": "⚠️ Số lượng connection tối đa tới database KHÔNG phải cấu hình tùy ý — mặc định được tính TỰ ĐỘNG dựa trên DUNG LƯỢNG RAM của instance class (instance càng lớn, max_connections mặc định càng cao) qua Parameter Group.\n📌 Tình huống: Ứng dụng báo lỗi \"too many connections\" dù server chưa quá tải CPU.\n✅ Đáp án đúng: Kiểm tra & tăng instance class (tăng RAM → tăng max_connections mặc định), HOẶC điều chỉnh thủ công giá trị max_connections trong Parameter Group, HOẶC dùng RDS Proxy để pooling connection hiệu quả hơn thay vì mỗi client mở connection riêng trực tiếp tới DB.",
+          "createdAt": "2026-09-14T08:52:44.314986Z",
+          "updatedAt": "2026-09-14T08:52:44.314986Z"
         }
       ]
     },
