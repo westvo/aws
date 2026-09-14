@@ -3045,6 +3045,13 @@
           "content": "✅ Step Functions có thể gọi TRỰC TIẾP hơn 200 AWS service (SQS, SNS, DynamoDB, ECS, Batch, SageMaker...) mà KHÔNG CẦN viết Lambda trung gian — dùng \".sync\" integration để CHỜ tác vụ bất đồng bộ hoàn tất (vd chạy Batch job xong mới sang state kế tiếp) thay vì phải tự polling.",
           "createdAt": "2026-09-14T03:39:06.369857Z",
           "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "bc923898b465",
+          "title": "STEP FUNCTIONS: CALLBACK PATTERN (WAIT FOR TASK TOKEN)",
+          "content": "📌 Tình huống: 1 bước trong workflow cần CHỜ con người phê duyệt thủ công (approval), hoặc chờ 1 hệ thống bên thứ 3 xử lý xong rồi mới callback lại, thời gian chờ có thể kéo dài không xác định.\n✅ Đáp án đúng: Callback Pattern (.waitForTaskToken) — Step Functions TẠM DỪNG execution tại bước đó, gửi kèm 1 Task Token cho hệ thống bên ngoài, chỉ tiếp tục chạy tiếp khi nhận được API call SendTaskSuccess/SendTaskFailure kèm đúng token đó — không tốn tài nguyên chờ đợi kiểu polling.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3152,6 +3159,13 @@
           "content": "✅ Config Aggregator: tổng hợp dữ liệu compliance từ NHIỀU account + NHIỀU Region vào 1 nơi duy nhất — dùng để có cái nhìn tổng quan tuân thủ toàn Organization mà không cần vào từng account/Region riêng lẻ.",
           "createdAt": "2026-09-14T03:42:37.586729Z",
           "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "c37cf53e2ec8",
+          "title": "AWS CONFIG: CONFORMANCE PACKS",
+          "content": "✅ Conformance Pack: gói SẴN nhiều Config Rule + Remediation Action liên quan tới 1 chuẩn compliance cụ thể (PCI-DSS, HIPAA, Operational Best Practices) — deploy 1 lần là có ngay bộ rule kiểm tra tuân thủ đầy đủ, thay vì tự tạo từng rule riêng lẻ.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3221,6 +3235,20 @@
           "content": "✅ Glue ETL: chạy job Spark SERVERLESS (Python/Scala) để trích xuất - biến đổi - nạp (Extract-Transform-Load) dữ liệu giữa các nguồn (S3, RDS, Redshift, DynamoDB...), không cần tự quản lý cluster Spark.\n✅ Glue Studio: giao diện KÉO-THẢ (visual) để xây ETL job mà không cần viết code Spark thủ công — phù hợp use case ETL đơn giản/trung bình.",
           "createdAt": "2026-09-14T03:42:37.586729Z",
           "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "18b750b1dd78",
+          "title": "ATHENA WORKGROUPS",
+          "content": "✅ Workgroup: tách biệt query & chi phí giữa các team/dự án khác nhau dùng chung Athena — mỗi Workgroup có thể giới hạn riêng số dữ liệu quét tối đa (data usage control), lưu query history riêng, và output result location riêng.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "8fa472c6858d",
+          "title": "GLUE JOB BOOKMARKS",
+          "content": "📌 Tình huống: Glue ETL job chạy ĐỊNH KỲ trên dữ liệu S3 liên tục có thêm file mới, cần đảm bảo mỗi lần chạy CHỈ xử lý dữ liệu MỚI (incremental), không xử lý lại dữ liệu đã xử lý trước đó.\n✅ Đáp án đúng: Bật Job Bookmark — Glue tự động ghi nhớ tiến trình đã xử lý tới đâu (file/timestamp), lần chạy sau chỉ xử lý phần dữ liệu MỚI phát sinh kể từ lần chạy trước.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3252,6 +3280,13 @@
           "content": "✅ ACM Private CA: tạo Certificate Authority RIÊNG của công ty để cấp chứng chỉ nội bộ (cho service mesh, mTLS giữa các microservice, thiết bị IoT) — khác ACM public certificate (chỉ dùng cho domain public), Private CA cho phép cấp chứng chỉ tùy ý không cần domain xác thực công khai.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "228e3fccbe96",
+          "title": "ACM: WILDCARD CERTIFICATE & SAN",
+          "content": "✅ Wildcard Certificate (*.example.com): 1 chứng chỉ dùng được cho MỌI subdomain cấp 1, tiện khi có nhiều subdomain (api., app., www.) mà không cần cấp riêng từng cái.\n✅ Subject Alternative Name (SAN): 1 chứng chỉ có thể gắn kèm NHIỀU domain KHÁC NHAU (không chỉ subdomain của 1 domain gốc) trong cùng 1 chứng chỉ.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3276,6 +3311,20 @@
           "content": "✅ All at once: deploy đồng loạt mọi instance CÙNG LÚC, nhanh nhất nhưng có DOWNTIME ngắn.\n✅ Rolling: deploy TỪNG BATCH instance một, còn lại vẫn phục vụ traffic — không downtime nhưng có lúc chạy CẢ 2 VERSION song song.\n✅ Rolling with additional batch: thêm batch instance MỚI trước khi rolling, giữ nguyên capacity phục vụ suốt quá trình — không giảm capacity như Rolling thường.\n✅ Immutable: tạo TOÀN BỘ Auto Scaling Group MỚI song song với group cũ, chỉ chuyển traffic sang khi group mới healthy hoàn toàn — an toàn nhất (rollback dễ) nhưng tốn chi phí & thời gian nhất.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "dd21606db82c",
+          "title": "ELASTIC BEANSTALK: ENVIRONMENT TIERS (WEB SERVER vs WORKER)",
+          "content": "✅ Web Server Tier: xử lý HTTP request trực tiếp (có ALB phía trước).\n✅ Worker Tier: xử lý tác vụ NỀN (background job) từ 1 SQS Queue mà Beanstalk tự tạo — ứng dụng chỉ cần lắng nghe HTTP POST nội bộ từ Beanstalk daemon mỗi khi có message mới trong queue, dùng cho xử lý bất đồng bộ (gửi email hàng loạt, resize ảnh) tách biệt khỏi web tier.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "350fe028904b",
+          "title": "ELASTIC BEANSTALK: .EBEXTENSIONS & CUSTOM CONFIGURATION",
+          "content": "✅ Thư mục .ebextensions/ trong source code cho phép TÙY BIẾN SÂU cấu hình hạ tầng bên dưới bằng file YAML/JSON (cài thêm package OS, chạy lệnh khi deploy, cấu hình thêm CloudWatch Alarm, sửa config Nginx/Apache) mà không cần rời khỏi mô hình PaaS đơn giản của Beanstalk.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3300,6 +3349,13 @@
           "content": "✅ Inspector v2 quét TỰ ĐỘNG & LIÊN TỤC (không cần lên lịch thủ công) — ngay khi EC2 instance/image ECR có thay đổi (cài thêm package, build image mới), hoặc khi có CVE MỚI công bố ảnh hưởng tới package đã cài sẵn, Inspector tự động phát hiện & tạo finding ngay mà không cần đợi lần quét định kỳ tiếp theo.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "57e52260d0da",
+          "title": "INSPECTOR: RISK SCORE & SUPPRESSION",
+          "content": "✅ Inspector chấm RISK SCORE cho từng finding dựa trên mức độ nghiêm trọng CVE + khả năng bị khai thác thực tế (network reachability — vd lỗ hổng ở port không mở ra ngoài sẽ có risk thấp hơn dù CVE nghiêm trọng) — giúp ưu tiên xử lý đúng finding NGUY HIỂM THỰC SỰ thay vì xử lý dàn trải theo CVSS score đơn thuần.\n✅ Suppression Rule: ẩn finding đã biết & chấp nhận rủi ro (đã có kế hoạch xử lý riêng hoặc false positive) khỏi danh sách hiển thị chính.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3324,6 +3380,13 @@
           "content": "📌 Tình huống: Ứng dụng đứng sau CloudFront/ALB bị tấn công DDoS ở TẦNG ỨNG DỤNG (Layer 7, vd HTTP flood giả lập request hợp lệ), khó phân biệt với traffic thật.\n✅ Đáp án đúng: Shield Advanced tích hợp với WAF — tự động PHÂN TÍCH pattern traffic bất thường và tự động TẠO/CẬP NHẬT WAF rule để chặn traffic tấn công theo thời gian thực, giảm thời gian phản ứng thủ công.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "277ec8f25571",
+          "title": "SHIELD ADVANCED: PROTECTED RESOURCE & COST PROTECTION",
+          "content": "✅ Cần đăng ký RÕ RÀNG từng resource (EIP, CloudFront, ALB, Route 53, Global Accelerator) vào Shield Advanced để được bảo vệ nâng cao — không tự động áp dụng cho MỌI resource như Shield Standard.\n✅ Cost Protection: nếu bị DDoS khiến Auto Scaling/CloudFront scale vọt lên gây phát sinh chi phí bất thường, AWS sẽ HOÀN LẠI phần chi phí phát sinh do chính cuộc tấn công đó gây ra (không phải miễn phí hoàn toàn, chỉ hoàn phần overage do attack).",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3348,6 +3411,20 @@
           "content": "✅ Backup Vault Lock: khóa chính sách retention của Backup Vault theo kiểu WORM (Write Once Read Many, giống S3 Object Lock Compliance mode) — KHÔNG AI (kể cả root) có thể xóa backup sớm hơn hạn hay tắt lock khi đã ở Compliance mode, đáp ứng yêu cầu compliance chống ransomware/xóa ác ý.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "41b0a2e408f4",
+          "title": "AWS BACKUP: CROSS-REGION & CROSS-ACCOUNT COPY",
+          "content": "📌 Tình huống: Cần backup không chỉ lưu trong CÙNG account/Region với resource gốc (rủi ro nếu account bị compromise hoặc Region gặp sự cố), mà phải có bản sao Ở NƠI KHÁC.\n✅ Đáp án đúng: Cấu hình Copy Rule trong Backup Plan — tự động copy bản backup sang Region khác (DR) và/hoặc account khác (an toàn hơn nếu account gốc bị xâm nhập/ransomware), có thể đặt retention riêng cho bản copy.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "35f3331a1b98",
+          "title": "AWS BACKUP AUDIT MANAGER",
+          "content": "✅ Backup Audit Manager: tự động kiểm tra xem các resource có TUÂN THỦ backup policy đã đề ra hay không (vd RDS nào chưa được backup, tần suất backup có đúng SLA không), sinh báo cáo compliance phục vụ audit mà không cần tự viết script kiểm tra thủ công.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3372,6 +3449,13 @@
           "content": "✅ Vì trace TOÀN BỘ request sẽ tốn kém & không cần thiết ở hệ thống traffic lớn, X-Ray dùng Sampling Rule để chỉ trace 1 TỶ LỆ request nhất định (vd 5% + luôn trace ít nhất 1 request/giây) — vẫn đủ đại diện để phát hiện vấn đề mà không tốn chi phí trace 100%.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "2da88b839a9d",
+          "title": "X-RAY: ANNOTATIONS vs METADATA",
+          "content": "✅ Annotations: key-value ĐƠN GIẢN, có thể dùng để FILTER/TÌM KIẾM trace (vd tìm mọi trace có annotation customerType=premium) — index được.\n✅ Metadata: dữ liệu PHONG PHÚ hơn (object lồng nhau) nhưng KHÔNG index/filter được, chỉ dùng để xem chi tiết bổ sung khi đã tìm ra đúng trace.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3434,6 +3518,13 @@
           "content": "✅ DynamoDB: key-value/document serverless, scale VÔ HẠN, phù hợp ứng dụng MỚI xây trên AWS cần hiệu năng cực cao & đơn giản vận hành.\n✅ DocumentDB: phù hợp khi ĐÃ CÓ ứng dụng dùng MongoDB (migrate mà giữ nguyên code/query phức tạp như aggregation pipeline) — DynamoDB không hỗ trợ query linh hoạt kiểu MongoDB aggregation.",
           "createdAt": "2026-09-14T03:46:04.020850Z",
           "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "8b5e0460c6a2",
+          "title": "DOCUMENTDB ELASTIC CLUSTERS",
+          "content": "✅ DocumentDB Elastic Clusters: tự động SHARDING dữ liệu ngang qua nhiều instance để scale write throughput vượt giới hạn 1 node (khác cụm DocumentDB thường chỉ scale READ qua Replica) — dùng cho workload MongoDB cực lớn cần ghi song song nhiều shard.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3451,6 +3542,27 @@
           "content": "✅ AppSync: managed GraphQL API, cho phép client (web/mobile) gọi 1 endpoint DUY NHẤT để lấy CHÍNH XÁC dữ liệu cần (tránh over-fetching/under-fetching như REST), tự động kết nối nhiều Data Source phía sau (DynamoDB, Lambda, RDS, HTTP endpoint khác) qua Resolver.\n✅ Real-time Subscriptions: hỗ trợ SẴN cơ chế real-time (qua WebSocket) để client tự động nhận cập nhật khi dữ liệu thay đổi, không cần tự polling hay tự dựng WebSocket server riêng.\n✅ Offline Sync: SDK client hỗ trợ cache dữ liệu local + tự đồng bộ lại khi có mạng trở lại — phù hợp ứng dụng mobile cần hoạt động offline.",
           "createdAt": "2026-09-14T03:46:04.020850Z",
           "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "a9c224306625",
+          "title": "APPSYNC RESOLVERS: VTL vs JS (APPSYNC JS)",
+          "content": "✅ Resolver là cầu nối giữa 1 field GraphQL và Data Source thực tế — viết bằng VTL (Velocity Template Language, kiểu cũ) hoặc APPSYNC JS (JavaScript, khuyến nghị mới, dễ đọc/debug hơn).\n✅ Pipeline Resolver: gộp NHIỀU bước (function) tuần tự trong 1 resolver — vd bước 1 kiểm tra quyền, bước 2 query DynamoDB, bước 3 format kết quả, thay vì phải làm hết trong 1 Lambda.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "670bbeecf6bb",
+          "title": "APPSYNC AUTHORIZATION MODES",
+          "content": "✅ AppSync hỗ trợ nhiều cơ chế xác thực CÙNG LÚC cho các field khác nhau: API Key (đơn giản, dùng cho demo/public read), IAM (SigV4, dùng cho service-to-service hoặc Identity Pool), Cognito User Pool (JWT của end-user), OIDC (nhà cung cấp identity ngoài) — cho phép field public dùng API Key trong khi field nhạy cảm bắt buộc Cognito.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "9b3151be07de",
+          "title": "APPSYNC CACHING",
+          "content": "✅ Bật Server-Side Cache ở cấp resolver hoặc toàn API — giảm số lần gọi xuống Data Source (DynamoDB/Lambda) cho các query GIỐNG NHAU trong khoảng TTL, tương tự API Gateway Caching nhưng áp dụng theo từng field GraphQL riêng lẻ.",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     },
@@ -3482,6 +3594,13 @@
           "content": "📌 Tình huống: Tổ chức có hàng trăm account, cần đảm bảo TẤT CẢ VPC/CloudFront đều áp dụng CÙNG 1 bộ rule WAF, Security Group, và Shield Advanced chuẩn, không để account nào \"quên\" cấu hình.\n✅ Đáp án đúng: AWS Firewall Manager — quản lý & áp dụng TẬP TRUNG chính sách bảo mật (WAF rule, Security Group, Shield Advanced, Network Firewall) xuyên suốt TOÀN BỘ account trong Organization từ 1 nơi, tự động phát hiện & sửa account nào chưa tuân thủ chính sách.",
           "createdAt": "2026-09-14T03:46:04.020850Z",
           "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "36767fc4832f",
+          "title": "SECURITY HUB: AUTOMATED RESPONSE & REMEDIATION (ASR)",
+          "content": "✅ Security Hub có thể tự động TRIGGER hành động khắc phục (qua EventBridge → Lambda/SSM Automation) NGAY KHI có finding mới match điều kiện — chuyển từ mô hình \"phát hiện rồi báo người xử lý\" sang \"tự động khắc phục ngay\" cho các lỗi cấu hình phổ biến (vd tự động chặn public access khi phát hiện S3 bucket public ngoài ý muốn).",
+          "createdAt": "2026-09-14T03:50:00.052608Z",
+          "updatedAt": "2026-09-14T03:50:00.052608Z"
         }
       ]
     }
