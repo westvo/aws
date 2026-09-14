@@ -695,6 +695,13 @@
           "content": "Điểm phân biệt: CDN/cache vs network acceleration.\n✅ CloudFront => CACHE nội dung tại Edge Location, hoạt động Layer 7 (HTTP/HTTPS), phù hợp static/dynamic WEB content.\n✅ Global Accelerator => Anycast IP TĨNH, tối ưu ĐƯỜNG ĐI MẠNG ở Layer 4 (TCP/UDP), KHÔNG cache nội dung, phù hợp ứng dụng non-HTTP hoặc cần IP cố định để allowlist.",
           "createdAt": "2026-09-14T16:18:04.325835Z",
           "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "4635087fbc0b",
+          "title": "SO SÁNH: SIGNED URL vs SIGNED COOKIE",
+          "content": "Điểm phân biệt: 1 file vs nhiều file.\n✅ Signed URL => cấp quyền truy cập TẠM THỜI cho ĐÚNG 1 OBJECT cụ thể, dùng khi cần chia sẻ link riêng lẻ hoặc client không hỗ trợ cookie.\n✅ Signed Cookie => cấp quyền truy cập cho NHIỀU OBJECT cùng lúc (vd toàn bộ thư mục video) mà KHÔNG cần đổi URL gốc — phù hợp khi user cần truy cập nhiều file liên tục sau khi đăng nhập.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -1303,6 +1310,13 @@
           "content": "CRR/SRR => yêu cầu bật Versioning cả 2 bên => Cross-Region cho compliance/DR => Same-Region để gộp log => không tự replicate object cũ (cần Batch Replication)",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "78c7b410ac9e",
+          "title": "SO SÁNH: S3 STANDARD-IA vs ONE ZONE-IA",
+          "content": "Điểm phân biệt: Multi-AZ durability vs single-AZ giá rẻ hơn.\n✅ Standard-IA => lưu trên ≥3 AZ, độ bền 11 số 9 giống Standard, chịu được mất nguyên 1 AZ.\n✅ One Zone-IA => CHỈ lưu ở 1 AZ DUY NHẤT, RẺ HƠN ~20% nhưng MẤT DỮ LIỆU nếu AZ đó gặp sự cố nghiêm trọng — chỉ dùng cho dữ liệu có thể tái tạo lại được (bản sao thứ 2, không phải bản gốc duy nhất).",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -2620,6 +2634,20 @@
           "content": "Cluster => hiệu năng mạng cao nhất, cùng AZ; Spread => tách biệt hardware, giảm rủi ro cùng lúc fail; Partition => nhóm lớn, cách ly theo partition",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "b250615c2ffd",
+          "title": "SO SÁNH: SPOT INSTANCE vs ON-DEMAND",
+          "content": "Điểm phân biệt: Chi phí thấp/rủi ro bị thu hồi vs ổn định/đắt hơn.\n✅ Spot Instance => RẺ NHẤT (giảm tới 90%), nhưng CÓ THỂ BỊ THU HỒI (interrupt) bất kỳ lúc nào khi AWS cần lại capacity (báo trước 2 phút) — chỉ phù hợp workload chịu được gián đoạn (batch job, fault-tolerant, stateless).\n✅ On-Demand => giá theo giờ/giây CỐ ĐỊNH, KHÔNG bị thu hồi, linh hoạt bật/tắt bất kỳ lúc nào — phù hợp workload ngắn hạn/không dự đoán được hoặc không chịu được gián đoạn.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "370a71e4dfcb",
+          "title": "SO SÁNH: ELASTIC IP vs PUBLIC IP",
+          "content": "Điểm phân biệt: Static persistent vs dynamic.\n✅ Public IP thường => CẤP TỰ ĐỘNG khi launch, THAY ĐỔI mỗi khi STOP/START lại instance, MIỄN PHÍ khi đang gắn với instance đang chạy.\n✅ Elastic IP => IP TĨNH, KHÔNG đổi dù stop/start instance, phải chủ động gắn (associate) => TÍNH PHÍ nếu để KHÔNG GẮN với instance nào (khuyến khích không giữ EIP dư thừa).",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -2864,6 +2892,13 @@
           "content": "EFS => shared, nhiều instance cùng đọc/ghi; EBS => gắn 1 instance (trừ Multi-Attach io1/io2), cần format theo OS",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "e9d97c82e276",
+          "title": "SO SÁNH: EFS vs FSX FOR WINDOWS",
+          "content": "Điểm phân biệt: Linux NFS vs Windows SMB.\n✅ EFS => giao thức NFS, dành cho HỆ ĐIỀU HÀNH LINUX, nhiều EC2 Linux mount cùng lúc.\n✅ FSx for Windows File Server => giao thức SMB, dành cho HỆ ĐIỀU HÀNH WINDOWS, tích hợp Active Directory, hỗ trợ tính năng file system của Windows (ACL, DFS) mà EFS không có.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -3861,6 +3896,13 @@
           "content": "AWS Owned Key => miễn phí, không kiểm soát/audit; AWS Managed Key => miễn phí, xem được, AWS tự xoay vòng; Customer Managed Key => trả phí, kiểm soát & audit đầy đủ, tự đặt rotation",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "05f6352d147a",
+          "title": "SO SÁNH: KMS vs CLOUDHSM",
+          "content": "Điểm phân biệt: Managed multi-tenant vs dedicated single-tenant HSM.\n✅ KMS => dịch vụ MANAGED, hạ tầng HSM DÙNG CHUNG (multi-tenant) giữa nhiều khách hàng (nhưng cách ly logic hoàn toàn), tích hợp SẴN với hầu hết AWS service, dễ dùng, chi phí thấp.\n✅ CloudHSM => cung cấp HSM VẬT LÝ RIÊNG (dedicated, single-tenant) đạt chuẩn FIPS 140-2 Level 3, TỰ QUẢN LÝ hoàn toàn key (AWS không truy cập được), dùng khi yêu cầu compliance nghiêm ngặt nhất không chấp nhận hạ tầng dùng chung.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -4349,6 +4391,13 @@
           "content": "Threat detection => phân tích VPC Flow Logs/CloudTrail/DNS logs => machine learning => không cần cài agent",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "1756f9f9f39f",
+          "title": "SO SÁNH: GUARDDUTY vs INSPECTOR vs MACIE",
+          "content": "Điểm phân biệt: Threat detection vs vulnerability scan vs sensitive data discovery.\n✅ GuardDuty => phát hiện HÀNH VI BẤT THƯỜNG/tấn công đang diễn ra (phân tích log VPC Flow/CloudTrail/DNS bằng ML), KHÔNG cần agent.\n✅ Inspector => quét LỖ HỔNG BẢO MẬT (CVE) trên EC2/ECR image/Lambda, đánh giá RỦI RO TIỀM ẨN trước khi bị khai thác.\n✅ Macie => phát hiện DỮ LIỆU NHẠY CẢM (PII) đang lưu trong S3, phục vụ compliance data privacy.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -4579,6 +4628,13 @@
           "content": "WAF => Layer 7, rule-based (SQL injection, XSS, rate limit) => gắn CloudFront/ALB/API Gateway; Shield => bảo vệ DDoS Layer 3/4",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "545101d3c49d",
+          "title": "SO SÁNH: WAF vs AWS NETWORK FIREWALL",
+          "content": "Điểm phân biệt: Layer 7 app rules vs Layer 3/4 network-wide firewall.\n✅ WAF => hoạt động Layer 7, lọc HTTP/HTTPS request (SQL injection, XSS, rate limit, bot control), gắn vào CloudFront/ALB/API Gateway/AppSync — bảo vệ ỨNG DỤNG WEB cụ thể.\n✅ AWS Network Firewall => hoạt động Layer 3/4/7, kiểm soát TOÀN BỘ traffic RA/VÀO VPC (không riêng HTTP), dùng stateful rule engine (Suricata-compatible) — bảo vệ ở CẤP MẠNG cho cả VPC, không chỉ 1 ứng dụng web.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -4701,6 +4757,13 @@
           "content": "Infrastructure as Code => template YAML/JSON => Stack => rollback tự động khi lỗi => StackSets triển khai multi-account/multi-region",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "369012993eea",
+          "title": "SO SÁNH: CLOUDFORMATION vs ELASTIC BEANSTALK",
+          "content": "Điểm phân biệt: Infrastructure-as-Code vs PaaS.\n✅ CloudFormation => IaC THUẦN TÚY, tự định nghĩa CHI TIẾT từng resource (VPC, EC2, RDS...) bằng template, kiểm soát TỐI ĐA, phù hợp hạ tầng phức tạp/tùy biến sâu.\n✅ Elastic Beanstalk => PaaS, TỰ ĐỘNG provision hạ tầng chuẩn cho web app (EC2+ALB+ASG+RDS), chỉ cần upload code, ít kiểm soát chi tiết hơn nhưng triển khai NHANH HƠN nhiều — thực chất Beanstalk dùng CloudFormation ở bên dưới.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -4823,6 +4886,13 @@
           "content": "Service Control Policy => giới hạn quyền TỐI ĐA => không tự cấp quyền (vẫn cần IAM Policy) => áp dụng cho toàn OU/account",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "4d18b4707af7",
+          "title": "SO SÁNH: SCP vs IAM POLICY",
+          "content": "Điểm phân biệt: Giới hạn quyền tối đa (guardrail) vs cấp quyền thực tế.\n✅ SCP (Service Control Policy) => đặt TRẦN GIỚI HẠN quyền tối đa cho cả account/OU, KHÔNG TỰ CẤP quyền gì (dù SCP Allow s3:*, user vẫn cần IAM Policy riêng mới thực sự dùng được).\n✅ IAM Policy => CẤP QUYỀN THỰC TẾ cho user/role, quyền hiệu lực cuối cùng = GIAO (intersection) giữa SCP cho phép VÀ IAM Policy cho phép.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -5081,6 +5151,13 @@
           "content": "Tự động scale capacity theo traffic thực tế => trả tiền theo mức dùng => phù hợp traffic không dự đoán được/gián đoạn",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "78a7bdfa609a",
+          "title": "SO SÁNH: AURORA vs AURORA SERVERLESS",
+          "content": "Điểm phân biệt: Provisioned capacity cố định vs auto-scaling theo traffic.\n✅ Aurora (Provisioned) => chọn TRƯỚC instance class cố định, phù hợp traffic ỔN ĐỊNH/dự đoán được, phải tự scale thủ công khi cần.\n✅ Aurora Serverless => TỰ ĐỘNG scale capacity (ACU) lên/xuống theo traffic THỰC TẾ, trả tiền theo mức dùng, phù hợp traffic KHÔNG dự đoán được/gián đoạn (dev/test, ứng dụng ít dùng).",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -5426,6 +5503,13 @@
           "content": "Data Streams => real-time, tự quản lý shard, custom consumer, retention tùy chỉnh; Firehose => fully managed, tự động load vào S3/Redshift/OpenSearch, gần real-time",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "8cfb29ea57f3",
+          "title": "SO SÁNH: KINESIS DATA STREAMS vs SQS",
+          "content": "Điểm phân biệt: Streaming (nhiều consumer, replay) vs Queue (1 consumer, xóa sau đọc).\n✅ Kinesis Data Streams => NHIỀU consumer cùng đọc ĐỘC LẬP 1 stream, dữ liệu vẫn GIỮ NGUYÊN trong retention window (replay lại được), thứ tự đảm bảo trong 1 shard.\n✅ SQS => message bị XÓA sau khi 1 consumer xử lý xong (trừ khi dùng nhiều queue song song), không replay được, mô hình pull đơn giản hơn cho xử lý bất đồng bộ 1-1.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -5548,6 +5632,13 @@
           "content": "Điểm phân biệt: Block vs File vs Object.\n✅ EBS => BLOCK storage, gắn được 1 EC2 (trừ Multi-Attach io1/io2), cần format filesystem giống ổ cứng thường.\n✅ EFS => FILE storage (NFS), NHIỀU EC2 mount & đọc/ghi CÙNG LÚC, scale dung lượng tự động.\n✅ S3 => OBJECT storage, truy cập qua API/HTTP (không phải filesystem/mount), scale GẦN NHƯ VÔ HẠN, rẻ nhất cho lưu trữ lớn.",
           "createdAt": "2026-09-14T16:18:04.325835Z",
           "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "361213f7042f",
+          "title": "SO SÁNH: EBS SNAPSHOT vs AMI",
+          "content": "Điểm phân biệt: Backup 1 volume vs backup toàn bộ instance.\n✅ EBS Snapshot => backup POINT-IN-TIME của 1 VOLUME cụ thể (ổ đĩa), dùng để tạo volume mới hoặc khôi phục dữ liệu.\n✅ AMI (Amazon Machine Image) => backup TOÀN BỘ CẤU HÌNH INSTANCE (OS, volume root + các volume khác đính kèm, launch permission), dùng để LAUNCH INSTANCE MỚI giống hệt — về bản chất AMI được xây dựng dựa trên các EBS Snapshot bên dưới.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -6022,6 +6113,13 @@
           "content": "Kết nối vật lý riêng tới AWS => bandwidth ổn định, độ trễ thấp => không đi qua Internet công khai => nên có VPN backup cho HA",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "aaae3dac87fd",
+          "title": "SO SÁNH: DIRECT CONNECT GATEWAY vs TRANSIT GATEWAY",
+          "content": "Điểm phân biệt: Global DX aggregation vs regional VPC hub.\n✅ Direct Connect Gateway => kết nối 1 Direct Connect với NHIỀU VPC ở NHIỀU REGION khác nhau (global reach) qua Private Virtual Interface.\n✅ Transit Gateway => hub ĐIỀU PHỐI routing giữa nhiều VPC/VPN TRONG 1 REGION (hoặc peering liên Region), thường dùng KẾT HỢP với Direct Connect Gateway khi cần vừa aggregate DX vừa quản lý routing tập trung nhiều VPC.",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -6656,6 +6754,13 @@
           "content": "Ghi log API call => ai làm gì, khi nào, từ đâu => Management Events + Data Events => phục vụ audit & compliance",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "3053c9766ac1",
+          "title": "SO SÁNH: CLOUDTRAIL vs CLOUDWATCH",
+          "content": "Điểm phân biệt: Ai làm gì (audit API) vs hiệu năng/metric (monitoring).\n✅ CloudTrail => ghi lại AI gọi API GÌ, KHI NÀO, TỪ ĐÂU — phục vụ AUDIT & COMPLIANCE, trả lời câu hỏi \"who did what\".\n✅ CloudWatch => thu thập METRIC hiệu năng (CPU, latency, request count...) + LOGS ứng dụng + ALARM — phục vụ MONITORING & vận hành real-time, trả lời câu hỏi \"hệ thống đang chạy thế nào\".",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
@@ -7597,6 +7702,13 @@
           "content": "Centralized backup => nhiều service (EBS, RDS, DynamoDB, EFS, FSx...) => Backup Plan chung => policy-based, hỗ trợ cross-region/cross-account",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "9dc5e7e708eb",
+          "title": "SO SÁNH: RTO vs RPO",
+          "content": "Điểm phân biệt: Thời gian phục hồi vs lượng dữ liệu chấp nhận mất.\n✅ RTO (Recovery Time Objective) => THỜI GIAN TỐI ĐA chấp nhận được để hệ thống HOẠT ĐỘNG TRỞ LẠI sau sự cố (vd RTO=1h nghĩa là phải khôi phục xong trong 1 giờ).\n✅ RPO (Recovery Point Objective) => LƯỢNG DỮ LIỆU TỐI ĐA chấp nhận MẤT tính theo thời gian kể từ lần backup gần nhất (vd RPO=15 phút nghĩa là chấp nhận mất tối đa 15 phút dữ liệu) — RTO/RPO càng THẤP thì kiến trúc DR càng PHỨC TẠP & TỐN KÉM (Pilot Light < Warm Standby < Multi-Site Active-Active).",
+          "createdAt": "2026-09-14T16:21:20.949026Z",
+          "updatedAt": "2026-09-14T16:21:20.949026Z"
         }
       ]
     },
