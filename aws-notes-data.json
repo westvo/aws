@@ -192,6 +192,27 @@
           "content": "📌 Tình huống: 1 sự kiện (vd đơn hàng mới) cần được xử lý ĐỒNG THỜI bởi NHIỀU hệ thống độc lập khác nhau (gửi email, cập nhật kho, tính điểm thưởng), mỗi hệ thống xử lý theo tốc độ riêng.\n✅ Đáp án đúng: Fanout Pattern — publish 1 message vào SNS Topic, gắn NHIỀU SQS Queue subscribe vào topic đó (mỗi hệ thống 1 queue riêng) — SNS tự động gửi bản sao message tới TẤT CẢ queue, mỗi consumer xử lý độc lập theo tốc độ riêng mà không ảnh hưởng nhau.",
           "createdAt": "2026-09-14T03:23:39.666692Z",
           "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "a357e52fbd6b",
+          "title": "SQS: MESSAGE ATTRIBUTES & MESSAGE GROUP ID (FIFO)",
+          "content": "✅ Message Attributes: metadata key-value đính kèm message (tách biệt với body) — dùng cho Message Filtering (SNS) hoặc truyền thông tin phụ trợ (content-type, timestamp) mà không cần parse body.\n✅ Message Group ID (chỉ FIFO Queue): message CÙNG group được đảm bảo thứ tự với NHAU, message KHÁC group có thể xử lý SONG SONG — cho phép tăng throughput trong khi vẫn giữ thứ tự đúng cho từng nhóm logic (vd mỗi customer 1 group riêng).",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "44ad74f4305e",
+          "title": "SQS: SERVER-SIDE ENCRYPTION (SSE) & DELAY QUEUE",
+          "content": "✅ SSE: mã hóa message at-rest bằng KMS (SSE-KMS) hoặc key quản lý bởi SQS (SSE-SQS, đơn giản hơn không cần chọn CMK).\n✅ Delay Queue: trì hoãn message MỚI GỬI VÀO không hiển thị cho consumer ngay (tối đa 15 phút) — dùng khi cần độ trễ cố định trước khi xử lý (vd chờ hệ thống khác kịp cập nhật trạng thái trước khi consumer đọc).",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "51337904ff5d",
+          "title": "SQS: EXTENDED CLIENT LIBRARY CHO MESSAGE LỚN",
+          "content": "📌 Tình huống: Cần gửi message lớn hơn giới hạn 256KB của SQS (vd đính kèm file/payload lớn).\n✅ Đáp án đúng: Amazon SQS Extended Client Library — tự động lưu PHẦN PAYLOAD LỚN vào S3, chỉ gửi REFERENCE (con trỏ) tới object đó qua SQS message, consumer dùng cùng thư viện để tự động lấy lại payload đầy đủ từ S3 — trong suốt với code nghiệp vụ.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
         }
       ]
     },
@@ -1878,6 +1899,20 @@
           "content": "✅ Redis hỗ trợ tạo Snapshot (thủ công hoặc tự động theo lịch) lưu trên S3 — dùng để backup định kỳ, tạo cluster mới từ snapshot (di chuyển dữ liệu giữa cluster, hoặc nhân bản môi trường test từ production).\n⚠️ Memcached KHÔNG hỗ trợ snapshot/backup — mất node là mất dữ liệu vĩnh viễn, đây là lý do quan trọng khi chọn giữa 2 engine cho dữ liệu cần độ bền.",
           "createdAt": "2026-09-14T04:06:12.743851Z",
           "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "95c746ab7fc3",
+          "title": "ELASTICACHE: EVICTION POLICY",
+          "content": "📌 Tình huống: Cache đã ĐẦY bộ nhớ, cần dữ liệu mới nhưng không đủ chỗ — cần chọn dữ liệu CŨ nào bị loại bỏ (evict) trước.\n✅ Các policy phổ biến (Redis): allkeys-lru (loại bỏ key ÍT DÙNG GẦN ĐÂY NHẤT trong TOÀN BỘ key — phổ biến nhất), volatile-lru (chỉ áp dụng cho key CÓ đặt TTL), allkeys-random, noeviction (từ chối ghi mới khi đầy thay vì tự xóa — dùng khi mất dữ liệu cache là KHÔNG chấp nhận được).",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "fdc776a2d308",
+          "title": "ELASTICACHE: TRANSIT & AT-REST ENCRYPTION, AUTH",
+          "content": "✅ Encryption in-transit (TLS) và at-rest (KMS) đều CHỈ đặt được KHI TẠO cluster (không bật/tắt sau), giống nhiều dịch vụ khác của AWS.\n✅ Redis AUTH: đặt thêm PASSWORD (token) để client phải xác thực trước khi kết nối vào Redis, thay vì chỉ dựa vào Security Group — lớp bảo vệ bổ sung khi cần chia sẻ endpoint trong môi trường nhiều team.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
         }
       ]
     },
@@ -2045,6 +2080,41 @@
           "content": "✅ SCP áp dụng ở cấp Organization/OU, đặt TRẦN quyền tối đa cho MỌI IAM user/role trong các account con (kể cả root user của account con) — SCP không tự cấp quyền, chỉ giới hạn, phải kết hợp với IAM policy trong account mới có quyền thực tế.\n⚠️ SCP KHÔNG áp dụng lên Management Account (account gốc của Organization) ➜ dễ bị hỏi bẫy trong đề thi.",
           "createdAt": "2026-09-14T03:17:58.276507Z",
           "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "4fc9979dd0ae",
+          "title": "IAM POLICY: NOTACTION & NOTRESOURCE",
+          "content": "✅ NotAction: cấp quyền cho TẤT CẢ action TRỪ những action được liệt kê (dùng với Effect: Allow để \"allow mọi thứ trừ...\", hoặc Effect: Deny để \"deny mọi thứ trừ...\") — hữu ích khi danh sách action CẦN CHẶN ngắn hơn nhiều so với danh sách action CHO PHÉP.\n✅ NotResource: tương tự nhưng áp dụng cho resource — dùng cẩn thận vì dễ vô tình cấp quyền rộng hơn dự định nếu không tính hết resource type liên quan.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "96caa96174b3",
+          "title": "IAM: CONDITION KEYS PHỔ BIẾN",
+          "content": "✅ aws:SourceIp: giới hạn theo dải IP nguồn gọi API.\n✅ aws:MultiFactorAuthPresent: bắt buộc phải có MFA mới cho phép hành động (thường dùng để bảo vệ hành động nguy hiểm như xóa resource).\n✅ aws:RequestedRegion: giới hạn action chỉ được thực hiện ở 1 số Region cụ thể.\n✅ aws:PrincipalOrgID: chỉ cho phép principal thuộc CÙNG 1 AWS Organization cụ thể — hữu ích khi viết resource policy (S3 bucket policy) muốn giới hạn truy cập cho toàn bộ account trong Org mà không cần liệt kê từng Account ID.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "74a31408a58e",
+          "title": "IAM: PERMISSION BOUNDARY vs SCP - PHÂN BIỆT PHẠM VI",
+          "content": "✅ Permission Boundary: áp dụng cho TỪNG User/Role CỤ THỂ trong 1 account, do chính account đó (người có quyền IAM) tự đặt.\n✅ SCP: áp dụng ở cấp Organization/OU, ảnh hưởng TOÀN BỘ account con (kể cả root), chỉ Management Account mới đặt được.\n⚠️ Cả 2 đều là \"guardrail\" (không tự cấp quyền, chỉ giới hạn) — quyền thực tế luôn là GIAO (intersection) của Identity Policy ∩ Permission Boundary (nếu có) ∩ SCP (nếu có) ∩ Resource Policy (nếu có).",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "9228ab0326c5",
+          "title": "IAM: ACCESS KEYS ROTATION & CREDENTIAL REPORT",
+          "content": "✅ Best practice: xoay vòng (rotate) Access Key định kỳ (90 ngày), xóa key không dùng — có thể dùng IAM Credential Report (báo cáo CSV toàn bộ user + tuổi password/access key/trạng thái MFA) để rà soát định kỳ toàn account.\n✅ IAM Access Advisor: xem LẦN CUỐI 1 user/role thực sự SỬ DỤNG 1 service cụ thể — dùng để tìm quyền THỪA (đã cấp nhưng không bao giờ dùng) nhằm thu hẹp theo least privilege.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "e462c04d3ac4",
+          "title": "IAM: SERVICE-LINKED ROLES",
+          "content": "✅ Service-Linked Role: loại Role ĐẶC BIỆT được 1 AWS service TỰ TẠO SẴN (khi bạn bật tính năng đó lần đầu, vd Auto Scaling, ElastiCache), có Trust Policy & Permission cố định do AWS định nghĩa, KHÔNG chỉnh sửa được permission tùy ý (để tránh phá vỡ cách service đó vận hành) — chỉ có thể xóa khi không còn resource nào dùng.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
         }
       ]
     },
@@ -2104,6 +2174,34 @@
           "content": "✅ Key Policy: resource policy CHÍNH, bắt buộc có, kiểm soát toàn bộ quyền quản trị/sử dụng key lâu dài.\n✅ Grants: cấp quyền TẠM THỜI, LINH HOẠT cho 1 principal cụ thể thực hiện hành động cụ thể (vd cho phép Lambda function tạo ra tự động dùng key để encrypt), có thể revoke ngay lập tức, phù hợp cấp quyền động do chương trình tự tạo/hủy (không cần sửa key policy thủ công).",
           "createdAt": "2026-09-14T03:17:58.276507Z",
           "updatedAt": "2026-09-14T03:17:58.276507Z"
+        },
+        {
+          "id": "f9d3170ead66",
+          "title": "KMS: ENVELOPE ENCRYPTION - QUY TRÌNH ĐẦY ĐỦ",
+          "content": "✅ Bước 1: gọi GenerateDataKey → KMS trả về Plaintext Data Key + Encrypted Data Key (đã mã hóa bằng CMK).\n✅ Bước 2: dùng Plaintext Data Key mã hóa dữ liệu THỰC TẾ ở phía client (AES-256), rồi XÓA Plaintext Data Key khỏi memory ngay.\n✅ Bước 3: lưu Encrypted Data Key CÙNG với ciphertext dữ liệu.\n✅ Khi cần giải mã: gửi Encrypted Data Key cho KMS qua Decrypt API → nhận lại Plaintext Data Key → dùng nó giải mã dữ liệu.\n⚠️ Đây là cơ chế S3 SSE-KMS/EBS/RDS encryption dùng NGẦM bên dưới, ứng dụng thường không cần tự làm thủ công (SDK đã tích hợp sẵn).",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "39e79aa81cff",
+          "title": "KMS: QUOTA - REQUEST PER SECOND",
+          "content": "📌 Tình huống: Ứng dụng gọi KMS Encrypt/Decrypt API với tần suất RẤT CAO (hàng chục nghìn request/giây) bị lỗi Throttling.\n✅ Nguyên nhân: KMS API có giới hạn request/giây theo Region + loại key (symmetric mặc định ~5,500-10,000 RPS tùy Region, có thể xin tăng quota).\n✅ Giải pháp: dùng Envelope Encryption (chỉ gọi KMS 1 lần để lấy Data Key, sau đó mã hóa HÀNG LOẠT dữ liệu ở local KHÔNG cần gọi KMS lại) thay vì gọi trực tiếp Encrypt API cho từng bản ghi nhỏ.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "0cf174773c15",
+          "title": "KMS: CUSTOM KEY STORE (CLOUDHSM)",
+          "content": "📌 Tình huống: Yêu cầu compliance nghiêm ngặt bắt buộc key material phải nằm trên HSM (Hardware Security Module) DO CHÍNH CÔNG TY kiểm soát hoàn toàn, không chấp nhận HSM dùng chung multi-tenant của AWS KMS mặc định.\n✅ Đáp án đúng: KMS Custom Key Store (dùng AWS CloudHSM Cluster) — key material được tạo & lưu trong CloudHSM cluster RIÊNG của bạn, KMS chỉ đóng vai trò API layer gọi tới HSM đó, đạt mức kiểm soát phần cứng cao nhất trong khi vẫn dùng API quen thuộc của KMS.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "34b2529a18b5",
+          "title": "KMS: DELETE KEY - WAITING PERIOD",
+          "content": "⚠️ KHÔNG THỂ xóa CMK NGAY LẬP TỨC — bắt buộc có Waiting Period (7-30 ngày, tự chọn) trước khi xóa vĩnh viễn, trong thời gian này key ở trạng thái \"Pending Deletion\" (không dùng được để encrypt/decrypt) nhưng VẪN CÓ THỂ HỦY YÊU CẦU XÓA (cancel deletion) nếu phát hiện vẫn cần dùng — tránh mất vĩnh viễn dữ liệu đã mã hóa bằng key đó do xóa nhầm.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
         }
       ]
     },
@@ -2177,6 +2275,34 @@
           "content": "📌 Tình huống: Cần release version mới của API cho 1 PHẦN NHỎ traffic để test trước khi áp dụng cho toàn bộ, giảm rủi ro khi deploy.\n✅ Đáp án đúng: Canary Release Deployment (trên REST API) — định nghĩa % traffic đi tới version MỚI (canary) trong khi phần lớn vẫn dùng version cũ (base), theo dõi log/metric riêng cho canary, tăng dần % hoặc rollback ngay nếu phát hiện lỗi.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "84b77de94299",
+          "title": "API GATEWAY: REQUEST/RESPONSE TRANSFORMATION (MAPPING TEMPLATE)",
+          "content": "✅ Mapping Template (VTL, dùng cho REST API): biến đổi request/response GIỮA client và backend — vd client gửi JSON theo format A, backend chỉ hiểu format B, API Gateway tự convert 2 chiều mà KHÔNG cần sửa code backend hay thêm Lambda trung gian chỉ để transform dữ liệu.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "7c6e5cbb8ea6",
+          "title": "API GATEWAY: STAGE VARIABLES & DEPLOYMENT",
+          "content": "✅ Stage: 1 API có thể có nhiều Stage (dev, staging, prod), mỗi Stage có config riêng (throttle, cache, log level).\n✅ Stage Variable: biến cấu hình theo TỪNG STAGE (vd trỏ Lambda alias khác nhau, hoặc URL backend khác nhau giữa dev/prod) — dùng 1 API Gateway config chung nhưng route khác nhau tùy Stage mà không cần deploy nhiều API riêng.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "b89e5596fd61",
+          "title": "API GATEWAY: LAMBDA AUTHORIZER (CUSTOM AUTHORIZER)",
+          "content": "📌 Tình huống: Cần logic xác thực TÙY CHỈNH phức tạp (vd kiểm tra JWT tự ký riêng, kiểm tra thêm điều kiện nghiệp vụ) mà Cognito Authorizer chuẩn không đáp ứng đủ.\n✅ Đáp án đúng: Lambda Authorizer — viết 1 Lambda function TỰ KIỂM TRA token/header bất kỳ theo logic riêng, trả về IAM Policy (Allow/Deny) cho API Gateway quyết định có cho request đi tiếp hay không, có thể CACHE kết quả theo token để giảm số lần gọi Lambda Authorizer lặp lại.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "0c6abce94c08",
+          "title": "API GATEWAY: REQUEST VALIDATION",
+          "content": "✅ API Gateway có thể tự VALIDATE request (body theo JSON Schema, query string/header bắt buộc) NGAY TẠI GATEWAY, từ chối request sai định dạng TRƯỚC KHI chạm tới Lambda/backend — giảm tải xử lý validate ở backend, tiết kiệm invocation Lambda cho request không hợp lệ.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
         }
       ]
     },
@@ -2354,6 +2480,20 @@
           "content": "📌 Tình huống: 1 cuộc tấn công thực sự thường gồm NHIỀU HÀNH VI nhỏ lẻ liên tiếp (do thám → chiếm credential → leo thang quyền → khai thác), mỗi hành vi riêng lẻ có thể không đủ nghiêm trọng để báo động ngay.\n✅ Đáp án đúng: GuardDuty Extended Threat Detection tự động LIÊN KẾT nhiều finding riêng lẻ theo THỜI GIAN thành 1 \"Attack Sequence\" hoàn chỉnh khi phát hiện pattern tấn công đa bước, giúp nhận diện tấn công có chủ đích (không chỉ noise lẻ tẻ) sớm hơn.",
           "createdAt": "2026-09-14T04:06:12.743851Z",
           "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "025d6a535015",
+          "title": "GUARDDUTY: RUNTIME MONITORING (EKS/ECS/EC2)",
+          "content": "✅ Runtime Monitoring: cài agent nhẹ (eBPF-based) trên EKS/ECS/EC2 để giám sát HÀNH VI THỰC THI THỜI GIAN THỰC bên trong workload (process, file, network syscall) — phát hiện sâu hơn nhiều so với chỉ phân tích log CloudTrail/VPC Flow Logs bên ngoài, bắt được hành vi độc hại NGAY TRONG container/instance (vd process lạ được spawn, file binary độc hại được thực thi).",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "b37596e76319",
+          "title": "GUARDDUTY: FINDING TYPES THEO NHÓM TÀI NGUYÊN",
+          "content": "✅ EC2 finding: traffic bất thường, communication với known-malicious IP, cryptomining.\n✅ IAM finding: API call bất thường (vd từ Tor exit node, geolocation lạ), thử enumerate permission (dấu hiệu do thám).\n✅ S3 finding: truy cập bất thường vào bucket (vd data exfiltration pattern), đổi bucket policy đáng ngờ.\n✅ EKS/RDS/Lambda finding: theo protection plan tương ứng đã bật riêng.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
         }
       ]
     },
@@ -2694,6 +2834,34 @@
           "content": "✅ Aurora ML: cho phép gọi TRỰC TIẾP model Machine Learning (Amazon SageMaker hoặc Amazon Comprehend) NGAY TRONG CÂU LỆNH SQL (vd SELECT kèm hàm dự đoán fraud detection) — không cần export dữ liệu ra ngoài rồi gọi API ML riêng, giảm độ trễ & độ phức tạp pipeline.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "b797361f1c83",
+          "title": "AURORA: PARALLEL QUERY (AURORA MYSQL)",
+          "content": "📌 Tình huống: Query phân tích (analytical) trên bảng lớn chạy chậm vì chỉ xử lý ở 1 tầng compute (Writer/Reader) duy nhất.\n✅ Đáp án đúng: Aurora Parallel Query — đẩy 1 PHẦN việc xử lý (scan, filter) XUỐNG TẦNG STORAGE (nơi có hàng trăm node xử lý song song) thay vì chỉ ở tầng compute, tăng tốc query phân tích trên bảng lớn đáng kể mà không cần dùng Redshift riêng.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "36a6dc972fb6",
+          "title": "AURORA: FAST CLONE vs SNAPSHOT RESTORE",
+          "content": "✅ Cloning (copy-on-write): tạo DB mới gần NGAY LẬP TỨC, chỉ tốn thêm storage cho phần dữ liệu THAY ĐỔI so với gốc — nhanh và rẻ hơn nhiều.\n✅ Snapshot & Restore: copy TOÀN BỘ dữ liệu thành 1 bản mới độc lập hoàn toàn — chậm hơn với DB lớn, nhưng phù hợp khi cần bản HOÀN TOÀN TÁCH BIỆT vật lý (backup dài hạn, cross-Region/cross-account).",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "fb894ee9f656",
+          "title": "AURORA: ZERO-DOWNTIME PATCHING (ZDP)",
+          "content": "✅ Zero-Downtime Patching: với 1 số bản vá engine tương thích, Aurora áp dụng patch mà KHÔNG cần restart/gây gián đoạn kết nối đang có (giữ nguyên transaction đang chạy) — khác các DB thông thường cần restart instance khi vá lỗi engine.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "24051484e1dd",
+          "title": "AURORA: RDS PROXY + AURORA CHO SERVERLESS/LAMBDA",
+          "content": "📌 Tình huống: Nhiều Lambda function cùng truy cập Aurora, mỗi lần cold start tạo connection mới gây quá tải số lượng kết nối DB.\n✅ Đáp án đúng: Kết hợp RDS Proxy đứng trước Aurora — pool connection sẵn, Lambda kết nối qua Proxy thay vì trực tiếp DB, giảm connection overhead & tăng tốc failover.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
         }
       ]
     },
@@ -2753,6 +2921,34 @@
           "content": "📌 Tình huống: Hệ thống bị chậm do 1 vài IP/user cụ thể gửi request bất thường nhiều, cần xác định NHANH \"ai\" đang là top contributor gây tải mà không cần tự viết query phân tích log thủ công.\n✅ Đáp án đúng: CloudWatch Contributor Insights — tự động phân tích log (CloudWatch Logs/Application Signals) để tìm ra top-N contributor theo 1 field bất kỳ (IP, URL, user ID...) theo thời gian thực, hữu ích để phát hiện top talker gây nghẽn hoặc DDoS layer 7.",
           "createdAt": "2026-09-14T03:21:35.599417Z",
           "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "9ba54c5531df",
+          "title": "CLOUDWATCH LOGS: METRIC FILTER & SUBSCRIPTION FILTER",
+          "content": "✅ Metric Filter: trích 1 CON SỐ từ pattern log (đã có note trước) để tạo alarm.\n✅ Subscription Filter: đẩy TOÀN BỘ log entry khớp pattern SANG REAL-TIME tới Lambda/Kinesis Data Streams/Kinesis Firehose để xử lý thêm (vd gửi log lỗi sang hệ thống phân tích riêng ngay khi phát sinh) — khác Metric Filter (chỉ tạo con số), Subscription Filter chuyển tiếp NGUYÊN VĂN nội dung log.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "45dae0446332",
+          "title": "CLOUDWATCH: COMPOSITE ALARM & ALARM ACTIONS ĐẦY ĐỦ",
+          "content": "✅ Alarm Action không chỉ gửi SNS — có thể trực tiếp: Stop/Terminate/Reboot/Recover EC2 instance, trigger EC2 Auto Scaling policy, hoặc Systems Manager OpsItem/Incident (tự động tạo ticket vận hành khi có sự cố) — giảm bước trung gian phải qua Lambda tự viết.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "7724e8c88c38",
+          "title": "CLOUDWATCH: LOGS INSIGHTS QUERY LANGUAGE",
+          "content": "✅ CloudWatch Logs Insights dùng ngôn ngữ query riêng (không phải SQL chuẩn) với các lệnh: fields (chọn field), filter (lọc điều kiện), stats (tổng hợp/group by), sort, limit — cho phép phân tích log NHANH ngay trên console mà không cần export ra Athena, phù hợp điều tra sự cố tức thời.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "8104e827d8b6",
+          "title": "CLOUDWATCH: CROSS-ACCOUNT OBSERVABILITY",
+          "content": "📌 Tình huống: Tổ chức có nhiều account riêng biệt, cần xem metric/log/trace của TẤT CẢ account đó ở 1 dashboard duy nhất mà không cần đăng nhập từng account.\n✅ Đáp án đúng: CloudWatch Cross-Account Observability — chỉ định 1 account làm MONITORING ACCOUNT (trung tâm), các account khác làm SOURCE ACCOUNT chia sẻ dữ liệu quan sát (metric, log, trace) sang account trung tâm để xem tổng hợp.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
         }
       ]
     },
@@ -2857,6 +3053,20 @@
           "content": "📌 Tình huống: Có NHIỀU consumer application cùng đọc từ 1 Kinesis Data Stream, các consumer bắt đầu tranh nhau băng thông đọc (2MB/s/shard) khiến độ trễ tăng khi thêm consumer mới.\n✅ Đáp án đúng: Bật Enhanced Fan-Out cho từng consumer — mỗi consumer được cấp ĐƯỜNG TRUYỀN RIÊNG 2MB/s/shard (không chia sẻ với consumer khác), dùng cơ chế HTTP/2 push thay vì polling, giảm độ trễ xuống ~70ms, tính phí thêm theo consumer + dữ liệu truyền ra.",
           "createdAt": "2026-09-14T03:21:35.599417Z",
           "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "7b6fd44bd0a4",
+          "title": "KINESIS: RECORD KEY & SHARD ASSIGNMENT",
+          "content": "✅ Mỗi record khi gửi vào Kinesis Data Streams có 1 Partition Key — Kinesis dùng HASH của key này để quyết định record đi vào SHARD nào, các record CÙNG key LUÔN vào CÙNG 1 shard (đảm bảo thứ tự cho cùng 1 entity, vd cùng 1 device ID) — chọn key có độ phân tán tốt để tránh hot shard tương tự vấn đề hot partition của DynamoDB.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "b482857d332c",
+          "title": "KINESIS FIREHOSE: BUFFER SIZE/INTERVAL & FORMAT CONVERSION",
+          "content": "✅ Firehose gom dữ liệu vào BUFFER (theo dung lượng HOẶC thời gian, cái nào đạt trước) rồi mới ghi ra đích 1 lần — buffer lớn/interval dài giảm số file nhỏ (ít API call, tối ưu chi phí S3) nhưng tăng độ trễ trước khi dữ liệu tới đích.\n✅ Format Conversion: Firehose có thể tự động convert dữ liệu (JSON) sang Parquet/ORC (columnar) TRƯỚC KHI ghi vào S3 — tối ưu sẵn cho Athena/Redshift Spectrum query sau này mà không cần ETL job riêng.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
         }
       ]
     },
@@ -2968,6 +3178,20 @@
           "content": "📌 Tình huống: Account A cần nhận sự kiện phát sinh từ account B (khác Organization hoặc khác team quản lý) mà không muốn 2 account chia sẻ toàn bộ quyền truy cập lẫn nhau.\n✅ Đáp án đúng: Cấu hình Resource Policy trên Event Bus của account B cho phép account A gửi event vào, rồi tạo Rule ở account A với Target trỏ NGƯỢC LẠI Event Bus của account B (hoặc ngược lại) — cho phép giao tiếp event xuyên account/Region một cách có kiểm soát mà không cần chia sẻ credential.",
           "createdAt": "2026-09-14T04:06:12.743851Z",
           "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "774ecfe26919",
+          "title": "EVENTBRIDGE: ARCHIVE & REPLAY",
+          "content": "📌 Tình huống: Cần TÁI XỬ LÝ lại các event đã xảy ra TRONG QUÁ KHỨ (vd sau khi sửa lỗi 1 consumer bị hỏng 2 ngày trước, cần replay lại toàn bộ event trong 2 ngày đó).\n✅ Đáp án đúng: Bật Archive cho Event Bus (lưu lại toàn bộ/một phần event theo filter, retention tùy chọn) — khi cần, dùng Replay để GỬI LẠI các event đã lưu trong archive, giống như chúng vừa xảy ra, cho phép consumer xử lý lại mà không cần nguồn phát event gốc tạo lại.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "73823ec586ed",
+          "title": "EVENTBRIDGE: INPUT TRANSFORMER",
+          "content": "✅ Input Transformer: BIẾN ĐỔI nội dung event TRƯỚC KHI gửi tới Target (vd chỉ lấy 1 vài field, định dạng lại thành message dễ đọc cho Slack/email) — tránh phải thêm Lambda trung gian chỉ để format lại dữ liệu đơn giản trước khi gửi đi.",
+          "createdAt": "2026-09-14T06:26:11.067628Z",
+          "updatedAt": "2026-09-14T06:26:11.067628Z"
         }
       ]
     },
@@ -3405,6 +3629,20 @@
           "content": "📌 Tình huống: Cần thêm logic tùy chỉnh vào quá trình đăng ký/đăng nhập (vd validate email domain công ty, ghi log custom, tự động gắn thêm attribute).\n✅ Đáp án đúng: Cognito Lambda Triggers — gắn Lambda function vào các điểm cụ thể trong vòng đời user (Pre Sign-up, Post Confirmation, Pre Token Generation, Custom Message...) để chèn logic tùy chỉnh mà không cần sửa core flow của Cognito.",
           "createdAt": "2026-09-14T04:05:17.515826Z",
           "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "936213ba0ff7",
+          "title": "COGNITO: TOKEN TYPES & REFRESH FLOW",
+          "content": "✅ ID Token: chứa thông tin định danh user (dùng để biết USER LÀ AI, gửi cho ứng dụng hiển thị).\n✅ Access Token: dùng để GỌI API (cấp quyền truy cập resource), thường có thời hạn ngắn (1h mặc định).\n✅ Refresh Token: dùng để LẤY LẠI Access/ID Token mới khi hết hạn mà KHÔNG cần user đăng nhập lại (thời hạn dài hơn, mặc định 30 ngày, tùy chỉnh được).",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "b46d65e87fb8",
+          "title": "COGNITO: CUSTOM DOMAIN & BRANDING",
+          "content": "✅ Có thể gắn Custom Domain (vd login.yourcompany.com) cho Hosted UI thay vì domain mặc định của Cognito (*.amazoncognito.com) — cần chứng chỉ ACM tương ứng, giúp trải nghiệm đăng nhập nhất quán thương hiệu công ty.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
         }
       ]
     },
@@ -4012,6 +4250,20 @@
           "content": "✅ ECR hỗ trợ Replication Rule tự động sao chép image sang Region/account khác — dùng cho kiến trúc multi-Region (giảm độ trễ pull image) hoặc chia sẻ image chuẩn cho nhiều account trong Organization mà không cần push thủ công nhiều lần.",
           "createdAt": "2026-09-14T04:05:17.515826Z",
           "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "24a26e6d56fa",
+          "title": "EKS: FARGATE PROFILE",
+          "content": "✅ Fargate Profile: định nghĩa Pod nào (theo namespace + label selector) sẽ CHẠY TRÊN FARGATE thay vì EC2 Worker Node — cho phép KẾT HỢP trong cùng 1 cluster: 1 số workload chạy Fargate (đơn giản, ít quản lý), 1 số chạy EC2 (cần GPU/tối ưu chi phí).",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "ebaff26dbedc",
+          "title": "EKS: CLUSTER AUTOSCALER vs KARPENTER",
+          "content": "✅ Cluster Autoscaler: scale Node Group (Auto Scaling Group) dựa trên Pod đang PENDING không đủ chỗ chạy — hoạt động theo ASG truyền thống.\n✅ Karpenter (công cụ mở, AWS khuyến khích cho thiết kế mới): tự động chọn & launch ĐÚNG loại/kích thước EC2 phù hợp NHẤT cho Pod đang chờ (không cần định nghĩa trước Node Group cứng nhắc), scale nhanh & tối ưu chi phí hơn Cluster Autoscaler truyền thống.",
+          "createdAt": "2026-09-14T06:27:04.373715Z",
+          "updatedAt": "2026-09-14T06:27:04.373715Z"
         }
       ]
     },
