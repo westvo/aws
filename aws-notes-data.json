@@ -1642,6 +1642,20 @@
           "content": "✅ Ngoài cài Storage Gateway dưới dạng VM (VMware/Hyper-V/KVM) hay EC2 AMI, AWS còn bán Storage Gateway Hardware Appliance (thiết bị vật lý) cho môi trường on-premises KHÔNG có sẵn hạ tầng ảo hóa — cắm điện, cấu hình mạng là dùng được ngay, không cần server riêng để chạy VM Gateway.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "704e628d31fb",
+          "title": "STORAGE GATEWAY: FSx FILE GATEWAY",
+          "content": "✅ FSx File Gateway (loại thứ 4, mới hơn): cache truy cập on-premises tới file share Windows đang chạy trên Amazon FSx for Windows File Server — tối ưu độ trễ truy cập cho file lớn/thường dùng ngay tại chỗ, trong khi dữ liệu gốc vẫn nằm trên FSx.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "9f46c0b267a7",
+          "title": "STORAGE GATEWAY: BANDWIDTH THROTTLING & CACHE SIZING",
+          "content": "✅ Có thể giới hạn (throttle) băng thông Storage Gateway dùng để upload/download theo khung giờ cụ thể (vd giảm băng thông giờ hành chính, tăng ban đêm) để không ảnh hưởng traffic công việc khác của công ty.\n✅ Với Cached Volume/File Gateway, kích thước LOCAL CACHE cần đủ lớn để chứa dữ liệu HAY TRUY CẬP NHẤT (working set) — cache quá nhỏ so với working set sẽ gây cache miss liên tục, làm chậm truy cập vì phải tải lại từ S3.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
         }
       ]
     },
@@ -1680,6 +1694,20 @@
           "content": "✅ Traffic Dial: điều chỉnh % traffic được route tới 1 Endpoint Group (Region) — dùng để giảm dần traffic một Region khi cần bảo trì (kiểu canary release ở cấp Region).\n✅ Endpoint Weight: trong cùng 1 Endpoint Group, phân chia tỷ trọng traffic giữa nhiều endpoint cụ thể (vd nhiều ALB trong cùng Region).",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "e705bc44c07e",
+          "title": "GLOBAL ACCELERATOR: CLIENT AFFINITY",
+          "content": "✅ Client Affinity: mặc định (NONE) Global Accelerator có thể route request của CÙNG 1 client tới các endpoint KHÁC NHAU theo thời gian; bật SOURCE_IP để ghim (route) traffic từ CÙNG 1 địa chỉ IP nguồn LUÔN về CÙNG 1 endpoint — cần thiết cho ứng dụng có state gắn theo session/connection dài hạn (vd gaming, giao dịch tài chính real-time).",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "c29a499b0103",
+          "title": "GLOBAL ACCELERATOR vs CLOUDFRONT: KHI NÀO DÙNG CÁI NÀO",
+          "content": "✅ CloudFront: tối ưu cho nội dung CÓ THỂ CACHE ĐƯỢC (static/dynamic content HTTP/HTTPS), hoạt động ở tầng ứng dụng (Layer 7).\n✅ Global Accelerator: tối ưu cho traffic KHÔNG CACHE ĐƯỢC (TCP/UDP thuần túy, gaming, VoIP, IoT) hoặc cần IP tĩnh cố định, hoạt động ở tầng mạng (Layer 3/4), cải thiện performance bằng cách đưa traffic vào mạng backbone AWS SỚM NHẤT có thể (ngay từ Edge gần user) thay vì cache nội dung.\n⚠️ Có thể DÙNG CHUNG cả 2: CloudFront cho phần static asset, Global Accelerator cho phần API/game server cần IP cố định.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
         }
       ]
     },
@@ -1836,6 +1864,20 @@
           "content": "📌 Tình huống: Không muốn tự tính toán/quản lý số node, kích thước node cho Redis/Memcached vì traffic khó dự đoán.\n✅ Đáp án đúng: ElastiCache Serverless — tự động scale capacity theo nhu cầu thực tế (giống Aurora Serverless/DynamoDB On-Demand), tính phí theo lượng dữ liệu lưu + traffic xử lý, không cần chọn instance type/số node thủ công.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "318523dc41a1",
+          "title": "ELASTICACHE: GLOBAL DATASTORE (REDIS)",
+          "content": "📌 Tình huống: Ứng dụng cache cần đọc độ trễ thấp từ nhiều Region, đồng thời cần khả năng phục hồi nhanh nếu Region chính gặp sự cố.\n✅ Đáp án đúng: ElastiCache Global Datastore — replicate dữ liệu Redis cross-Region với độ trễ thấp (dưới 1 giây), cho phép Region phụ đọc dữ liệu gần như real-time, và PROMOTE Region phụ thành primary trong vài phút khi cần failover.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "4776911785aa",
+          "title": "ELASTICACHE: BACKUP & RESTORE (REDIS)",
+          "content": "✅ Redis hỗ trợ tạo Snapshot (thủ công hoặc tự động theo lịch) lưu trên S3 — dùng để backup định kỳ, tạo cluster mới từ snapshot (di chuyển dữ liệu giữa cluster, hoặc nhân bản môi trường test từ production).\n⚠️ Memcached KHÔNG hỗ trợ snapshot/backup — mất node là mất dữ liệu vĩnh viễn, đây là lý do quan trọng khi chọn giữa 2 engine cho dữ liệu cần độ bền.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
         }
       ]
     },
@@ -2298,6 +2340,20 @@
           "content": "✅ Suppression Rule: tự động ẩn (không hiển thị) các finding khớp điều kiện định sẵn — dùng khi biết chắc 1 loại cảnh báo là FALSE POSITIVE lặp lại (vd scanner bảo mật nội bộ tự quét gây finding giả).\n✅ Trusted IP List: danh sách IP TIN CẬY (vd văn phòng công ty) — GuardDuty KHÔNG tạo finding cho traffic từ các IP này dù có pattern giống tấn công.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "2229102cc56c",
+          "title": "GUARDDUTY: FINDING SEVERITY & FREQUENCY",
+          "content": "✅ Finding được chấm điểm SEVERITY (Low/Medium/High) dựa trên mức độ nguy hiểm & độ tin cậy của phát hiện — nên ưu tiên xử lý HIGH trước.\n✅ GuardDuty gửi finding MỚI ngay khi phát hiện lần đầu, các lần phát hiện LẶP LẠI của CÙNG 1 loại hành vi trên CÙNG resource sẽ được GOM LẠI (update Count & thời gian) thay vì tạo finding mới liên tục, tránh spam.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "1428fb6fe0b6",
+          "title": "GUARDDUTY: EXTENDED THREAT DETECTION (ATTACK SEQUENCE)",
+          "content": "📌 Tình huống: 1 cuộc tấn công thực sự thường gồm NHIỀU HÀNH VI nhỏ lẻ liên tiếp (do thám → chiếm credential → leo thang quyền → khai thác), mỗi hành vi riêng lẻ có thể không đủ nghiêm trọng để báo động ngay.\n✅ Đáp án đúng: GuardDuty Extended Threat Detection tự động LIÊN KẾT nhiều finding riêng lẻ theo THỜI GIAN thành 1 \"Attack Sequence\" hoàn chỉnh khi phát hiện pattern tấn công đa bước, giúp nhận diện tấn công có chủ đích (không chỉ noise lẻ tẻ) sớm hơn.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
         }
       ]
     },
@@ -2336,6 +2392,20 @@
           "content": "📌 Tình huống: Khi Macie phát hiện 1 bucket S3 chứa dữ liệu nhạy cảm bị cấu hình PUBLIC, cần TỰ ĐỘNG cảnh báo/xử lý ngay thay vì chờ người xem dashboard.\n✅ Đáp án đúng: Macie tự động gửi finding qua EventBridge — tạo rule trigger Lambda tự động (vd revoke public access của bucket đó ngay), đồng thời finding cũng tổng hợp vào AWS Security Hub để xem chung với các finding bảo mật khác (GuardDuty, Inspector).",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "04eb6edb33a8",
+          "title": "MACIE: AUTOMATED SENSITIVE DATA DISCOVERY",
+          "content": "✅ Automated Discovery: Macie tự động lấy MẪU đại diện từ các bucket S3 trong account (thay vì quét TOÀN BỘ mọi object mọi lúc, tốn kém), liên tục cập nhật bản đồ rủi ro dữ liệu nhạy cảm theo THỜI GIAN, tối ưu chi phí hơn nhiều so với chạy Classification Job full-scan định kỳ trên toàn bộ dữ liệu lớn.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "7a02693cf617",
+          "title": "MACIE: JOB DẠNG ONE-TIME vs SCHEDULED",
+          "content": "✅ One-time Job: quét 1 LẦN toàn bộ bucket đã chọn — dùng khi cần đánh giá nhanh 1 lần (vd trước khi công bố bucket public).\n✅ Scheduled Job: quét ĐỊNH KỲ (theo lịch) — dùng cho bucket liên tục có dữ liệu mới, đảm bảo phát hiện sớm dữ liệu nhạy cảm mới phát sinh.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
         }
       ]
     },
@@ -2374,6 +2444,20 @@
           "content": "✅ WAF Logging: xuất log chi tiết từng request (match rule nào, action gì) ra Kinesis Data Firehose → S3/OpenSearch để phân tích/audit.\n✅ CAPTCHA/Challenge Action: thay vì Block thẳng, WAF có thể yêu cầu client giải CAPTCHA hoặc silent challenge (JS challenge) trước khi cho qua — dùng chống bot tự động mà vẫn cho phép người dùng thật tiếp tục, ít gây phiền hơn Block cứng.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "9ec5195cdd50",
+          "title": "WAF: SCOPE - REGIONAL vs CLOUDFRONT (GLOBAL)",
+          "content": "✅ WAF gắn vào CloudFront: scope GLOBAL, Web ACL tạo ở us-east-1 dù CloudFront phục vụ toàn cầu.\n✅ WAF gắn vào ALB/API Gateway/AppSync/Cognito: scope REGIONAL, Web ACL phải tạo ở ĐÚNG Region của resource đó — không dùng chung Web ACL giữa CloudFront và ALB được (khác scope).",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "b60a42efd129",
+          "title": "WAF: RULE PRIORITY & LABELS",
+          "content": "✅ Rule trong Web ACL được đánh giá theo PRIORITY (số nhỏ xử lý trước), dừng ngay khi gặp rule TERMINATING action (Block/Allow) đầu tiên khớp — action Count không dừng, dùng để TEST rule trước khi chuyển sang Block thật.\n✅ Label: gắn nhãn cho request khi khớp 1 rule, RULE SAU có thể dùng label này làm điều kiện — cho phép xây logic RULE CHAIN phức tạp (vd chỉ Block nếu vừa khớp rule A VÀ rule B).",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
         }
       ]
     },
@@ -2419,6 +2503,20 @@
           "content": "📌 Tình huống: Trước khi update 1 CloudFormation stack production, muốn biết CHÍNH XÁC những gì sẽ thay đổi (resource nào bị thay thế/xóa/sửa) TRƯỚC khi thực sự áp dụng, tránh rủi ro downtime bất ngờ do resource bị recreate.\n✅ Đáp án đúng: Tạo Change Set — CloudFormation tính toán trước sự khác biệt giữa template mới và trạng thái hiện tại, hiển thị preview (Add/Modify/Remove, và có gây REPLACEMENT resource hay không) mà CHƯA áp dụng gì — review xong mới Execute Change Set để thực thi thật.",
           "createdAt": "2026-09-14T03:23:39.666692Z",
           "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "07e232e7f2a6",
+          "title": "CLOUDFORMATION STACKSETS: DEPLOYMENT OPTIONS",
+          "content": "✅ StackSets hỗ trợ 2 chế độ quản lý permission: Self-managed (tự tạo IAM Role tin cậy lẫn nhau giữa admin & target account thủ công) và Service-managed (dùng trust có sẵn của AWS Organizations, tự động deploy cho account MỚI thêm vào OU mà không cần cấu hình IAM Role thủ công).",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "7feefa4e5ed9",
+          "title": "CLOUDFORMATION: DRIFT DETECTION CHI TIẾT & DELETION POLICY",
+          "content": "✅ DeletionPolicy: Retain (giữ lại resource dù xóa stack — dùng cho resource quan trọng như S3 bucket/RDS không muốn mất khi lỡ xóa stack), Snapshot (tạo snapshot trước khi xóa, áp dụng cho RDS/EBS/ElastiCache/Redshift), Delete (mặc định, xóa hẳn resource theo stack).\n✅ UpdateReplacePolicy: tương tự DeletionPolicy nhưng áp dụng khi UPDATE khiến resource bị THAY THẾ (replace) thay vì sửa tại chỗ.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
         }
       ]
     },
@@ -2509,6 +2607,20 @@
           "content": "📌 Tình huống: Công ty có NHIỀU chi nhánh/văn phòng ở các địa điểm khác nhau, muốn các chi nhánh này giao tiếp được với nhau (site-to-site) mà không cần tự dựng thêm hạ tầng VPN riêng giữa từng cặp văn phòng.\n✅ Đáp án đúng: AWS VPN CloudHub — tạo nhiều Site-to-Site VPN connection (mỗi văn phòng 1 connection) cùng trỏ về 1 Virtual Private Gateway, cấu hình routing (BGP) phù hợp để các văn phòng có thể giao tiếp CHÉO NHAU thông qua VPC làm \"hub\" trung tâm, tận dụng lại hạ tầng VPN đã có sẵn thay vì xây kết nối riêng.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "9b640a3c3eff",
+          "title": "VPN: ACCELERATED SITE-TO-SITE VPN",
+          "content": "📌 Tình huống: VPN thông thường qua Internet công cộng bị độ trễ cao/không ổn định do đi qua nhiều chặng mạng trung gian trước khi tới AWS.\n✅ Đáp án đúng: Accelerated Site-to-Site VPN — kết hợp AWS Global Accelerator, đưa traffic VPN vào mạng backbone AWS NGAY TỪ Edge Location gần Customer Gateway nhất, cải thiện độ ổn định & giảm số hop qua Internet công cộng.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "b3eccdd8b9b7",
+          "title": "VPN: ROUTE-BASED vs POLICY-BASED",
+          "content": "✅ Route-Based VPN (AWS mặc định dùng loại này): dùng BGP để trao đổi route ĐỘNG, linh hoạt khi mạng thay đổi, hỗ trợ ECMP (dùng nhiều tunnel cùng lúc tăng băng thông).\n✅ Policy-Based VPN: định nghĩa CỨNG cặp CIDR nguồn-đích được phép qua VPN (dùng cho thiết bị VPN cũ không hỗ trợ BGP) — AWS Site-to-Site VPN CHỦ YẾU hỗ trợ Route-Based, cần kiểm tra tương thích nếu thiết bị Customer Gateway chỉ hỗ trợ Policy-Based.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
         }
       ]
     },
@@ -2679,6 +2791,20 @@
           "content": "✅ Run Command: chạy lệnh/script (Shell, PowerShell) TRÊN HÀNG LOẠT instance cùng lúc mà không cần SSH/RDP vào từng máy, có log kết quả tập trung.\n✅ Automation Documents (SSM Documents): định nghĩa quy trình vận hành TỰ ĐỘNG HÓA nhiều bước (vd tự tạo AMI, patch rồi restart, rollback khi lỗi) — có thể trigger thủ công, theo lịch, hoặc từ EventBridge.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "d30d54ed04dd",
+          "title": "SSM: INVENTORY & COMPLIANCE",
+          "content": "✅ Inventory: tự động thu thập thông tin chi tiết (phần mềm cài đặt, phiên bản OS, network config...) từ TOÀN BỘ fleet EC2/on-premises quản lý bởi SSM, tạo báo cáo tập trung để biết chính xác đang có gì trong hạ tầng.\n✅ Compliance: kết hợp với Patch Manager/State Manager để báo cáo instance nào ĐANG TUÂN THỦ / KHÔNG TUÂN THỦ baseline đã định (vd patch bảo mật).",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "566841ec3f5d",
+          "title": "SSM: FLEET MANAGER & DOCUMENT AUTOMATION AT SCALE",
+          "content": "✅ Fleet Manager: giao diện tập trung để quản lý, kết nối (RDP web-based), xem thông tin của TOÀN BỘ fleet server (EC2 + on-premises) trong 1 nơi mà không cần vào từng console riêng.\n✅ Có thể chạy Automation Document (chuỗi bước tự động hóa) trên HÀNG NGHÌN instance ĐỒNG THỜI, với Rate Control (giới hạn % instance xử lý song song) để tránh gây gián đoạn diện rộng nếu automation có lỗi.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
         }
       ]
     },
@@ -2828,6 +2954,20 @@
           "content": "📌 Tình huống: Cần kết nối trực tiếp giữa 1 nguồn (vd DynamoDB Streams, SQS, Kinesis) tới 1 đích (Step Functions, Lambda...) kèm bước filter/transform đơn giản ở giữa, mà không muốn tự viết Lambda trung gian chỉ để chuyển tiếp dữ liệu.\n✅ Đáp án đúng: EventBridge Pipes — point-to-point integration có sẵn filter + enrichment + transform, giảm code \"glue\" (Lambda trung gian) không cần thiết giữa các service.",
           "createdAt": "2026-09-14T03:23:39.666692Z",
           "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "60871a0438fe",
+          "title": "EVENTBRIDGE: SCHEMA REGISTRY & CODE BINDING",
+          "content": "✅ Schema Registry: tự động lưu & phiên bản hóa CẤU TRÚC (schema) của event đã từng đi qua bus (kể cả tự suy luận từ event thực tế) — cho phép sinh tự động code binding (class/type) theo ngôn ngữ lập trình (Java, Python, TypeScript...) để code xử lý event có TYPE-SAFETY, giảm lỗi do đọc sai field.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "733d2f1962a8",
+          "title": "EVENTBRIDGE: CROSS-ACCOUNT & CROSS-REGION EVENT BUS",
+          "content": "📌 Tình huống: Account A cần nhận sự kiện phát sinh từ account B (khác Organization hoặc khác team quản lý) mà không muốn 2 account chia sẻ toàn bộ quyền truy cập lẫn nhau.\n✅ Đáp án đúng: Cấu hình Resource Policy trên Event Bus của account B cho phép account A gửi event vào, rồi tạo Rule ở account A với Target trỏ NGƯỢC LẠI Event Bus của account B (hoặc ngược lại) — cho phép giao tiếp event xuyên account/Region một cách có kiểm soát mà không cần chia sẻ credential.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
         }
       ]
     },
@@ -2866,6 +3006,20 @@
           "content": "✅ Neptune Multi-AZ tương tự Aurora: 1 storage layer chia sẻ trên nhiều AZ, có thể thêm tới 15 Read Replica dùng chung storage, failover nhanh.\n✅ Neptune Global Database: replicate cross-Region với độ trễ thấp (giống Aurora Global Database), phục vụ đọc gần người dùng toàn cầu + DR.",
           "createdAt": "2026-09-14T03:41:03.034633Z",
           "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "f2ab3ac56286",
+          "title": "NEPTUNE SERVERLESS",
+          "content": "✅ Neptune Serverless: tự động scale capacity (NCU - Neptune Capacity Unit) theo tải thực tế của workload đồ thị, không cần chọn instance size cố định — phù hợp workload graph có tải KHÔNG ổn định/khó dự đoán, tương tự Aurora Serverless.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "42a700a9b846",
+          "title": "NEPTUNE ML",
+          "content": "📌 Tình huống: Cần dự đoán (vd gợi ý kết bạn, phát hiện gian lận qua mạng lưới giao dịch) dựa trên CẤU TRÚC ĐỒ THỊ phức tạp mà thuật toán ML thông thường khó xử lý tốt quan hệ nhiều chiều.\n✅ Đáp án đúng: Neptune ML — tích hợp SageMaker để tự động xây dựng & huấn luyện model Graph Neural Network (GNN) NGAY TRÊN dữ liệu đồ thị hiện có trong Neptune, dùng cho các bài toán dự đoán quan hệ/phân loại node mà graph algorithm truyền thống không làm tốt.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
         }
       ]
     },
@@ -3126,6 +3280,20 @@
           "content": "✅ Mỗi lần rotate/update, Secrets Manager giữ lại NHIỀU VERSION (gắn stage label: AWSCURRENT, AWSPENDING, AWSPREVIOUS) — cho phép rollback về version trước nếu rotation lỗi, và ứng dụng luôn lấy đúng bản mới nhất qua AWSCURRENT.",
           "createdAt": "2026-09-14T03:39:06.369857Z",
           "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "78efbb740610",
+          "title": "SECRETS MANAGER: RESOURCE-BASED POLICY & VPC ENDPOINT",
+          "content": "✅ Có thể truy cập Secrets Manager qua VPC Endpoint (Interface Endpoint) để giữ traffic lấy secret HOÀN TOÀN TRONG VPC, không đi qua Internet — quan trọng khi Lambda/EC2 trong private subnet cần lấy secret mà không có NAT Gateway.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "94aca5cb9f84",
+          "title": "SECRETS MANAGER: MULTI-REGION SECRETS",
+          "content": "📌 Tình huống: Ứng dụng DR chạy đa Region cần secret (DB credentials) giống nhau ở cả 2 Region, đồng bộ tự động khi rotate.\n✅ Đáp án đúng: Multi-Region Secrets — tạo secret REPLICA ở Region khác, tự động đồng bộ nội dung khi secret gốc được rotate/update, ứng dụng ở Region phụ đọc secret y hệt mà không cần tự đồng bộ thủ công.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
         }
       ]
     },
@@ -3164,6 +3332,20 @@
           "content": "📌 Tình huống: 1 bước trong workflow cần CHỜ con người phê duyệt thủ công (approval), hoặc chờ 1 hệ thống bên thứ 3 xử lý xong rồi mới callback lại, thời gian chờ có thể kéo dài không xác định.\n✅ Đáp án đúng: Callback Pattern (.waitForTaskToken) — Step Functions TẠM DỪNG execution tại bước đó, gửi kèm 1 Task Token cho hệ thống bên ngoài, chỉ tiếp tục chạy tiếp khi nhận được API call SendTaskSuccess/SendTaskFailure kèm đúng token đó — không tốn tài nguyên chờ đợi kiểu polling.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "3d435cf323b8",
+          "title": "STEP FUNCTIONS: MAP STATE & DISTRIBUTED MAP",
+          "content": "📌 Tình huống: Cần xử lý SONG SONG hàng nghìn/triệu item (vd resize hàng triệu ảnh trong 1 bucket S3), mỗi item chạy qua cùng 1 logic xử lý.\n✅ Đáp án đúng: Map State (Standard, xử lý song song tới 40 item/lần lặp) hoặc Distributed Map (mới hơn, scale tới HÀNG TRIỆU item song song, đọc trực tiếp danh sách từ S3) — tự động fan-out xử lý song song mà không cần tự viết logic chia batch thủ công.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "911fb9f58775",
+          "title": "STEP FUNCTIONS: ERROR HANDLING (RETRY & CATCH)",
+          "content": "✅ Retry: tự động THỬ LẠI 1 state khi gặp lỗi cụ thể, cấu hình được số lần retry, khoảng cách giữa các lần (backoff rate) — xử lý lỗi TẠM THỜI (transient, vd throttling) mà không cần code thử-lại thủ công.\n✅ Catch: bắt lỗi và CHUYỂN HƯỚNG sang 1 state khác để xử lý (vd gửi thông báo lỗi, rollback) khi Retry đã hết số lần mà vẫn lỗi — đảm bảo workflow luôn có đường xử lý dự phòng thay vì dừng đột ngột.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
         }
       ]
     },
@@ -3202,6 +3384,27 @@
           "content": "✅ Cognito hỗ trợ MFA (SMS, TOTP app) bắt buộc hoặc tùy chọn cho user.\n✅ Advanced Security Features: phát hiện đăng nhập BẤT THƯỜNG (địa điểm lạ, thiết bị lạ, risk score cao) và có thể tự động yêu cầu thêm MFA hoặc chặn đăng nhập — tăng bảo mật thích ứng (adaptive) mà không làm phiền user hợp lệ.",
           "createdAt": "2026-09-14T03:39:06.369857Z",
           "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "350ac2ed5abe",
+          "title": "COGNITO: USER POOL GROUPS & FINE-GRAINED AUTHORIZATION",
+          "content": "✅ User Pool Groups: gán user vào nhóm (vd Admin, Editor, Viewer), group được đưa vào JWT token (cognito:groups claim) — backend/API Gateway đọc claim này để phân quyền chi tiết theo vai trò, không cần tra cứu DB riêng.\n✅ Có thể gắn IAM Role RIÊNG cho từng Group (qua Identity Pool) — user thuộc group khác nhau nhận quyền AWS credentials khác nhau khi truy cập trực tiếp tài nguyên AWS.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "4f0e511d7f3a",
+          "title": "COGNITO: HOSTED UI & OAUTH 2.0 FLOWS",
+          "content": "✅ Hosted UI: trang đăng nhập/đăng ký CÓ SẴN do Cognito cung cấp (tùy biến logo/màu sắc), không cần tự xây UI login từ đầu, hỗ trợ chuẩn OAuth 2.0 (Authorization Code Grant khuyến nghị cho web app, Implicit Grant cũ hơn ít an toàn hơn).",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "4d64d7393102",
+          "title": "COGNITO: LAMBDA TRIGGERS TÙY BIẾN LUỒNG XÁC THỰC",
+          "content": "📌 Tình huống: Cần thêm logic tùy chỉnh vào quá trình đăng ký/đăng nhập (vd validate email domain công ty, ghi log custom, tự động gắn thêm attribute).\n✅ Đáp án đúng: Cognito Lambda Triggers — gắn Lambda function vào các điểm cụ thể trong vòng đời user (Pre Sign-up, Post Confirmation, Pre Token Generation, Custom Message...) để chèn logic tùy chỉnh mà không cần sửa core flow của Cognito.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
         }
       ]
     },
@@ -3358,6 +3561,20 @@
           "content": "✅ Redshift Serverless: tự động scale compute theo tải, không cần quản lý cluster/node — phù hợp workload không liên tục, muốn giảm chi phí vận hành.\n✅ Concurrency Scaling: khi có NHIỀU query đồng thời làm nghẽn cluster chính, Redshift tự động thêm cluster TẠM THỜI phía sau để xử lý query bổ sung, KHÔNG làm chậm query đang chạy trên cluster chính.",
           "createdAt": "2026-09-14T03:42:37.586729Z",
           "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "89374a3393a7",
+          "title": "REDSHIFT: WORKLOAD MANAGEMENT (WLM) & QUERY QUEUES",
+          "content": "📌 Tình huống: Nhiều team cùng chạy query trên 1 Redshift cluster, 1 query BI nặng chạy lâu làm nghẽn các query ngắn khác của team khác đang chờ.\n✅ Đáp án đúng: Workload Management (WLM) — tạo nhiều QUEUE riêng biệt với mức ưu tiên/memory allocation khác nhau (vd 1 queue riêng cho query ngắn ưu tiên cao, 1 queue cho batch/BI nặng chạy nền), tránh 1 loại query chiếm hết tài nguyên ảnh hưởng loại khác.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "15a3f452807b",
+          "title": "REDSHIFT DATA SHARING",
+          "content": "📌 Tình huống: Nhiều team/account cần TRUY VẤN CHUNG 1 bộ dữ liệu Redshift mà không muốn COPY dữ liệu sang cluster riêng của từng team (tốn storage, dữ liệu bị lệch pha).\n✅ Đáp án đúng: Redshift Data Sharing — chia sẻ dữ liệu LIVE (không copy) giữa nhiều cluster/Workgroup Serverless, kể cả xuyên account/Organization, mỗi bên vẫn tự quản lý compute riêng nhưng đọc chung 1 nguồn dữ liệu luôn cập nhật mới nhất.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
         }
       ]
     },
@@ -3403,6 +3620,20 @@
           "content": "📌 Tình huống: Glue ETL job chạy ĐỊNH KỲ trên dữ liệu S3 liên tục có thêm file mới, cần đảm bảo mỗi lần chạy CHỈ xử lý dữ liệu MỚI (incremental), không xử lý lại dữ liệu đã xử lý trước đó.\n✅ Đáp án đúng: Bật Job Bookmark — Glue tự động ghi nhớ tiến trình đã xử lý tới đâu (file/timestamp), lần chạy sau chỉ xử lý phần dữ liệu MỚI phát sinh kể từ lần chạy trước.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "d8a6cb2f9190",
+          "title": "ATHENA: FEDERATED QUERY",
+          "content": "📌 Tình huống: Cần JOIN dữ liệu từ S3 với dữ liệu đang nằm trực tiếp trong RDS hoặc DynamoDB CÙNG 1 câu query, không muốn export dữ liệu ra S3 trước.\n✅ Đáp án đúng: Athena Federated Query — dùng Data Source Connector (Lambda) để Athena TRUY VẤN TRỰC TIẾP nhiều nguồn dữ liệu khác nhau (RDS, DynamoDB, Redshift, thậm chí on-premises DB) trong CÙNG 1 câu SQL, không cần ETL trước.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "ad87dbd74d86",
+          "title": "GLUE DATABREW",
+          "content": "📌 Tình huống: Data analyst (không rành code) cần làm sạch/chuẩn hóa dữ liệu (loại bỏ giá trị lỗi, đổi định dạng ngày tháng, chuẩn hóa text) trước khi phân tích.\n✅ Đáp án đúng: AWS Glue DataBrew — công cụ VISUAL (không cần viết code) với hơn 250 transformation dựng sẵn để làm sạch/chuẩn hóa dữ liệu, xem trước kết quả ngay trên giao diện trước khi áp dụng thật.",
+          "createdAt": "2026-09-14T04:06:12.743851Z",
+          "updatedAt": "2026-09-14T04:06:12.743851Z"
         }
       ]
     },
@@ -3500,6 +3731,20 @@
           "content": "✅ Thư mục .ebextensions/ trong source code cho phép TÙY BIẾN SÂU cấu hình hạ tầng bên dưới bằng file YAML/JSON (cài thêm package OS, chạy lệnh khi deploy, cấu hình thêm CloudWatch Alarm, sửa config Nginx/Apache) mà không cần rời khỏi mô hình PaaS đơn giản của Beanstalk.",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "aa062f247d6b",
+          "title": "BEANSTALK: SAVED CONFIGURATIONS & SWAP ENVIRONMENT URLS",
+          "content": "✅ Saved Configuration: lưu lại 1 bộ cấu hình environment (instance type, scaling, env variable...) để tái sử dụng tạo environment mới giống hệt, hoặc để đồng bộ cấu hình giữa dev/staging/prod.\n✅ Swap Environment URLs: kỹ thuật BLUE/GREEN deployment cho Beanstalk — deploy version mới ra 1 environment HOÀN TOÀN TÁCH BIỆT, test xong thì HOÁN ĐỔI URL giữa 2 environment (traffic chuyển ngay lập tức), rollback cực nhanh bằng cách swap ngược lại nếu lỗi.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "9185a400ddc8",
+          "title": "BEANSTALK: MANAGED PLATFORM UPDATES",
+          "content": "✅ Managed Platform Updates: tự động áp dụng bản vá bảo mật/cập nhật minor version của platform (runtime, OS) theo lịch bảo trì định sẵn, có thể cấu hình rollback tự động nếu update gây lỗi health check — giảm gánh nặng tự theo dõi & vá platform thủ công.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
         }
       ]
     },
@@ -3746,6 +3991,27 @@
           "content": "✅ ECR: private registry lưu container image, tích hợp IAM để kiểm soát quyền push/pull, hỗ trợ Image Scanning (dùng chung engine với Amazon Inspector) tự động quét lỗ hổng (CVE) mỗi khi push image mới.\n✅ Lifecycle Policy: tự động XÓA image CŨ theo quy tắc (vd chỉ giữ 10 image mới nhất, hoặc xóa image untagged sau 14 ngày) — tránh phình dung lượng lưu trữ vô hạn theo thời gian.",
           "createdAt": "2026-09-14T03:46:04.020850Z",
           "updatedAt": "2026-09-14T03:46:04.020850Z"
+        },
+        {
+          "id": "3e7491c5d747",
+          "title": "EKS: IRSA (IAM ROLES FOR SERVICE ACCOUNTS)",
+          "content": "📌 Tình huống: 1 Pod trong EKS cần gọi API S3, không muốn cấp quyền rộng cho TOÀN BỘ Worker Node (mọi Pod trên node đó đều có quyền), chỉ muốn ĐÚNG Pod đó có quyền.\n✅ Đáp án đúng: IRSA — gắn IAM Role trực tiếp vào KUBERNETES SERVICE ACCOUNT (không phải vào EC2 Node Role), chỉ Pod dùng đúng service account đó mới nhận được quyền tương ứng qua OIDC — tuân thủ least privilege ở cấp Pod thay vì cấp node.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "d71c07bc2e08",
+          "title": "EKS: MANAGED NODE GROUP vs SELF-MANAGED",
+          "content": "✅ Managed Node Group: EKS tự động quản lý vòng đời Node (tạo/update/terminate qua Auto Scaling Group), tự động drain Pod an toàn khi update — giảm thao tác thủ công.\n✅ Self-managed Node: tự tạo/quản lý Auto Scaling Group + AMI riêng — linh hoạt hơn (custom AMI, cấu hình đặc biệt) nhưng phải tự lo việc patch/update Node.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "c8d8bf6a8400",
+          "title": "ECR: CROSS-REGION & CROSS-ACCOUNT REPLICATION",
+          "content": "✅ ECR hỗ trợ Replication Rule tự động sao chép image sang Region/account khác — dùng cho kiến trúc multi-Region (giảm độ trễ pull image) hoặc chia sẻ image chuẩn cho nhiều account trong Organization mà không cần push thủ công nhiều lần.",
+          "createdAt": "2026-09-14T04:05:17.515826Z",
+          "updatedAt": "2026-09-14T04:05:17.515826Z"
         }
       ]
     },
@@ -3888,6 +4154,27 @@
           "content": "✅ Security Hub có thể tự động TRIGGER hành động khắc phục (qua EventBridge → Lambda/SSM Automation) NGAY KHI có finding mới match điều kiện — chuyển từ mô hình \"phát hiện rồi báo người xử lý\" sang \"tự động khắc phục ngay\" cho các lỗi cấu hình phổ biến (vd tự động chặn public access khi phát hiện S3 bucket public ngoài ý muốn).",
           "createdAt": "2026-09-14T03:50:00.052608Z",
           "updatedAt": "2026-09-14T03:50:00.052608Z"
+        },
+        {
+          "id": "8db607b688ff",
+          "title": "SECURITY HUB: SECURITY SCORE & STANDARDS",
+          "content": "✅ Security Hub chấm 1 SECURITY SCORE tổng quan (%) dựa trên số lượng check PASS/FAIL theo từng Standard đã bật (AWS Foundational Security Best Practices, CIS AWS Foundations Benchmark, PCI DSS, NIST 800-53) — giúp lãnh đạo/security team theo dõi xu hướng cải thiện bảo mật theo thời gian bằng 1 con số duy nhất.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "f01912ef8f03",
+          "title": "FIREWALL MANAGER: NETWORK FIREWALL POLICY TẬP TRUNG",
+          "content": "📌 Tình huống: Cần đảm bảo MỌI VPC mới tạo trong Organization đều TỰ ĐỘNG có AWS Network Firewall bảo vệ theo đúng rule chuẩn công ty, không phụ thuộc việc từng team nhớ cấu hình thủ công.\n✅ Đáp án đúng: Firewall Manager Network Firewall Policy — định nghĩa rule chuẩn 1 lần, tự động áp dụng cho MỌI VPC hiện có VÀ VPC MỚI tạo sau này trong phạm vi Organization/OU đã chọn.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "d1a0a157f96f",
+          "title": "DETECTIVE: BEHAVIOR GRAPH & FINDING GROUP",
+          "content": "✅ Detective tự động dựng Behavior Graph liên kết dữ liệu 12 tháng gần nhất giữa các entity (IP, user, role, instance) — khi điều tra 1 finding, có thể XEM NGƯỢC LẠI lịch sử hành vi liên quan dù finding đó mới xảy ra, giúp phát hiện tấn công đã âm thầm diễn ra TRƯỚC KHI bị phát hiện.",
+          "createdAt": "2026-09-14T04:04:07.265302Z",
+          "updatedAt": "2026-09-14T04:04:07.265302Z"
         }
       ]
     }
