@@ -279,6 +279,20 @@
           "content": "📌 Tình huống: Traffic đi qua 1 thiết bị bảo mật (firewall ảo) đặt trong VPC trung tâm cần đảm bảo gói tin ĐI và VỀ đều qua CÙNG 1 instance của thiết bị đó (để inspection đúng cả 2 chiều 1 session).\n✅ Đáp án đúng: Bật Appliance Mode trên Transit Gateway VPC Attachment — đảm bảo traffic 2 chiều của CÙNG 1 flow luôn đi qua CÙNG 1 AZ/appliance instance, tránh tình trạng traffic đi 1 đường về 1 đường khác gây lỗi cho thiết bị stateful inspection.",
           "createdAt": "2026-09-14T06:28:13.873303Z",
           "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "58b254574a09",
+          "title": "TRANSIT GATEWAY: CONNECT ATTACHMENT (GRE + BGP)",
+          "content": "📌 Tình huống: Cần kết nối 1 thiết bị SD-WAN (Software-Defined WAN) của bên thứ 3 vào Transit Gateway với throughput cao hơn nhiều so với VPN connection thông thường qua Internet.\n✅ Đáp án đúng: Transit Gateway Connect Attachment — dùng giao thức GRE (Generic Routing Encapsulation) kết hợp BGP để kết nối thiết bị SD-WAN/appliance ảo trực tiếp vào Transit Gateway với băng thông cao hơn nhiều so với VPN attachment thông thường (không giới hạn ở mức VPN tunnel ~1.25Gbps).",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "084cec58202b",
+          "title": "TRANSIT GATEWAY: CHIA SẺ QUA AWS RAM (RESOURCE ACCESS MANAGER)",
+          "content": "📌 Tình huống: Nhiều account trong Organization cần dùng CHUNG 1 Transit Gateway (do 1 account trung tâm quản lý) để kết nối VPC của mình vào, mà không cần tạo Transit Gateway riêng cho từng account (tốn kém & khó quản lý routing tập trung).\n✅ Đáp án đúng: Chia sẻ Transit Gateway qua AWS Resource Access Manager (RAM) — account owner share Transit Gateway cho các account khác trong Organization, các account đó tự gắn (attach) VPC của mình vào Transit Gateway dùng chung, quản lý routing tập trung tại 1 nơi.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
         }
       ]
     },
@@ -1733,6 +1747,20 @@
           "content": "✅ Có thể giới hạn (throttle) băng thông Storage Gateway dùng để upload/download theo khung giờ cụ thể (vd giảm băng thông giờ hành chính, tăng ban đêm) để không ảnh hưởng traffic công việc khác của công ty.\n✅ Với Cached Volume/File Gateway, kích thước LOCAL CACHE cần đủ lớn để chứa dữ liệu HAY TRUY CẬP NHẤT (working set) — cache quá nhỏ so với working set sẽ gây cache miss liên tục, làm chậm truy cập vì phải tải lại từ S3.",
           "createdAt": "2026-09-14T04:06:12.743851Z",
           "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "60267ad79dd5",
+          "title": "STORAGE GATEWAY: TAPE GATEWAY - VIRTUAL TAPE SHELF (VTS)",
+          "content": "✅ Virtual Tape Library (VTL): các \"tape ảo\" đang SẴN SÀNG dùng ngay (giống tape trong máy đọc).\n✅ Virtual Tape Shelf (VTS): nơi LƯU TRỮ tape đã \"eject\" (archive lâu dài, giá rẻ hơn, tương đương Glacier) — mô phỏng đúng quy trình tape vật lý truyền thống (đưa vào máy đọc ↔ cất vào kho lưu trữ), giúp doanh nghiệp chuyển đổi từ tape thật sang cloud mà giữ nguyên quy trình vận hành quen thuộc.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "fdb42c894a82",
+          "title": "STORAGE GATEWAY: AUDIT LOGGING QUA CLOUDTRAIL & CLOUDWATCH",
+          "content": "✅ Mọi hoạt động quản trị Storage Gateway (tạo/xóa gateway, thay đổi cấu hình) được ghi qua CloudTrail; hiệu năng gateway (cache hit rate, upload buffer usage, latency) được theo dõi qua CloudWatch Metrics — dùng để phát hiện sớm khi cache/buffer sắp đầy gây nghẽn hiệu năng truy cập on-premises.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
         }
       ]
     },
@@ -2686,6 +2714,20 @@
           "content": "📌 Tình huống: Khi Macie phát hiện file chứa dữ liệu nhạy cảm bị lưu NHẦM vào bucket public, cần tự động cách ly ngay (chặn truy cập) mà không chờ người xử lý thủ công.\n✅ Đáp án đúng: Macie finding → EventBridge rule → Lambda tự động thêm Block Public Access lên bucket đó hoặc di chuyển object sang bucket cách ly (quarantine bucket) ngay lập tức.",
           "createdAt": "2026-09-14T06:29:02.614843Z",
           "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "bd7649c0affd",
+          "title": "MACIE: CUSTOM DATA IDENTIFIER - IGNORE WORDS & KEYWORDS",
+          "content": "✅ Khi định nghĩa Custom Data Identifier bằng Regex, có thể thêm Keywords (bắt buộc phải xuất hiện GẦN pattern regex để giảm false positive, vd chỉ tính là số thẻ nếu gần chữ \"card number\") và Ignore Words (loại trừ các giá trị biết chắc KHÔNG phải dữ liệu nhạy cảm dù khớp regex, vd số test cố định dùng trong môi trường dev).",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "389d9696ec9f",
+          "title": "MACIE: SUMMARY DASHBOARD & BUCKET INVENTORY",
+          "content": "✅ Macie Dashboard hiển thị TỔNG QUAN toàn bộ bucket trong account: bucket nào PUBLIC, bucket nào KHÔNG mã hóa, bucket nào được chia sẻ ra ngoài account — hữu ích để rà soát nhanh RỦI RO CẤU HÌNH ở mức bucket, không chỉ dừng ở việc tìm dữ liệu nhạy cảm bên trong file.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
         }
       ]
     },
@@ -2752,6 +2794,20 @@
           "content": "📌 Tình huống: Website bị bot tự động (scraper, credential stuffing, bot mua vé số lượng lớn) tấn công, cần phân biệt bot với người dùng thật mà không chỉ dựa vào rate limit đơn thuần.\n✅ Đáp án đúng: AWS WAF Bot Control (Managed Rule Group trả phí thêm) — tự động phân loại traffic là bot HỢP LỆ (Googlebot, Bingbot...) hay bot ĐỘC HẠI, cho phép chặn/CAPTCHA riêng theo từng loại bot mà không ảnh hưởng người dùng thật hay bot tìm kiếm hợp lệ (SEO).",
           "createdAt": "2026-09-14T06:29:02.614843Z",
           "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "99860aef06f0",
+          "title": "WAF: WEB ACL CAPACITY UNITS (WCU)",
+          "content": "✅ Mỗi rule trong Web ACL tiêu tốn 1 lượng WCU nhất định (tùy độ phức tạp: rule đơn giản như IP match tốn ít, rule regex/managed rule group phức tạp tốn nhiều), tổng WCU của 1 Web ACL bị GIỚI HẠN (mặc định 1500, xin tăng được) — cần cân nhắc khi thêm nhiều Managed Rule Group vì mỗi group có thể tốn hàng trăm WCU.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "f2a1538cc6d7",
+          "title": "WAF: JA3 FINGERPRINT & TLS FINGERPRINTING",
+          "content": "📌 Tình huống: Bot tự động cố tình GIẢ MẠO User-Agent giống trình duyệt thật để né các rule filter theo header thông thường.\n✅ Đáp án đúng: WAF hỗ trợ JA3 Fingerprint — nhận diện CLIENT dựa trên cách nó bắt tay TLS (TLS handshake signature), khó giả mạo hơn nhiều so với User-Agent header (vì phụ thuộc vào thư viện TLS thực tế client dùng), giúp phát hiện bot tinh vi hơn.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
         }
       ]
     },
@@ -2891,6 +2947,20 @@
           "content": "✅ Consolidated Billing only (kiểu cũ): chỉ gộp hóa đơn, KHÔNG dùng được SCP, Tag Policy, hay các tính năng quản trị nâng cao khác.\n✅ All Features (mặc định khi tạo Organization mới, khuyến nghị): mở khóa TOÀN BỘ tính năng quản trị (SCP, Tag Policy, StackSets, Backup Policy...) — cần account thành viên CHẤP NHẬN lời mời (hoặc account do chính Organization TẠO MỚI thì tự động ở chế độ này).",
           "createdAt": "2026-09-14T06:28:13.873303Z",
           "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "c287fcec1a51",
+          "title": "ORGANIZATIONS: RESOURCE CONTROL POLICY (RCP)",
+          "content": "📌 Tình huống: Cần đặt giới hạn KHÔNG PHẢI cho principal (IAM user/role) mà cho chính RESOURCE (vd mọi S3 bucket trong Organization không được public dù IAM policy của user có cho phép).\n✅ Đáp án đúng: Resource Control Policy (RCP, tính năng mới hơn SCP) — đặt GIỚI HẠN Ở CẤP RESOURCE xuyên Organization, bổ sung cho SCP (vốn giới hạn principal), đảm bảo dù identity policy/resource policy riêng lẻ có sai sót cũng không thể vượt qua giới hạn RCP đặt sẵn.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "2ebaef484e11",
+          "title": "ORGANIZATIONS: INVITE vs CREATE ACCOUNT",
+          "content": "✅ Create Account: tạo account MỚI TRỰC TIẾP từ Organization — account con này mặc định KHÔNG có root password riêng biết trước (phải reset), và LUÔN ở chế độ All Features.\n✅ Invite Account: mời 1 account AWS ĐÃ TỒN TẠI SẴN (standalone) tham gia Organization — account đó phải CHẤP NHẬN lời mời, có thể chọn ở chế độ Consolidated Billing only hoặc All Features.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
         }
       ]
     },
@@ -3284,6 +3354,20 @@
           "content": "✅ Firehose gom dữ liệu vào BUFFER (theo dung lượng HOẶC thời gian, cái nào đạt trước) rồi mới ghi ra đích 1 lần — buffer lớn/interval dài giảm số file nhỏ (ít API call, tối ưu chi phí S3) nhưng tăng độ trễ trước khi dữ liệu tới đích.\n✅ Format Conversion: Firehose có thể tự động convert dữ liệu (JSON) sang Parquet/ORC (columnar) TRƯỚC KHI ghi vào S3 — tối ưu sẵn cho Athena/Redshift Spectrum query sau này mà không cần ETL job riêng.",
           "createdAt": "2026-09-14T06:27:04.373715Z",
           "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "165b4050ba24",
+          "title": "KINESIS AGENT & KPL (KINESIS PRODUCER LIBRARY)",
+          "content": "✅ Kinesis Agent: phần mềm cài SẴN trên server (Java) để TỰ ĐỘNG theo dõi file log và đẩy dữ liệu mới vào Kinesis Data Streams/Firehose mà không cần tự viết code producer.\n✅ KPL (Kinesis Producer Library): thư viện giúp TỐI ƯU việc gửi dữ liệu vào Data Streams — tự động BATCH nhiều record nhỏ thành 1 request PutRecords (giảm chi phí & tăng throughput), có cơ chế retry tự động — đánh đổi lại là thêm 1 chút độ trễ (buffer time trước khi gửi).",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "55516d1c80a4",
+          "title": "KINESIS: SERVER-SIDE ENCRYPTION & VPC ENDPOINT",
+          "content": "✅ Kinesis Data Streams hỗ trợ mã hóa at-rest bằng KMS (bật 1-click, không cần Envelope Encryption thủ công như S3).\n✅ Có thể dùng VPC Endpoint (Interface Endpoint) để Producer/Consumer trong private subnet gọi Kinesis API mà không cần NAT Gateway, giữ traffic hoàn toàn trong mạng AWS riêng.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
         }
       ]
     },
@@ -3496,6 +3580,20 @@
           "content": "✅ Neptune hỗ trợ IAM Database Authentication (dùng IAM Role thay vì user/password cố định để kết nối) — giống RDS.\n✅ Neptune LUÔN nằm trong VPC (không có endpoint public), chỉ truy cập được từ trong VPC/qua peering/VPN — tương tự DocumentDB, tăng bảo mật mặc định cho dữ liệu đồ thị thường mang tính nhạy cảm cao (quan hệ tài chính, social graph).",
           "createdAt": "2026-09-14T06:29:02.614843Z",
           "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "448b7e559613",
+          "title": "NEPTUNE: BULK LOADER",
+          "content": "📌 Tình huống: Cần nạp HÀNG TRIỆU node/edge vào Neptune cùng lúc (migrate dữ liệu graph có sẵn), dùng câu lệnh INSERT từng dòng sẽ quá chậm.\n✅ Đáp án đúng: Neptune Bulk Loader — nạp dữ liệu HÀNG LOẠT trực tiếp từ file (CSV cho Gremlin, hoặc N-Triples/RDF cho SPARQL) đặt sẵn trên S3, xử lý song song nhanh hơn rất nhiều so với insert từng bản ghi qua API thông thường.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "058622ab0e15",
+          "title": "NEPTUNE: NOTEBOOKS (JUPYTER TÍCH HỢP)",
+          "content": "✅ Neptune Notebooks: môi trường Jupyter Notebook được AWS chuẩn bị SẴN (managed), tích hợp sẵn magic command để chạy Gremlin/SPARQL/openCypher trực tiếp và VẼ ĐỒ THỊ trực quan kết quả — giúp data scientist/developer thử nghiệm truy vấn graph nhanh mà không cần tự cài đặt môi trường.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
         }
       ]
     },
@@ -3562,6 +3660,20 @@
           "content": "✅ Ngoài EC2, Compute Optimizer còn phân tích & khuyến nghị cho: EBS volume (đổi loại/giảm IOPS provisioned dư thừa), Lambda function (điều chỉnh memory allocation tối ưu giữa cost và performance vì Lambda tính phí theo GB-giây), Auto Scaling Group (chọn instance type phù hợp cho cả nhóm).",
           "createdAt": "2026-09-14T04:01:22.238023Z",
           "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "2eb30fd5c290",
+          "title": "AWS COST AND USAGE REPORT (CUR)",
+          "content": "📌 Tình huống: Cần dữ liệu chi phí CHI TIẾT NHẤT có thể (từng dòng resource, từng giờ, kèm thuế, discount, RI amortization) để tự phân tích sâu bằng công cụ BI riêng (QuickSight, Tableau).\n✅ Đáp án đúng: AWS Cost and Usage Report (CUR) — báo cáo CHI TIẾT NHẤT trong hệ sinh thái cost tool của AWS, xuất định kỳ ra S3 dưới dạng CSV/Parquet, dùng làm nguồn cho Athena/Redshift/QuickSight phân tích tùy ý, chi tiết hơn nhiều so với Cost Explorer (vốn chỉ xem trực quan sẵn có).",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "6d898e6d9e8b",
+          "title": "SAVINGS PLANS PURCHASE ANALYZER & AMORTIZED COST",
+          "content": "✅ Amortized Cost View trong Cost Explorer: phân bổ ĐỀU chi phí RI/Savings Plan trả TRƯỚC (upfront) ra TỪNG NGÀY sử dụng trong suốt kỳ hạn, thay vì hiển thị dồn hết vào ngày mua — giúp so sánh chi phí THỰC TẾ theo ngày công bằng hơn giữa các tháng.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
         }
       ]
     },
@@ -3621,6 +3733,20 @@
           "content": "✅ Direct Connect dùng giao thức BGP (Border Gateway Protocol) để trao đổi route động giữa on-premises router và AWS — có thể dùng BGP Community Tag để đánh dấu route (public/local Region/toàn bộ Region khác), kiểm soát chi tiết route nào được advertise/nhận, tối ưu bảo mật và routing.",
           "createdAt": "2026-09-14T04:02:45.495017Z",
           "updatedAt": "2026-09-14T04:02:45.495017Z"
+        },
+        {
+          "id": "e3369ed8b3bf",
+          "title": "DIRECT CONNECT GATEWAY vs VIRTUAL PRIVATE GATEWAY: PHẠM VI REGION",
+          "content": "✅ Virtual Private Gateway (VGW) gắn TRỰC TIẾP vào 1 VPC, chỉ dùng được trong CÙNG Region với Direct Connect connection.\n✅ Direct Connect Gateway: lớp trung gian toàn cầu, cho phép 1 Direct Connect connection (qua Private VIF) kết nối tới NHIỀU VGW ở NHIỀU Region KHÁC NHAU — giải quyết hạn chế \"1 VIF chỉ 1 Region\" của cách dùng VGW trực tiếp.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "efeb54a5a544",
+          "title": "DIRECT CONNECT: MACSEC ENCRYPTION",
+          "content": "📌 Tình huống: Yêu cầu compliance bắt buộc dữ liệu phải được MÃ HÓA ngay ở TẦNG VẬT LÝ (Layer 2) khi truyền qua Direct Connect, không chỉ dựa vào mã hóa ở tầng ứng dụng (TLS).\n✅ Đáp án đúng: MACsec (Media Access Control Security) — mã hóa Layer 2 tốc độ dây (line-rate), hỗ trợ trên kết nối Dedicated 10Gbps/100Gbps tại 1 số Direct Connect location, đảm bảo dữ liệu mã hóa xuyên suốt đường truyền vật lý mà không cần dựng thêm VPN chồng lên Direct Connect.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
         }
       ]
     },
@@ -3718,6 +3844,20 @@
           "content": "✅ SQS: hàng đợi ĐIỂM-ĐIỂM, 1 message → 1 consumer xử lý, dùng để decouple & buffer traffic.\n✅ SNS: PUB/SUB đơn giản, đẩy tới nhiều subscriber ngay lập tức, không lọc phức tạp theo nội dung sâu.\n✅ EventBridge: PUB/SUB NÂNG CAO, lọc theo nội dung JSON chi tiết (content-based routing), tích hợp trực tiếp hàng trăm AWS service làm source, hỗ trợ schema registry & nhiều bus.\n⚠️ Đáp án sai thường gặp: dùng SNS khi cần lọc phức tạp theo nhiều field lồng nhau trong event ➜ EventBridge phù hợp hơn cho content-based routing phức tạp.",
           "createdAt": "2026-09-14T03:39:06.369857Z",
           "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "12797d22cc4b",
+          "title": "SNS: DEAD LETTER QUEUE CHO SUBSCRIPTION",
+          "content": "✅ Mỗi Subscription (không chỉ SQS mà cả Lambda, HTTP endpoint) có thể gắn riêng 1 Dead Letter Queue — nếu SNS gửi message tới subscriber đó nhiều lần THẤT BẠI (endpoint down, Lambda lỗi), message được chuyển vào DLQ riêng của subscription đó, không làm mất message vĩnh viễn.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "a38c2c693473",
+          "title": "SNS: DELIVERY STATUS LOGGING & RETRY POLICY",
+          "content": "✅ Delivery Status Logging: ghi log CloudWatch Logs chi tiết việc gửi message THÀNH CÔNG/THẤT BẠI tới từng subscriber — dùng để audit & debug khi 1 subscriber không nhận được message như mong đợi.\n✅ Retry Policy (HTTP/HTTPS endpoint): tùy chỉnh số lần thử lại, khoảng cách giữa các lần retry khi endpoint tạm thời không phản hồi — có Backoff Function (linear/exponential) để tránh dồn dập gửi lại ngay khi endpoint vẫn đang quá tải.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
         }
       ]
     },
@@ -3850,6 +3990,20 @@
           "content": "✅ Choice State: rẽ nhánh workflow dựa trên điều kiện (giống if/else) — kiểm tra giá trị field trong input để quyết định đường đi tiếp theo.\n✅ Parallel State: chạy NHIỀU NHÁNH khác nhau ĐỒNG THỜI (khác Map State chạy LẶP LẠI cùng 1 logic trên nhiều item — Parallel chạy các LOGIC KHÁC NHAU song song, vd vừa gửi email vừa cập nhật DB cùng lúc), chỉ tiếp tục khi TẤT CẢ nhánh hoàn tất.",
           "createdAt": "2026-09-14T06:29:02.614843Z",
           "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "66573611384b",
+          "title": "STEP FUNCTIONS: VERSIONS & ALIASES",
+          "content": "✅ Version: mỗi lần publish State Machine tạo ra 1 bản snapshot BẤT BIẾN (immutable) — giữ lại lịch sử các version trước.\n✅ Alias: con trỏ TRỎ TỚI 1 hoặc NHIỀU version (chia % traffic giữa 2 version, giống canary deployment) — cho phép release version mới cho 1 phần traffic để test trước khi chuyển 100% sang, tương tự Lambda Alias/Version.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "a88cc47dd5c5",
+          "title": "STEP FUNCTIONS: LOGGING & X-RAY TRACING TÍCH HỢP",
+          "content": "✅ Có thể bật CloudWatch Logs cho từng execution (ghi lại TOÀN BỘ input/output của mỗi state chuyển đổi) để debug chi tiết, và tích hợp X-Ray để xem trace xuyên suốt cả Step Functions LẪN các service nó gọi (Lambda, DynamoDB...) trong CÙNG 1 Service Map, giúp debug end-to-end dễ hơn nhiều.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
         }
       ]
     },
@@ -4135,6 +4289,20 @@
           "content": "📌 Tình huống: Cần JOIN dữ liệu ĐANG NẰM TRỰC TIẾP trong RDS/Aurora PostgreSQL với dữ liệu đã có sẵn trong Redshift, không muốn ETL đồng bộ dữ liệu sang trước.\n✅ Đáp án đúng: Redshift Federated Query — truy vấn TRỰC TIẾP dữ liệu LIVE từ RDS/Aurora ngay trong câu SQL của Redshift mà không cần copy/ETL trước, tương tự khái niệm Athena Federated Query nhưng dành riêng cho Redshift.",
           "createdAt": "2026-09-14T06:28:13.873303Z",
           "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "c6595e2b0f3b",
+          "title": "REDSHIFT: MATERIALIZED VIEWS",
+          "content": "📌 Tình huống: 1 câu query phức tạp (nhiều JOIN/aggregation) được chạy LẶP LẠI RẤT NHIỀU LẦN bởi dashboard BI, gây tốn tài nguyên tính toán lại mỗi lần.\n✅ Đáp án đúng: Materialized View — LƯU SẴN kết quả của query phức tạp đó, các lần gọi sau đọc thẳng kết quả đã tính sẵn (nhanh hơn nhiều), tự động REFRESH định kỳ hoặc theo yêu cầu để cập nhật dữ liệu mới mà không cần tính toán lại từ đầu mỗi lần.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "5f8f0832f62f",
+          "title": "REDSHIFT: AUTOMATIC TABLE OPTIMIZATION (ATO)",
+          "content": "✅ Automatic Table Optimization: Redshift TỰ ĐỘNG chọn Distribution Style & Sort Key TỐI ƯU cho từng bảng dựa trên PATTERN TRUY VẤN THỰC TẾ theo thời gian (dùng ML), tự áp dụng thay đổi khi có lợi rõ rệt — giảm nhu cầu phải tự tay tối ưu thủ công như note trước đã đề cập.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
         }
       ]
     },
@@ -4750,6 +4918,20 @@
           "content": "✅ Event Subscriptions: gửi thông báo (qua SNS) khi có sự kiện quan trọng xảy ra với cluster (failover, thay đổi cấu hình, backup hoàn tất, low storage warning) — giống RDS Event Notifications, giúp chủ động theo dõi tình trạng cluster mà không cần liên tục check dashboard.",
           "createdAt": "2026-09-14T06:29:02.614843Z",
           "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "59f60d67c0d7",
+          "title": "DOCUMENTDB: I/O-OPTIMIZED STORAGE CONFIGURATION",
+          "content": "✅ I/O-Optimized: cấu hình storage TÍNH GIÁ CỐ ĐỊNH theo dung lượng thay vì tính riêng theo số lượng I/O — phù hợp workload có TẦN SUẤT I/O RẤT CAO (nhiều read/write liên tục), giúp dự đoán chi phí ổn định hơn so với Standard (tính phí I/O riêng theo lượt, có thể biến động mạnh theo tải).",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "675d01ed4438",
+          "title": "DOCUMENTDB: PARAMETER GROUPS & INSTANCE CLASS",
+          "content": "✅ Cluster Parameter Group: cấu hình tham số CHUNG cho cả cluster (audit logging, TTL monitor...); Instance Parameter Group: cấu hình riêng từng instance — tương tự khái niệm Parameter Group của RDS/Aurora nhưng áp dụng cho tham số đặc thù MongoDB-compatible engine.",
+          "createdAt": "2026-09-14T06:32:39.487411Z",
+          "updatedAt": "2026-09-14T06:32:39.487411Z"
         }
       ]
     },
@@ -4875,6 +5057,20 @@
           "content": "✅ Detective tự động dựng Behavior Graph liên kết dữ liệu 12 tháng gần nhất giữa các entity (IP, user, role, instance) — khi điều tra 1 finding, có thể XEM NGƯỢC LẠI lịch sử hành vi liên quan dù finding đó mới xảy ra, giúp phát hiện tấn công đã âm thầm diễn ra TRƯỚC KHI bị phát hiện.",
           "createdAt": "2026-09-14T04:04:07.265302Z",
           "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "11275150f33c",
+          "title": "SECURITY HUB: CUSTOM ACTIONS & AUTOMATION RULES",
+          "content": "✅ Custom Action: định nghĩa hành động TÙY CHỌN xuất hiện trên UI, khi security analyst chọn 1 finding rồi bấm Custom Action → trigger EventBridge → Lambda xử lý (vd gửi ticket JIRA) — cho phép phản ứng THỦ CÔNG có kiểm soát.\n✅ Automation Rules: TỰ ĐỘNG cập nhật/thay đổi finding (đổi severity, đánh dấu suppressed, thêm note) khi khớp điều kiện — giảm công sức xử lý hàng loạt finding lặp lại/đã biết.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "442bfd43adbb",
+          "title": "FIREWALL MANAGER: DNS FIREWALL POLICY & THIRD-PARTY FIREWALL",
+          "content": "✅ Firewall Manager cũng quản lý tập trung Route 53 Resolver DNS Firewall Policy xuyên Organization (không chỉ WAF/Network Firewall/Shield như đã nêu), và hỗ trợ tích hợp firewall của ĐỐI TÁC (Palo Alto, Fortinet...) qua AWS Marketplace, quản lý CHUNG với Network Firewall gốc của AWS trong 1 policy.",
+          "createdAt": "2026-09-14T06:31:58.066350Z",
+          "updatedAt": "2026-09-14T06:31:58.066350Z"
         }
       ]
     }
