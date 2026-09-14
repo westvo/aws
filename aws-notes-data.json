@@ -806,6 +806,160 @@
           "content": "✅ Static Website Hosting: bật trực tiếp trên bucket để host website TĨNH (HTML/CSS/JS) chỉ với S3, không cần server — có URL endpoint riêng (khác endpoint API S3 thường), bucket phải để PUBLIC READ.\n✅ CORS (Cross-Origin Resource Sharing): cấu hình trên bucket để cho phép JavaScript từ 1 DOMAIN KHÁC gọi (fetch) tới object trong bucket — cần thiết khi frontend ở domain A gọi API/tải asset từ bucket S3 domain khác.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "a654b1ffe497",
+          "title": "S3 EVENT NOTIFICATIONS",
+          "content": "📌 Tình huống: Cần TỰ ĐỘNG xử lý ngay khi có object mới upload vào bucket (vd resize ảnh, quét virus, index metadata) mà không cần polling kiểm tra định kỳ.\n✅ Đáp án đúng: S3 Event Notifications — bucket TỰ ĐỘNG gửi event (PUT/DELETE/multipart complete...) tới đích: Lambda Function (xử lý trực tiếp), SQS Queue (xử lý bất đồng bộ, có buffer chống quá tải), SNS Topic (fan-out tới nhiều subscriber), hoặc EventBridge (linh hoạt nhất — lọc/định tuyến event phức tạp tới nhiều đích khác nhau, tích hợp với toàn bộ hệ sinh thái sự kiện AWS).",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "92e1d4857010",
+          "title": "S3 BATCH OPERATIONS",
+          "content": "📌 Tình huống: Cần thực hiện 1 THAO TÁC HÀNG LOẠT (copy, đổi storage class, xóa, gắn tag, thực thi Lambda, khôi phục từ Glacier) trên HÀNG TRIỆU object có sẵn trong bucket — làm thủ công hoặc script từng object không khả thi.\n✅ Đáp án đúng: S3 Batch Operations — cung cấp danh sách object cần xử lý (qua S3 Inventory report hoặc CSV manifest tự tạo), chọn loại thao tác (Copy, Replace Tags, Replace Access Control, Invoke Lambda, Restore, Delete Object Version...), S3 tự động thực thi trên TOÀN BỘ danh sách, theo dõi tiến độ & retry lỗi tự động — dùng để backfill S3 Replication cho object đã tồn tại từ trước khi bật rule.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "de7683006a5d",
+          "title": "S3 INVENTORY",
+          "content": "✅ S3 Inventory: tạo BÁO CÁO ĐỊNH KỲ (hàng ngày/hàng tuần) liệt kê TOÀN BỘ object trong bucket (hoặc theo prefix) kèm metadata (size, storage class, encryption status, replication status...) dưới dạng file CSV/ORC/Parquet lưu vào 1 bucket khác — thay thế cho việc gọi API LIST liên tục (chậm & tốn phí với bucket hàng tỷ object), dùng làm đầu vào cho S3 Batch Operations hoặc phân tích bằng Athena.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "7a15ac8947e3",
+          "title": "S3 STORAGE LENS",
+          "content": "✅ S3 Storage Lens: dashboard PHÂN TÍCH & TRỰC QUAN HÓA việc sử dụng & hoạt động storage trên QUY MÔ TOÀN TỔ CHỨC (nhiều bucket, nhiều account, nhiều Region) — cung cấp 60+ metric (dung lượng, số object, tỷ lệ mã hóa, tỷ lệ dùng storage class kém tối ưu...), khuyến nghị TỐI ƯU CHI PHÍ tự động, khác Storage Class Analysis chỉ phân tích cho 1 bucket đơn lẻ.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "3e75a32815d4",
+          "title": "S3 ACCESS POINTS",
+          "content": "📌 Tình huống: 1 bucket S3 dùng chung được truy cập bởi HÀNG TRĂM ứng dụng khác nhau, mỗi ứng dụng cần quyền/phạm vi truy cập RIÊNG (vd chỉ đọc 1 prefix cụ thể) — quản lý 1 bucket policy DUY NHẤT chứa hết logic cho tất cả ứng dụng trở nên cực kỳ phức tạp & khó audit.\n✅ Đáp án đúng: S3 Access Points — tạo NHIỀU \"cổng vào\" riêng biệt cho CÙNG 1 bucket, mỗi Access Point có HOSTNAME riêng, policy riêng (thu hẹp phạm vi theo ứng dụng/team) và có thể giới hạn CHỈ truy cập được từ 1 VPC cụ thể (VPC-restricted Access Point) — tách biệt rõ ràng quyền truy cập theo từng use case mà không cần sửa policy gốc của bucket.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "3886ee8f8407",
+          "title": "S3 MULTI-REGION ACCESS POINTS",
+          "content": "📌 Tình huống: Ứng dụng global cần truy cập dữ liệu S3 replicate ở NHIỀU REGION, muốn dùng 1 ENDPOINT DUY NHẤT mà tự động route tới bản sao GẦN NHẤT/nhanh nhất, không cần tự code logic chọn Region.\n✅ Đáp án đúng: S3 Multi-Region Access Point — cung cấp 1 endpoint global DUY NHẤT trước nhiều bucket ở nhiều Region (đã cấu hình Replication với nhau), tự động định tuyến request tới bucket GẦN client nhất dựa trên độ trễ mạng (dùng AWS Global Accelerator bên dưới), hỗ trợ failover tự động nếu 1 Region gặp sự cố.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "ccc731e9bee5",
+          "title": "S3 OBJECT LAMBDA",
+          "content": "📌 Tình huống: Cần TRẢ VỀ DỮ LIỆU ĐÃ BIẾN ĐỔI khi client gọi GET object (vd ẩn thông tin nhạy cảm (PII) cho 1 nhóm user, resize ảnh theo yêu cầu, đổi định dạng file) mà KHÔNG muốn lưu nhiều bản sao đã biến đổi sẵn trong bucket.\n✅ Đáp án đúng: S3 Object Lambda — gắn 1 Lambda Function vào S3 Access Point, MỌI request GET đi qua Access Point đó sẽ được Lambda XỬ LÝ & BIẾN ĐỔI dữ liệu TRƯỚC KHI trả về client theo thời gian thực (on-the-fly), object GỐC trong bucket KHÔNG bị thay đổi, tiết kiệm việc phải lưu trữ nhiều phiên bản.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "88ae52c1ef62",
+          "title": "S3 REQUESTER PAYS",
+          "content": "📌 Tình huống: Bucket owner chia sẻ dữ liệu công khai/dataset lớn cho bên thứ 3 tải về, nhưng KHÔNG muốn TỰ MÌNH trả phí data transfer (có thể rất lớn khi nhiều người tải).\n✅ Đáp án đúng: Bật Requester Pays trên bucket — người TẢI (requester) sẽ phải trả phí request & data transfer thay vì bucket owner (owner vẫn trả phí lưu trữ storage), requester bắt buộc phải xác thực (không dùng được với truy cập ẩn danh) và phải khai báo rõ chấp nhận trả phí trong request.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "07bd598d9326",
+          "title": "S3 BLOCK PUBLIC ACCESS",
+          "content": "⚠️ Block Public Access: 4 tùy chọn CHẶN TOÀN DIỆN ở CẤP TÀI KHOẢN hoặc CẤP BUCKET, override MỌI ACL/Bucket Policy hiện có nếu bật — (1) chặn ACL công khai mới, (2) xóa ACL công khai hiện có, (3) chặn Bucket Policy công khai mới, (4) chặn truy cập công khai dù policy cho phép — MẶC ĐỊNH BẬT TOÀN BỘ cho account/bucket MỚI TẠO, là lớp bảo vệ CUỐI CÙNG chống rò rỉ dữ liệu do cấu hình sai policy/ACL, nên hầu như luôn giữ bật trừ khi thực sự cần bucket public (vd static website hosting).",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "43c58383f88c",
+          "title": "S3: STRONG READ-AFTER-WRITE CONSISTENCY",
+          "content": "✅ S3 cung cấp STRONG CONSISTENCY (nhất quán mạnh) cho MỌI thao tác — ngay sau khi PUT (tạo mới hoặc ghi đè) hoặc DELETE thành công, MỌI request GET/LIST tiếp theo LUÔN thấy dữ liệu MỚI NHẤT ngay lập tức, không còn độ trễ eventual consistency như trước đây (đây là thay đổi quan trọng AWS công bố từ 12/2020) — không cần thêm cơ chế retry/workaround để chờ dữ liệu propagate như thiết kế ứng dụng cũ.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "9b8fd6babf27",
+          "title": "S3: BYTE-RANGE FETCHES",
+          "content": "✅ Byte-Range Fetches: client có thể yêu cầu CHỈ 1 PHẦN cụ thể của object (Range header, vd byte 0-1000) thay vì tải NGUYÊN FILE — dùng để TĂNG TỐC ĐỘ tải file lớn bằng cách tải SONG SONG nhiều range cùng lúc (nhiều thread/connection), hoặc chỉ cần đọc 1 phần nhỏ metadata đầu file mà không cần tải hết (vd đọc header của file video/dataset lớn).",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "9ef7550208aa",
+          "title": "S3 GLACIER: CÁC CHẾ ĐỘ RETRIEVAL (EXPEDITED / STANDARD / BULK)",
+          "content": "✅ Glacier Flexible Retrieval hỗ trợ 3 tốc độ lấy dữ liệu (đánh đổi tốc độ vs chi phí): Expedited (1-5 phút, phí CAO NHẤT, dùng khi khẩn cấp), Standard (3-5 giờ, cân bằng), Bulk (5-12 giờ, RẺ NHẤT, dùng khi khôi phục khối lượng lớn không gấp).\n⚠️ Glacier Deep Archive CHỈ hỗ trợ Standard (12 giờ) và Bulk (48 giờ) — KHÔNG có Expedited, vì đây là tier lưu trữ LÂU DÀI NHẤT & RẺ NHẤT, dùng cho dữ liệu gần như không bao giờ cần truy cập (compliance archive 7-10 năm).",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "927e85d51619",
+          "title": "S3 BUCKET KEY (GIẢM CHI PHÍ SSE-KMS)",
+          "content": "📌 Tình huống: Bucket dùng SSE-KMS mã hóa HÀNG TRIỆU request/object, chi phí gọi API tới KMS (tính theo request) tăng vọt vì MỖI lần GET/PUT object đều phải gọi KMS riêng để giải mã/mã hóa data key.\n✅ Đáp án đúng: Bật S3 Bucket Key — S3 tạo ra 1 BUCKET-LEVEL KEY ngắn hạn (derived từ KMS key gốc) và DÙNG LẠI key này cho NHIỀU request trong bucket thay vì gọi KMS cho MỖI request riêng lẻ — giảm ĐÁNG KỂ (tới 99%) số lượng API call tới KMS, giảm mạnh chi phí mà vẫn giữ nguyên mức bảo mật của SSE-KMS.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "ba62ecf92590",
+          "title": "S3 SERVER-SIDE ENCRYPTION: SSE-S3 vs SSE-KMS vs SSE-C",
+          "content": "⚠️ SSE-S3: AWS quản lý TOÀN BỘ key (tạo, xoay vòng, lưu trữ) — đơn giản nhất, không kiểm soát/audit được việc dùng key ở cấp độ chi tiết.\n⚠️ SSE-KMS: dùng KMS Key (managed hoặc customer-managed) — kiểm soát QUYỀN dùng key qua IAM/Key Policy riêng biệt với quyền S3, có CloudTrail AUDIT LOG chi tiết từng lần dùng key, hỗ trợ Key Rotation tùy chỉnh — ĐÁNH ĐỔI: giới hạn theo KMS request quota/giây (cần xin tăng hoặc dùng S3 Bucket Key để giảm tải).\n⚠️ SSE-C: KHÁCH HÀNG TỰ QUẢN LÝ HOÀN TOÀN encryption key, AWS KHÔNG LƯU key này (chỉ dùng 1 lần rồi bỏ) — client PHẢI GỬI KÈM key trong MỖI request (qua HTTPS bắt buộc), AWS không chịu trách nhiệm nếu mất key (mất key = mất vĩnh viễn dữ liệu, không khôi phục được).",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "baf9ad73c12b",
+          "title": "S3 OBJECT TAGGING & LIFECYCLE/REPLICATION THEO TAG",
+          "content": "✅ Object Tagging: gắn tối đa 10 cặp key-value cho MỖI object (tách biệt với metadata hệ thống) — dùng để PHÂN LOẠI dữ liệu (vd Confidential=true, Project=X) mà không cần đổi tên/cấu trúc thư mục.\n✅ Lifecycle Rule & Replication Rule đều có thể LỌC THEO TAG (kết hợp với prefix) — cho phép áp dụng chính sách transition/expiration/replicate CHỈ cho object có tag cụ thể, linh hoạt hơn nhiều so với chỉ lọc theo prefix (đường dẫn thư mục cố định).",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "7ddc9e052113",
+          "title": "S3 SERVER ACCESS LOGGING vs CLOUDTRAIL DATA EVENTS",
+          "content": "⚠️ Server Access Logging: ghi log CHI TIẾT từng request (GET/PUT/DELETE...) tới bucket vào 1 bucket log KHÁC (dạng file text) — MIỄN PHÍ nhưng có ĐỘ TRỄ (vài giờ) và không đảm bảo 100% mọi request được ghi (best-effort).\n⚠️ CloudTrail Data Events: ghi lại các API call ở CẤP OBJECT (GetObject, PutObject...) gần REAL-TIME hơn, tích hợp được với CloudWatch Alarm/EventBridge để cảnh báo/tự động hóa ngay khi có hành động bất thường — TÍNH PHÍ theo số lượng event, dùng khi cần audit nghiêm ngặt & phản ứng nhanh hơn Server Access Logging.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "b832c409e389",
+          "title": "S3 OBJECT OWNERSHIP: BUCKET OWNER ENFORCED (TẮT ACL)",
+          "content": "📌 Tình huống: Nhiều account khác nhau upload object vào CHUNG 1 bucket (vd data lake), mỗi object có OWNER khác nhau tùy account đã upload, gây khó khăn khi bucket owner muốn quản lý quyền truy cập THỐNG NHẤT bằng Bucket Policy.\n✅ Đáp án đúng: Đặt Object Ownership = Bucket Owner Enforced — TẮT HOÀN TOÀN ACL (kể cả ACL do account khác gán khi upload), MỌI object tự động thuộc quyền sở hữu của BUCKET OWNER bất kể ai upload, toàn bộ quyền truy cập chỉ còn quản lý qua Bucket Policy/IAM Policy — đây là CÀI ĐẶT MẶC ĐỊNH cho bucket mới tạo và là khuyến nghị chuẩn của AWS (ACL được coi là cơ chế cũ, nên tránh dùng).",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "e6a038a6b820",
+          "title": "S3 REPLICATION: DELETE MARKER REPLICATION & REPLICATION TIME CONTROL (RTC)",
+          "content": "⚠️ Mặc định, khi object bị XÓA (tạo delete marker) ở bucket nguồn, delete marker này CÓ THỂ replicate hoặc KHÔNG sang bucket đích tùy cấu hình (Delete Marker Replication bật/tắt riêng) — cần cân nhắc kỹ vì xóa nhầm ở nguồn có thể (hoặc không) lan sang đích tùy cấu hình này.\n✅ Replication Time Control (RTC): cam kết SLA 99.99% object được replicate trong vòng 15 PHÚT (có giám sát qua CloudWatch metric riêng: số object đang chờ, thời gian replicate), dùng khi có yêu cầu compliance NGHIÊM NGẶT về THỜI GIAN tối đa dữ liệu được sao lưu sang Region khác, khác Replication thường không cam kết SLA thời gian cụ thể.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "8d324770c839",
+          "title": "S3 VPC GATEWAY ENDPOINT: TRUY CẬP S3 RIÊNG TƯ TỪ VPC",
+          "content": "📌 Tình huống: EC2 trong PRIVATE SUBNET cần truy cập S3 nhưng KHÔNG muốn traffic đi qua NAT Gateway/Internet Gateway (tốn phí NAT data processing, hoặc yêu cầu bảo mật không cho traffic ra Internet).\n✅ Đáp án đúng: Tạo VPC Gateway Endpoint cho S3 — traffic từ EC2 tới S3 đi qua ĐƯỜNG RIÊNG TƯ trong mạng AWS (không qua Internet), MIỄN PHÍ (khác Interface Endpoint tính phí theo giờ), chỉ cần thêm route trong Route Table trỏ tới Gateway Endpoint — cách phổ biến nhất để tối ưu chi phí NAT Gateway khi ứng dụng dùng S3 nhiều.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "1be09081b670",
+          "title": "S3: BUCKET POLICY vs IAM POLICY vs ACL - THỨ TỰ ĐÁNH GIÁ QUYỀN",
+          "content": "⚠️ 3 cơ chế kiểm soát truy cập S3: (1) IAM Policy — gắn vào USER/ROLE, kiểm soát quyền của IDENTITY đó với NHIỀU resource AWS khác nhau; (2) Bucket Policy — gắn vào BUCKET, kiểm soát AI được truy cập bucket đó (kể cả cross-account), viết bằng JSON tương tự IAM Policy; (3) ACL — cơ chế CŨ NHẤT, gán quyền ở cấp object/bucket đơn giản (Read/Write), AWS khuyến nghị TẮT ACL (dùng Bucket Owner Enforced) trừ trường hợp đặc biệt.\n✅ Nguyên tắc: request được PHÉP nếu có ÍT NHẤT 1 policy cho phép VÀ KHÔNG có policy nào EXPLICIT DENY — Explicit Deny ở BẤT KỲ đâu (IAM, Bucket Policy, SCP) luôn THẮNG mọi Allow.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "c62dd2a8d168",
+          "title": "S3: GIỚI HẠN TÊN BUCKET & KÍCH THƯỚC OBJECT",
+          "content": "⚠️ Tên bucket S3 phải DUY NHẤT TOÀN CẦU (global, không chỉ trong account/Region) — do bucket có thể dùng làm hostname DNS (virtual-hosted style: bucketname.s3.amazonaws.com). Quy tắc: 3-63 ký tự, chữ thường/số/dấu gạch ngang, không được là địa chỉ IP.\n⚠️ Kích thước object: tối thiểu 0 byte, TỐI ĐA 5TB/object; PUT trực tiếp (single request) giới hạn 5GB — file lớn hơn 5GB BẮT BUỘC phải dùng Multipart Upload.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
+        },
+        {
+          "id": "c2eb90e8660f",
+          "title": "S3 ON OUTPOSTS",
+          "content": "📌 Tình huống: Ứng dụng cần lưu trữ S3 nhưng dữ liệu PHẢI Ở TẠI DATA CENTER ON-PREMISES (yêu cầu độ trễ cực thấp hoặc data residency pháp lý không cho phép rời khỏi cơ sở vật lý cụ thể), không thể dùng S3 Region chuẩn.\n✅ Đáp án đúng: S3 on Outposts — cung cấp S3 API/storage NGAY TẠI thiết bị AWS Outposts đặt tại on-premises, dữ liệu KHÔNG rời khỏi Outposts trừ khi chủ động replicate, dùng API và công cụ giống hệt S3 chuẩn nhưng vận hành hoàn toàn tại chỗ.",
+          "createdAt": "2026-09-14T09:14:25.863447Z",
+          "updatedAt": "2026-09-14T09:14:25.863447Z"
         }
       ]
     },
