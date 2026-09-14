@@ -4424,8 +4424,124 @@
             </div>
         </div>
     </div>
+<!-- END -->
+ <!-- MẪU BÀI THI CÂU 97 (ĐÃ CẬP NHẬT HOÀN CHỈNH) -->
+    <div class="exam-card" style="margin-top: 25px;">
+        <h2 class="domain-header pink">🩷 DOMAIN: <span class="pink"><b>AWS DATABASE MIGRATION SERVICE (AWS DMS)</b></span>, <span class="pink"><b>AMAZON S3</b></span> & <span class="pink"><b>AMAZON KINESIS DATA STREAMS</b></span></h2>
 
+        <!-- CÂU HỎI -->
+        <div class="question-box">
+            <strong>[CÂU HỎI]</strong><br>
+            Một <span class="black"><b>Big Data analytics company</b></span> ghi data và log files trong <span class="pink"><b>Amazon S3 buckets</b></span>. Công ty muốn stream các existing data files cũng như các ongoing file updates từ <span class="pink"><b>Amazon S3</b></span> sang <span class="pink"><b>Amazon Kinesis Data Streams</b></span>.<br><br>
+            • Yêu cầu: <span class="bg-blue-inline"><b>Đề xuất giải pháp nhanh nhất và tối ưu nhất để stream dữ liệu từ S3 sang Kinesis Data Streams theo chuẩn đề thi</b></span>.<br>
+            • Ràng buộc: <span class="bg-orange-inline"><b>Xử lý trọn gói cả dữ liệu lịch sử (existing files) và dữ liệu cập nhật thời gian thực (ongoing updates) mà không cần viết code thủ công</b></span>.
+        </div>
 
+        <!-- ĐÁP ÁN ĐÚNG -->
+        <div class="option-box correct">
+            <b>🟢 Tận dụng <span class="pink"><b>AWS Database Migration Service (AWS DMS)</b></span> làm cầu nối giữa <span class="pink"><b>Amazon S3</b></span> và <span class="pink"><b>Amazon Kinesis Data Streams</b></span>.</b>
+            <div class="explanation">
+                ➜ [<span class="green"><b>ĐÚNG</b></span>]: <span class="pink"><b>AWS DMS</b></span> không chỉ hỗ trợ migration cơ sở dữ liệu truyền thống mà còn hỗ trợ cấu hình <span class="pink"><b>Amazon S3 làm source endpoint</b></span>. Nó cung cấp khả năng đọc các tệp dữ liệu hiện có (<span class="pink"><b>Full Load</b></span>) cũng như liên tục bắt các tệp thay đổi, cập nhật mới (<span class="pink"><b>Change Data Capture - CDC</b></span>) để truyền thẳng tới <span class="pink"><b>Amazon Kinesis Data Streams</b></span> một cách đồng bộ, giúp xây dựng hệ thống phân tích dữ liệu lớn nhanh chóng mà không phải viết mã nguồn mới.
+            </div>
+
+            <div style="margin-top: 10px; text-align: center;">
+                    <img src="https://assets-pt.media.datacumulus.com/aws-saa-pt/assets/pt3-q27-i1.jpg" alt="Amazon Kinesis Data Analytics Architecture Diagram" style="max-width: 100%; height: auto; border-radius: 4px; border: 1px solid #ddd;" />
+                </div>
+        </div>
+
+        <!-- CÁC ĐÁP ÁN SAI -->
+        <div class="option-box incorrect">
+            <b>🔴 Sử dụng S3 Event Notification kết hợp AWS Lambda hoặc Amazon SNS/EventBridge.</b>
+            <div class="explanation">
+                ➜ [<span class="red"><b>SAI TRONG NGỮ CẢNH ĐỀ THI</b></span>]: Mặc dù S3 Events + Lambda rất phổ biến trong thực tế, các phương án này <span class="red"><b>không tự động xử lý được phần dữ liệu lịch sử (existing data files)</b></span> đã có sẵn trong bucket từ trước mà chỉ bắt được các sự kiện phát sinh mới, đồng thời đòi hỏi phải tự viết và bảo trì code xử lý. Trong khi đó, AWS DMS giải quyết trọn gói cả Full Load lẫn CDC một cách out-of-the-box.
+            </div>
+        </div>
+
+        <!-- PHẦN GHI NHỚ CHO KỲ THI SAA-C03 -->
+        <div class="explanation" style="margin-top: 15px; background-color: #f8f9fa; border-left: 4px solid #ff69b4; padding: 10px;">
+            🎓 <strong>Ghi nhớ cho kỳ thi SAA-C03:</strong> Khi đề bài yêu cầu stream dữ liệu từ <b>Amazon S3</b> (bao gồm cả dữ liệu cũ và cập nhật mới) sang các nền tảng streaming như <b>Amazon Kinesis Data Streams</b> hoặc <b>Amazon MSK</b> một cách nhanh chóng mà <b>không cần viết code</b>, hãy ưu tiên chọn <b>AWS Database Migration Service (AWS DMS)</b> nhờ khả năng tích hợp sẵn tính năng <b>Full Load</b> kết hợp <b>CDC</b>.
+        </div>
+    </div>
+<!-- MẪU BÀI THI CÂU 98 -->
+    <div class="exam-card" style="margin-top: 25px;">
+        <h2 class="domain-header pink">🩷 DOMAIN: <span class="pink"><b>CONTAINER ORCHESTRATION</b></span>, <span class="pink"><b>AWS FARGATE</b></span>, <span class="pink"><b>ECS</b></span> & <span class="pink"><b>EKS SERVERLESS</b></span></h2>
+
+        <!-- CÂU HỎI -->
+        <div class="question-box">
+            <strong>[CÂU HỎI]</strong><br>
+            Một <span class="black"><b>IT company</b></span> có lượng lớn clients xây dựng API bằng <span class="pink"><b>Docker containers</b></span>. Để host các containers này, công ty tìm kiếm các orchestration services khả dụng trên <span class="pink"><b>AWS</b></span>.<br><br>
+            • Yêu cầu: <span class="bg-blue-inline"><b>Chọn 2 giải pháp điều phối container theo mô hình serverless (Select two)</b></span>.<br>
+            • Ràng buộc: <span class="bg-orange-inline"><b>Docker containers, orchestration services, serverless infrastructure</b></span>.
+        </div>
+
+        <!-- ĐÁP ÁN ĐÚNG 1 -->
+        <div class="option-box correct">
+            <b>🟢 Sử dụng <span class="pink"><b>Amazon Elastic Container Service (Amazon ECS)</b></span> kết hợp với <span class="pink"><b>AWS Fargate</b></span> để điều phối serverless các dịch vụ container.</b>
+            <div class="explanation">
+                ➜ [<span class="green"><b>ĐÚNG</b></span>]: <span class="pink"><b>Amazon ECS</b></span> là dịch vụ điều phối container native của AWS. Khi chạy ECS với <span class="pink"><b>AWS Fargate</b></span>, bạn có một kiến trúc hoàn toàn serverless vì AWS tự động quản lý hạ tầng phần cứng máy chủ bên dưới, bạn chỉ cần cấu hình task định nghĩa và chạy container trực tiếp.
+            </div>
+        </div>
+
+        <!-- ĐÁP ÁN ĐÚNG 2 -->
+        <div class="option-box correct">
+            <b>🟢 Sử dụng <span class="pink"><b>Amazon Elastic Kubernetes Service (Amazon EKS)</b></span> kết hợp với <span class="pink"><b>AWS Fargate</b></span> để điều phối serverless các dịch vụ container.</b>
+            <div class="explanation">
+                ➜ [<span class="green"><b>ĐÚNG</b></span>]: <span class="pink"><b>Amazon EKS</b></span> là dịch vụ quản lý Kubernetes chuẩn nguồn mở trên AWS. Khi kết hợp EKS với <span class="pink"><b>AWS Fargate</b></span>, các Kubernetes Pods sẽ chạy dưới dạng serverless mà bạn không cần phải tự quản lý, cấu hình hay scale các EC2 worker nodes.
+            </div>
+        </div>
+
+        <!-- CÁC ĐÁP ÁN SAI -->
+        <div class="option-box incorrect">
+            <b>🔴 Sử dụng Amazon ECS với Amazon EC2, Amazon SageMaker hoặc Amazon EMR để điều phối serverless container.</b>
+            <div class="explanation">
+                ➜ [<span class="red"><b>SAI TRONG NGỮ CẢNH ĐỀ THI</b></span>]: 
+                - <span class="pink"><b>ECS with EC2</b></span> yêu cầu người dùng phải tự quản lý, vá lỗi và scale các máy chủ EC2, không phải là serverless.<br>
+                - <span class="pink"><b>Amazon SageMaker</b></span> chuyên dùng cho Machine Learning và AI.<br>
+                - <span class="pink"><b>Amazon EMR</b></span> chuyên dùng cho xử lý Big Data (Hadoop, Spark). Cả hai dịch vụ sau không phải là bộ điều phối container API thông thường.
+            </div>
+        </div>
+
+        <!-- PHẦN GHI NHỚ CHO KỲ THI SAA-C03 -->
+        <div class="explanation" style="margin-top: 15px; background-color: #f8f9fa; border-left: 4px solid #ff69b4; padding: 10px;">
+            🎓 <strong>Ghi nhớ cho kỳ thi SAA-C03:</strong> Cứ thấy từ khóa <b>Serverless + Container Orchestration</b> trên AWS, đáp án chính xác luôn gắn liền với động cơ tính toán <b>AWS Fargate</b> đi kèm với một trong hai dịch vụ điều phối chủ lực là <b>Amazon ECS</b> hoặc <b>Amazon EKS</b>. Tránh xa các lựa chọn gắn với EC2 truyền thống (vì phải quản lý server) hoặc các dịch vụ chuyên biệt ngành dọc như SageMaker, EMR.
+        </div>
+    </div>
+<!-- MẪU BÀI THI CÂU 99 -->
+    <div class="exam-card" style="margin-top: 25px;">
+        <h2 class="domain-header pink">🩷 DOMAIN: <span class="pink"><b>DATABASE CACHING STRATEGY</b></span>, <span class="pink"><b>AMAZON ELASTICACHE FOR REDIS</b></span> & COST OPTIMIZATION</h2>
+
+        <!-- CÂU HỎI -->
+        <div class="question-box">
+            <strong>[CÂU HỎI]</strong><br>
+            Một <span class="black"><b>transportation logistics company</b></span> chạy shipment tracking app trên <span class="pink"><b>Amazon EC2</b></span> với <span class="pink"><b>Amazon Aurora MySQL database cluster</b></span>. Ứng dụng tăng trưởng nhanh từ mobile users truy vấn trạng thái gói hàng liên tục. Mặc dù EC2 ổn định, Aurora DB cluster đang chịu <span class="orange"><b>growing read pressure</b></span> do các truy vấn lặp đi lặp lại về vị trí và lịch sử giao hàng (<span class="orange"><b>frequent repeated queries</b></span>). Thêm read replica chỉ giải quyết tạm thời. Công ty muốn giảm áp lực đọc lặp lại này một cách <span class="orange"><b>cost-effective</b></span>.<br><br>
+            • Yêu cầu: <span class="bg-blue-inline"><b>Chọn giải pháp tối ưu chi phí và hiệu quả nhất để giảm tải các truy vấn đọc lặp lại cho database</b></span>.<br>
+            • Ràng buộc: <span class="bg-orange-inline"><b>Read bottleneck do repeated queries, cost-effective optimization</b></span>.
+        </div>
+
+        <!-- ĐÁP ÁN ĐÚNG -->
+        <div class="option-box correct">
+            <b>🟢 Tích hợp <span class="pink"><b>Amazon ElastiCache for Redis</b></span> giữa ứng dụng và Aurora. Lưu cache các kết quả truy vấn thường xuyên trong Redis để giảm số lượng các request đọc trùng lặp tác động vào database.</b>
+            <div class="explanation">
+                ➜ [<span class="green"><b>ĐÚNG</b></span>]: Khi người dùng liên tục tra cứu trạng thái đơn hàng (các truy vấn lặp đi lặp lại), việc tra cứu trực tiếp xuống Aurora sẽ làm nghẽn database. Bằng cách chèn thêm lớp <span class="pink"><b>Amazon ElastiCache for Redis</b></span> (in-memory cache), ứng dụng sẽ kiểm tra dữ liệu trong cache trước. Nếu có (Cache Hit), dữ liệu trả về ngay lập tức với độ trễ siêu thấp và chặn đứng hoàn toàn các câu lệnh đọc trùng lặp chạm tới Aurora, mang lại giải pháp tối ưu hiệu năng và <span class="green"><b>chi phí hiệu quả nhất</b></span>.
+            </div>
+        </div>
+
+        <!-- CÁC ĐÁP ÁN SAI -->
+        <div class="option-box incorrect">
+            <b>🔴 Thêm Aurora read replica, bật Aurora Serverless v2, hoặc dùng Aurora Global Database Multi-writer.</b>
+            <div class="explanation">
+                ➜ [<span class="red"><b>SAI TRONG NGỮ CẢNH ĐỀ THI</b></span>]: 
+                - Thêm read replica chỉ là giải pháp scale-out tạm thời, chi phí sẽ tăng theo cấp số nhân nếu traffic tiếp tục tăng đột biến.<br>
+                - Aurora Serverless v2 tự động scale compute nhưng tài nguyên database đắt hơn rất nhiều so với việc dùng cache cho các truy vấn trùng lặp.<br>
+                - Aurora Global Database Multi-writer giải quyết bài toán ghi đa vùng (multi-region writes), hoàn toàn không liên quan đến bài toán tối ưu đọc lặp lại tại chỗ.
+            </div>
+        </div>
+
+        <!-- PHẦN GHI NHỚ CHO KỲ THI SAA-C03 -->
+        <div class="explanation" style="margin-top: 15px; background-color: #f8f9fa; border-left: 4px solid #ff69b4; padding: 10px;">
+            🎓 <strong>Ghi nhớ cho kỳ thi SAA-C03:</strong> Cứ nhìn thấy từ khóa <b>Repeated reads</b>, <b>Frequent queries cùng một nội dung</b>, hoặc bài toán nghẽn cơ sở dữ liệu do lượng truy vấn đọc trùng lặp quá lớn, đáp án kinh điển và tối ưu chi phí nhất luôn là chèn thêm tầng <b>Amazon ElastiCache (Redis/Memcached)</b> để làm lớp Caching trung gian.
+        </div>
+    </div>
 
 
 

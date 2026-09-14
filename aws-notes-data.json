@@ -479,6 +479,244 @@
           "content": "📌 Tình huống: Một Elastic Load Balancer đã đánh dấu tất cả các Amazon EC2 instances trong target group là unhealthy . Đáng ngạc nhiên là khi một developer nhập trực tiếp IP address của EC2 instances vào web browser, anh ấy lại có thể truy cập được website bình thường. • Yêu cầu: Chọn 2 nguyên nhân có thể khiến các instances bị đánh dấu là unhealthy trong khi truy cập trực tiếp vẫn thành công . • Ràng buộc: Ứng dụng chạy bình thường ở tầng instance nhưng load balancer không thể hoàn thành...\n\n✅ Đáp án đúng 1: \n   ➜ ➜ [ ĐÚNG ]: Nếu đường dẫn kiểm tra sức khỏe (ví dụ: `/healthz` hoặc `/status`) trong Target Group bị cấu hình sai đường dẫn hoặc trang đó không tồn tại trên web server, ALB sẽ nhận lại mã lỗi HTTP (như `404 Not Found`) và đánh dấu instance là unhealthy . Trong khi đó, người dùng truy cập trực tiếp vào trang chủ (`/`) vẫn hoạt động hoàn toàn bình thường.\n✅ Đáp án đúng 2: \n   ➜ ➜ [ ĐÚNG ]: Nếu Security Group của EC2 instances chưa mở rule cho phép traffic từ Security Group của ALB (hoặc từ các IP của ALB subnet) ở port ứng dụng, ALB sẽ không thể gửi các gói tin health check tới instance được, dẫn đến trạng thái unhealthy. Tuy nhiên, developer vẫn có thể truy cập trực tiếp nếu máy tính của họ nằm trong dải mạng được phép truy cập trực tiếp vào instance.",
           "createdAt": "2026-09-07T16:40:39.830797Z",
           "updatedAt": "2026-09-07T16:40:39.830798Z"
+        },
+        {
+          "id": "224cb841fd5b",
+          "title": "VPC & SUBNET CIDR SIZING RULES",
+          "content": "📌 Tình huống: Cần thiết kế VPC mới, phân bổ CIDR sao cho không bị conflict và đủ IP cho tương lai, đồng thời hiểu tại sao 1 subnet /24 (256 IP) lại chỉ dùng được 251 IP cho instance.\n\n✅ Đáp án đúng:\n   • VPC CIDR block (IPv4) cho phép từ /16 (65,536 IP) đến /28 (16 IP).\n   • Mỗi Subnet CIDR phải là tập con của VPC CIDR, nằm gọn trong 1 Availability Zone duy nhất, và không được overlap với subnet khác trong cùng VPC.\n   • AWS luôn RESERVE 5 địa chỉ IP trong MỖI subnet (không cấp cho instance/ENI):\n      - .0 → Network address\n      - .1 → VPC router\n      - .2 → DNS server (Amazon-provided DNS)\n      - .3 → dự phòng cho tương lai\n      - địa chỉ cuối (.255 với /24) → Broadcast address (dù VPC không hỗ trợ broadcast, AWS vẫn reserve)\n   ➜ Subnet /24 = 256 IP tổng nhưng chỉ 256 − 5 = 251 IP dùng được thực tế.\n\n⚠️ Lưu ý: 1 VPC có thể gắn thêm tối đa 4 CIDR block phụ (secondary CIDR) ngoài CIDR chính — hữu ích khi VPC gần hết địa chỉ IP mà không muốn tạo VPC mới rồi phải re-peering/re-route mọi thứ.",
+          "createdAt": "2026-09-14T00:21:09.134274Z",
+          "updatedAt": "2026-09-14T00:21:09.134274Z"
+        },
+        {
+          "id": "c91f07a69e0d",
+          "title": "GATEWAY ENDPOINT vs INTERFACE ENDPOINT (AWS PRIVATELINK)",
+          "content": "📌 Tình huống: Ứng dụng trong private subnet cần gọi tới nhiều dịch vụ AWS (S3, DynamoDB, SNS, SSM...) mà không muốn đi qua Internet/NAT Gateway, để giảm chi phí data transfer và tăng bảo mật.\n\n✅ Đáp án đúng:\n   • Với Amazon S3 & DynamoDB: dùng Gateway Endpoint — MIỄN PHÍ, hoạt động bằng cách thêm 1 route (qua prefix list) vào route table của subnet, không tạo ENI.\n   • Với các dịch vụ AWS khác (SNS, SQS, SSM, Kinesis...) hoặc dịch vụ nội bộ/bên thứ 3: dùng Interface Endpoint (chạy trên nền AWS PrivateLink) — tạo ra 1 ENI có private IP ngay trong subnet, tính phí theo giờ + theo GB dữ liệu truyền qua endpoint.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Dùng Interface Endpoint cho S3/DynamoDB trong khi Gateway Endpoint miễn phí đã đủ đáp ứng ➜ tốn thêm chi phí không cần thiết.\n   • AWS PrivateLink còn cho phép chính công ty bạn expose 1 service nội bộ (đứng sau Network Load Balancer) để VPC khác dùng riêng tư mà không cần VPC Peering và không lộ ra Internet.",
+          "createdAt": "2026-09-14T00:21:09.134274Z",
+          "updatedAt": "2026-09-14T00:21:09.134274Z"
+        },
+        {
+          "id": "9d6b371eee6e",
+          "title": "VPC FLOW LOGS: GIÁM SÁT & TROUBLESHOOT TRAFFIC",
+          "content": "📌 Tình huống: Cần điều tra tại sao một kết nối bị từ chối, hoặc nghi ngờ có traffic bất thường đi vào/ra VPC, cần log lại thông tin traffic ở mức IP để phân tích sau bằng Athena.\n\n✅ Đáp án đúng: Bật VPC Flow Logs — capture thông tin traffic (source/dest IP, port, protocol, action ACCEPT/REJECT, số byte...) ở 1 trong 3 mức: VPC, Subnet, hoặc Network Interface (ENI). Có thể xuất log tới 3 nơi: Amazon CloudWatch Logs, Amazon S3, hoặc Amazon Data Firehose — nếu lưu ở S3 thì query trực tiếp bằng Amazon Athena để phân tích.\n\n⚠️ Lưu ý:\n   • Flow Logs KHÔNG capture traffic tới/từ 169.254.169.254 (instance metadata) và traffic DNS nội bộ tới Amazon-provided DNS server.\n   • Flow Logs ghi lại cả traffic bị NACL/Security Group CHẶN (REJECT) lẫn traffic được phép (ACCEPT) ➜ rất hữu ích để xác định traffic bị chặn bởi Security Group hay Network ACL.",
+          "createdAt": "2026-09-14T00:21:09.134274Z",
+          "updatedAt": "2026-09-14T00:21:09.134274Z"
+        },
+        {
+          "id": "1af5194ec396",
+          "title": "IPv4 vs IPv6 TRONG VPC & EGRESS-ONLY INTERNET GATEWAY",
+          "content": "📌 Tình huống: Ứng dụng cần hỗ trợ địa chỉ IPv6, nhưng instance trong private subnet chỉ được phép GỌI RA Internet (outbound), không cho phép kết nối chủ động TỪ Internet vào (inbound) — tương tự mục đích của NAT Gateway nhưng cho IPv6.\n\n✅ Đáp án đúng: Dùng Egress-Only Internet Gateway (chỉ áp dụng cho IPv6).\n   ➜ Vì mọi địa chỉ IPv6 trong VPC đều là địa chỉ PUBLIC/routable theo thiết kế (không có khái niệm private IPv6 + NAT như IPv4), nên cần Egress-Only IGW đóng vai trò tương tự NAT Gateway: cho traffic đi ra nhưng chặn traffic khởi tạo từ bên ngoài vào.\n\n⚠️ Lưu ý:\n   • VPC luôn BẮT BUỘC phải có 1 CIDR IPv4, IPv6 chỉ là tùy chọn thêm vào (dual-stack) — không thể tạo VPC chỉ toàn IPv6.\n   • Có thể dùng dải IPv6 do Amazon cấp (/56 cho VPC, /64 cho mỗi subnet) hoặc mang theo dải IP riêng của công ty (BYOIP).",
+          "createdAt": "2026-09-14T00:21:09.134274Z",
+          "updatedAt": "2026-09-14T00:21:09.134274Z"
+        },
+        {
+          "id": "c4b29280405d",
+          "title": "AWS NETWORK FIREWALL & ROUTE 53 RESOLVER DNS FIREWALL",
+          "content": "📌 Tình huống: Ngoài Security Group (stateful, chỉ lọc theo IP/port) và Network ACL (stateless, theo subnet), công ty cần chặn traffic dựa trên TÊN MIỀN (domain) độc hại và cần khả năng IDS/IPS (phát hiện & ngăn chặn xâm nhập) ở tầng mạng cho toàn VPC.\n\n✅ Đáp án đúng:\n   • AWS Network Firewall: managed stateful firewall cho cả VPC, hỗ trợ rule theo IP/port/protocol lẫn domain filtering, tích hợp rule dạng Suricata cho IDS/IPS, deploy qua endpoint trong 1 subnet riêng (firewall subnet).\n   • Route 53 Resolver DNS Firewall: lọc DNS query đi RA từ VPC theo domain block-list/allow-list — chặn ngay từ bước phân giải tên miền, trước khi kết nối TCP/IP được thiết lập.\n\n⚠️ Lưu ý: Security Group & NACL chỉ lọc theo IP/port/protocol (Layer 3/4), KHÔNG hiểu được domain name hay nội dung traffic (Layer 7) ➜ không đáp ứng được yêu cầu chặn theo domain hoặc phát hiện tấn công dạng signature-based.",
+          "createdAt": "2026-09-14T00:21:09.134274Z",
+          "updatedAt": "2026-09-14T00:21:09.134274Z"
+        },
+        {
+          "id": "067d45d9e87d",
+          "title": "VPC REACHABILITY ANALYZER",
+          "content": "📌 Tình huống: 2 EC2 instance ở 2 subnet khác nhau không kết nối được với nhau, cần xác định NHANH nguyên nhân (do Security Group, Network ACL, hay Route Table sai) mà không muốn gửi traffic thật rồi tự debug thủ công từng bước.\n\n✅ Đáp án đúng: Dùng VPC Reachability Analyzer — công cụ network diagnostics, phân tích CẤU HÌNH hiện tại (không gửi traffic thật) theo từng hop giữa source và destination, chỉ ra chính xác thành phần nào (rule Security Group, rule NACL, entry Route Table...) đang chặn kết nối.\n\n⚠️ Lưu ý: Khác với VPC Flow Logs (ghi lại traffic THỰC TẾ đã xảy ra trong quá khứ), Reachability Analyzer mô phỏng đường đi dựa trên cấu hình hiện tại để dự đoán traffic CÓ THỂ đi được hay không — phù hợp để debug trước khi traffic thật chạy qua.",
+          "createdAt": "2026-09-14T00:21:09.134274Z",
+          "updatedAt": "2026-09-14T00:21:09.134274Z"
+        },
+        {
+          "id": "c92cf7461d89",
+          "title": "ELASTIC IP & DHCP OPTION SETS",
+          "content": "📌 Tình huống A: Instance production bị lỗi, cần thay thế NGAY bằng instance dự phòng khác mà không muốn đổi DNS record hay cấu hình client, vì client đang gọi trực tiếp vào 1 địa chỉ IP cố định.\n\n✅ Đáp án đúng: Dùng Elastic IP (EIP) — địa chỉ IPv4 public TĨNH gắn với account, có thể remap (gỡ khỏi instance cũ, gắn sang instance mới) chỉ trong vài giây để failover nhanh mà vẫn giữ nguyên địa chỉ IP.\n\n⚠️ Lưu ý: AWS tính phí nếu EIP KHÔNG được gắn với instance đang chạy (khuyến khích release EIP thừa) — nên ưu tiên dùng DNS (Route 53) cho phần lớn use case, chỉ dùng EIP khi thực sự cần địa chỉ IP tĩnh cố định.\n\n📌 Tình huống B: Cần các EC2 instance trong VPC tự động dùng DNS server nội bộ riêng của công ty thay vì Amazon-provided DNS mặc định.\n\n✅ Đáp án đúng: Tạo DHCP Option Set tùy chỉnh (khai báo domain-name-servers trỏ tới IP DNS server riêng của công ty) rồi gán vào VPC — mọi instance mới khởi động trong VPC sẽ tự nhận cấu hình DNS này qua DHCP.",
+          "createdAt": "2026-09-14T00:21:09.134274Z",
+          "updatedAt": "2026-09-14T00:21:09.134274Z"
+        },
+        {
+          "id": "0bc2d4dfc9e1",
+          "title": "CUSTOMER-MANAGED vs AWS-MANAGED PREFIX LISTS",
+          "content": "📌 Managed Prefix List = tập hợp nhiều dải CIDR được gom thành 1 tên gọi duy nhất, dùng thay thế cho việc liệt kê từng CIDR trong Security Group / Route Table.\n\n• Customer-managed prefix list: bạn tự tạo & quản lý danh sách CIDR (vd tất cả CIDR của các VPC chi nhánh công ty). Khi cần thêm/bớt 1 CIDR, chỉ sửa 1 chỗ ➜ tự động áp dụng cho MỌI Security Group/Route Table đang reference tới list đó, thay vì phải sửa thủ công từng rule ở từng nơi.\n• AWS-managed prefix list: do AWS cung cấp sẵn (vd \"com.amazonaws.<region>.s3\", \"com.amazonaws.<region>.dynamodb\") — đại diện cho dải IP của chính dịch vụ AWS đó, tự động cập nhật khi AWS thay đổi dải IP.\n\n✅ Lợi ích chính: giảm số lượng rule cần quản lý (1 SG chỉ cho tối đa ~60 rule), dễ maintain khi hạ tầng có nhiều CIDR hay thay đổi, và có thể share prefix list qua AWS RAM cho nhiều account dùng chung.",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "bf79299b1bc4",
+          "title": "DEFAULT VPC: CÁC THÀNH PHẦN CÓ SẴN",
+          "content": "📌 Mỗi AWS Region mới sẽ có sẵn 1 Default VPC (CIDR 172.31.0.0/16) để người dùng có thể launch EC2 ngay mà không cần tự cấu hình network.\n\n✅ Default VPC đã có sẵn:\n   • 1 Subnet public trong MỖI Availability Zone của Region đó (CIDR /20).\n   • 1 Internet Gateway đã attach sẵn.\n   • Route table mặc định đã có route 0.0.0.0/0 → Internet Gateway.\n   • Auto-assign Public IPv4 = BẬT sẵn cho instance launch trong các subnet này.\n   • Default Security Group (cho phép toàn bộ traffic nội bộ giữa các resource cùng SG) và Default Network ACL (cho phép toàn bộ traffic in/out).\n\n⚠️ Lưu ý: nếu lỡ xóa Default VPC, phải tự tạo lại thủ công (AWS không tự sinh lại) hoặc dùng CLI `create-default-vpc`. Trong thực tế production, best practice là tự thiết kế Custom VPC riêng thay vì dùng Default VPC.",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "33e2f6bfaf14",
+          "title": "DNS ATTRIBUTES: enableDnsSupport & enableDnsHostnames",
+          "content": "📌 Tình huống: Cần cho phép instance trong VPC phân giải được private DNS name của Interface VPC Endpoint (PrivateLink) hoặc gọi được tên miền qua Amazon-provided DNS Resolver.\n\n✅ 2 thuộc tính cấu hình DNS ở cấp VPC:\n   • enableDnsSupport: bật/tắt khả năng phân giải DNS qua Amazon-provided DNS Resolver (địa chỉ .2 của VPC CIDR) — mặc định BẬT.\n   • enableDnsHostnames: quyết định instance có được gán DNS hostname public/private hay không khi có public IP — mặc định BẬT ở Default VPC, TẮT ở Custom VPC mới tạo (phải tự bật).\n\n⚠️ Lưu ý: Cả 2 thuộc tính PHẢI được bật thì Private DNS name của Interface Endpoint mới hoạt động đúng (để code gọi tên miền dịch vụ AWS bình thường mà tự động resolve ra private IP của endpoint, không cần sửa code).",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "9244f35c4f11",
+          "title": "ROUTE TABLE: MAIN ROUTE TABLE, LOCAL ROUTE & ROUTE PRIORITY",
+          "content": "📌 Mỗi VPC có 1 Main Route Table mặc định — subnet nào KHÔNG được gán route table riêng sẽ tự động dùng Main Route Table này.\n\n✅ Kiến thức cần nhớ:\n   • Local route (traffic trong cùng VPC CIDR) luôn tồn tại mặc định trong mọi route table và KHÔNG THỂ xóa/sửa — đảm bảo các subnet trong cùng VPC luôn thấy nhau.\n   • 1 subnet chỉ được gán với ĐÚNG 1 route table tại 1 thời điểm, nhưng 1 route table có thể gán cho NHIỀU subnet.\n   • Route Priority: khi có nhiều route cùng match 1 địa chỉ đích, AWS luôn chọn route có CIDR CỤ THỂ NHẤT (longest prefix match) — vd route /32 (1 địa chỉ) được ưu tiên hơn route /24 hay 0.0.0.0/0, bất kể route nào được tạo trước.\n\n⚠️ Lưu ý: có thể đổi Main Route Table sang 1 route table khác (replace main route table) mà không cần re-associate từng subnet thủ công.",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "b69f116b2ce8",
+          "title": "MỞ RỘNG VPC RA LOCAL ZONES, WAVELENGTH & OUTPOSTS",
+          "content": "📌 Tình huống: Ứng dụng cần độ trễ cực thấp cho người dùng ở gần 1 thành phố lớn cụ thể (không phải Region chính), hoặc cần chạy ngay tại data center on-premises nhưng vẫn dùng API/tooling của AWS.\n\n✅ 3 cách mở rộng subnet của VPC ra ngoài Region gốc:\n   • AWS Local Zones: đặt compute/storage gần các thành phố lớn (vd Los Angeles, Hà Nội...) để giảm latency cho end-user tại khu vực đó, vẫn quản lý qua cùng VPC/Region cha.\n   • AWS Wavelength: đặt hạ tầng AWS ngay bên trong mạng 5G của nhà mạng viễn thông (telecom), phục vụ ứng dụng cần độ trễ siêu thấp cho thiết bị di động/IoT (AR/VR, gaming, connected cars).\n   • AWS Outposts: đưa phần cứng AWS thật (rack) đặt NGAY tại data center on-premises của khách hàng — chạy EC2/EBS/ECS tại chỗ nhưng vẫn quản lý bằng chính AWS Console/API, phù hợp khi có yêu cầu data residency hoặc latency cực thấp với hệ thống local.",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "7c4ae5f0cfb8",
+          "title": "VPC BLOCK PUBLIC ACCESS (VPC BPA)",
+          "content": "📌 Tình huống: Công ty lo ngại một subnet/VPC nào đó vô tình bị cấu hình public (lộ ra Internet) do lỗi con người (vd ai đó gán Elastic IP + route 0.0.0.0/0 nhầm), muốn có 1 lớp bảo vệ tập trung chặn đứng việc này ở cấp VPC/account, thay vì chỉ trông chờ vào Security Group.\n\n✅ Đáp án đúng: Bật VPC Block Public Access (VPC BPA) ở cấp VPC hoặc toàn bộ account — chặn TOÀN BỘ traffic internet-bound (qua Internet Gateway/Egress-only IGW) trừ khi được khai báo ngoại lệ (exclusion) rõ ràng cho từng VPC/subnet cụ thể.\n\n⚠️ Lưu ý: đây là lớp bảo vệ bổ sung mang tính \"guardrail\" ở tầng hạ tầng (network-level), độc lập với Security Group/NACL — ngăn chặn cả trường hợp SG/NACL bị cấu hình sai cho phép public access ngoài ý muốn.",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "9a7a7b975f2b",
+          "title": "SUBNET CIDR RESERVATIONS",
+          "content": "📌 Tình huống: Trong 1 subnet, cần dành riêng 1 dải IP nhỏ (vd 10 địa chỉ) để không cấp phát tự động cho EC2 (tránh AWS tự động gán trùng), ví dụ để dành cho thiết bị có IP tĩnh cấu hình thủ công hoặc dịch vụ on-premises kết nối qua VPN.\n\n✅ Đáp án đúng: Tạo Subnet CIDR Reservation — khai báo 1 dải CIDR con bên trong subnet là \"đã đặt trước\" (loại Prefix hoặc Explicit), AWS sẽ không tự động cấp các IP này cho resource khác qua DHCP, dành riêng cho mục đích thủ công của bạn.",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "9b1cd448f0e9",
+          "title": "NAT GATEWAY: GIÁM SÁT BẰNG CLOUDWATCH METRICS",
+          "content": "📌 Tình huống: Ứng dụng backend qua NAT Gateway thỉnh thoảng bị lỗi kết nối ra ngoài, nghi ngờ NAT Gateway đang bị nghẽn cổ chai (bottleneck) về băng thông hoặc số lượng kết nối đồng thời.\n\n✅ Đáp án đúng: Theo dõi CloudWatch Metrics của NAT Gateway — các chỉ số quan trọng: BytesOutToDestination/BytesInFromDestination (băng thông), ActiveConnectionCount (số kết nối đang mở), ErrorPortAllocation (báo hiệu NAT Gateway đã hết port khả dụng do quá nhiều kết nối đồng thời tới cùng 1 destination).\n\n⚠️ Lưu ý: mỗi NAT Gateway giới hạn ~55,000 kết nối đồng thời tới CÙNG 1 destination IP/port/protocol ➜ nếu chạm giới hạn (ErrorPortAllocation tăng), giải pháp là tạo thêm NAT Gateway (mỗi AZ 1 cái) để phân tán traffic, không thể tăng giới hạn của 1 NAT Gateway.",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "ec2c3c6c3d5c",
+          "title": "GATEWAY LOAD BALANCER (GWLB) & MIDDLEBOX ROUTING",
+          "content": "📌 Tình huống: Công ty muốn TOÀN BỘ traffic ra/vào VPC đi qua 1 lớp thiết bị bảo mật bên thứ 3 (firewall, IDS/IPS ảo hóa) để kiểm tra trước khi tới đích, và có thể scale số lượng thiết bị này lên/xuống theo tải mà không đổi cấu trúc route phức tạp.\n\n✅ Đáp án đúng: Dùng Gateway Load Balancer (GWLB) đặt trước các virtual appliance (firewall/IDS-IPS), rồi cấu hình Route Table (middlebox routing) để redirect traffic đi qua GWLB Endpoint trước khi tới đích thật.\n   ➜ GWLB hoạt động ở Layer 3 (network layer), dùng giao thức GENEVE (port 6081), vừa load balance vừa transparent (traffic vẫn giữ nguyên IP gốc khi tới đích).\n\n⚠️ Lưu ý: khác với ALB/NLB (dùng để phân phối traffic đến ứng dụng của bạn), GWLB dùng để CHÈN (insert) một lớp thiết bị bảo mật/inspection vào giữa đường đi của traffic một cách trong suốt.",
+          "createdAt": "2026-09-14T00:28:28.396518Z",
+          "updatedAt": "2026-09-14T00:28:28.396518Z"
+        },
+        {
+          "id": "e19ab867bf5b",
+          "title": "NACL: RULE NUMBERS, THỨ TỰ ĐÁNH GIÁ & EPHEMERAL PORTS",
+          "content": "📌 Tình huống: Client bên ngoài kết nối HTTPS (port 443) vào EC2 qua NACL của subnet, request đi vào được nhưng response trả về bị chặn, dù đã mở port 443 inbound.\n\n✅ Nguyên nhân & cách nhớ NACL:\n   • NACL là STATELESS ➜ phải tự khai báo rule cho CẢ 2 CHIỀU (inbound và outbound), khác Security Group (stateful, tự động cho phép chiều ngược lại).\n   • Rule được đánh giá theo RULE NUMBER từ THẤP đến CAO, gặp rule đầu tiên match là dừng (không đánh giá tiếp) ➜ số nhỏ hơn có độ ưu tiên cao hơn.\n   • Response traffic trả về từ server luôn dùng 1 cổng NGẪU NHIÊN phía client gọi là Ephemeral Port (thường 1024–65535) ➜ phải mở OUTBOUND rule cho dải ephemeral port này thì response mới đi ra được, dù chỉ mở inbound 443.\n\n⚠️ Đáp án sai thường gặp: chỉ mở inbound 443 mà quên mở outbound ephemeral port range ➜ client thấy connect được (SYN vào) nhưng không nhận được response (timeout).",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "9115f0af6dff",
+          "title": "SECURITY GROUP: DÙNG SG KHÁC LÀM SOURCE/DESTINATION",
+          "content": "📌 Tình huống: Có nhiều EC2 instance trong Auto Scaling Group (IP thay đổi liên tục khi scale in/out), cần cho phép RDS chỉ nhận traffic từ các instance này mà không muốn cập nhật thủ công dải IP mỗi lần scale.\n\n✅ Đáp án đúng: Trong rule của Security Group (RDS), khai báo Source = Security Group của EC2 (thay vì CIDR/IP cụ thể).\n   ➜ AWS sẽ tự động cho phép traffic từ BẤT KỲ instance nào đang gắn Security Group đó, dù IP thay đổi liên tục do scaling — không cần cập nhật rule thủ công.\n\n⚠️ Lưu ý: Security Group reference SG khác hoạt động trong CÙNG VPC (hoặc VPC đã peering ở 1 số trường hợp); Default Security Group của VPC có sẵn 1 rule inbound cho phép mọi traffic từ chính nó (self-reference).",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "ef5b4d719418",
+          "title": "ELASTIC NETWORK INTERFACE (ENI): GẮN/GỠ & FAILOVER",
+          "content": "📌 Tình huống: Cần chuyển 1 địa chỉ private IP + toàn bộ cấu hình network (security group, MAC address) từ EC2 instance bị lỗi sang instance dự phòng khác NGAY LẬP TỨC, trong cùng Availability Zone.\n\n✅ Đáp án đúng: Dùng Elastic Network Interface (ENI) — 1 network card ảo có thể detach khỏi instance cũ và attach sang instance mới (cùng AZ) chỉ trong vài giây, giữ nguyên private IP, Elastic IP, MAC address và Security Group gắn kèm.\n\n⚠️ Lưu ý: 1 EC2 instance có thể gắn NHIỀU ENI (mỗi ENI 1 subnet khác nhau, kể cả khác VPC trong 1 số setup), hữu ích cho kịch bản network appliance cần nhiều interface (management network riêng, data network riêng) hoặc dual-homed instance.",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "e953be81b5b7",
+          "title": "VPC ENDPOINT POLICY: KIỂM SOÁT QUYỀN TRUY CẬP QUA ENDPOINT",
+          "content": "📌 Tình huống: Công ty cho phép EC2 trong private subnet truy cập S3 qua Gateway Endpoint, nhưng muốn GIỚI HẠN chỉ được đọc/ghi 1 bucket cụ thể của công ty, chặn truy cập tới bucket của bên khác dù endpoint vẫn kết nối được tới S3 nói chung.\n\n✅ Đáp án đúng: Gắn Endpoint Policy (resource-based policy, tương tự cấu trúc IAM policy) lên chính VPC Endpoint đó — chỉ cho phép các action/resource (ARN bucket) cụ thể đi qua endpoint này.\n\n⚠️ Lưu ý: Endpoint Policy là 1 LỚP KIỂM SOÁT BỔ SUNG, hoạt động song song với IAM policy của user/role và Bucket Policy của S3 — quyền truy cập cuối cùng là GIAO (intersection) của cả 3 lớp, không lớp nào thay thế lớp nào.",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "cb58c585ebb1",
+          "title": "AWS PRIVATELINK: EXPOSE SERVICE NỘI BỘ QUA ENDPOINT SERVICE",
+          "content": "📌 Tình huống: Công ty A có 1 service nội bộ (vd API xử lý thanh toán) muốn chia sẻ CHO công ty B (VPC khác, có thể khác account) dùng riêng tư, không muốn lộ ra Internet, không muốn dùng VPC Peering (không muốn 2 VPC thấy toàn bộ mạng của nhau).\n\n✅ Đáp án đúng: Công ty A tạo Endpoint Service (VPC Endpoint Service) đứng sau 1 Network Load Balancer, dùng AWS PrivateLink expose service này. Công ty B tạo Interface Endpoint trỏ tới Endpoint Service đó để gọi vào — traffic đi hoàn toàn trong mạng AWS, KHÔNG qua Internet, và 2 VPC KHÔNG thấy được toàn bộ network của nhau (chỉ 1 chiều kết nối tới đúng service được share).\n\n⚠️ So sánh nhanh: VPC Peering = kết nối 2 mạng với nhau (route table thấy nhau); PrivateLink = chỉ share 1 SERVICE cụ thể (1 chiều, hẹp hơn, an toàn hơn khi share cho bên thứ 3/đối tác).",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "3c457ca2e29e",
+          "title": "AWS CLIENT VPN vs SITE-TO-SITE VPN",
+          "content": "📌 Tình huống: Cần phân biệt 2 loại VPN của AWS khi thiết kế truy cập từ xa vào VPC.\n\n✅ Đáp án đúng:\n   • AWS Client VPN: dùng cho TỪNG NGƯỜI DÙNG cá nhân (remote employee) kết nối từ laptop/thiết bị cá nhân vào VPC qua phần mềm OpenVPN-based client, xác thực bằng Active Directory/certificate/SAML — giống VPN công ty truyền thống nhưng managed & serverless, tự động scale.\n   • AWS Site-to-Site VPN: kết nối GIỮA 2 MẠNG (Customer Gateway ở on-premises ⇄ Virtual Private Gateway/Transit Gateway trên AWS) — dùng IPSec, kết nối toàn bộ mạng văn phòng/data center với VPC, không phải cho từng cá nhân.\n\n⚠️ Lưu ý: Client VPN = user-to-network; Site-to-Site VPN = network-to-network. Cả 2 đều đi qua Internet công cộng (mã hóa IPSec) — khác Direct Connect (đường truyền riêng vật lý, không qua Internet).",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "19b19fa4f983",
+          "title": "VPC PEERING: GIỚI HẠN NON-TRANSITIVE & CIDR OVERLAP",
+          "content": "📌 Tình huống: Công ty có VPC A peering với VPC B, và VPC B peering với VPC C. Đội hạ tầng kỳ vọng VPC A có thể giao tiếp thẳng với VPC C thông qua VPC B, nhưng thực tế không kết nối được.\n\n✅ Giải thích: VPC Peering KHÔNG TRANSITIVE (không bắc cầu) — A peering B và B peering C KHÔNG có nghĩa A tự động thấy C. Muốn A ⇄ C giao tiếp trực tiếp, phải tạo THÊM 1 peering connection riêng A ⇄ C (hoặc chuyển sang dùng AWS Transit Gateway nếu số lượng VPC cần kết nối chéo nhiều, tránh phải tạo peering dạng full-mesh tốn kém).\n\n⚠️ Lưu ý quan trọng khác: 2 VPC có CIDR block TRÙNG/CHỒNG LẤN (overlapping) thì KHÔNG THỂ tạo Peering Connection giữa chúng ➜ cần thiết kế CIDR không overlap ngay từ đầu giữa các VPC dự kiến sẽ peering với nhau trong tương lai.",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "0c11f5713ece",
+          "title": "BASTION HOST (JUMP BOX) PATTERN",
+          "content": "📌 Tình huống: Cần SSH vào các EC2 instance nằm trong private subnet (không có public IP) để quản trị, nhưng không dùng Systems Manager Session Manager (vd do yêu cầu compliance cụ thể hoặc hệ thống legacy).\n\n✅ Đáp án đúng: Triển khai 1 Bastion Host (jump box) — 1 EC2 nhỏ đặt trong PUBLIC subnet, mở port 22 CHỈ cho dải IP tin cậy (vd IP văn phòng công ty) trong Security Group. Admin SSH vào Bastion Host trước, rồi từ Bastion Host SSH tiếp (hop) vào các instance private subnet (dùng SG rule cho phép Bastion SG làm source).\n\n⚠️ Lưu ý: Bastion Host phải được đặt trong Auto Scaling Group (min=max=desired=1) trải ít nhất 2 AZ để đảm bảo có sẵn khi 1 AZ down; SSH Agent Forwarding dùng để không phải copy private key vào Bastion Host. Xu hướng hiện đại ưu tiên Systems Manager Session Manager hơn vì không cần mở port 22 công khai.",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "b6c686c6c260",
+          "title": "THIẾT KẾ VPC 3-TIER: PUBLIC / PRIVATE APP / PRIVATE DATA",
+          "content": "📌 Tình huống: Thiết kế kiến trúc web application chuẩn 3 tầng trên VPC: tầng web (nhận traffic từ Internet), tầng ứng dụng (xử lý logic), và tầng database (lưu dữ liệu), đảm bảo an toàn theo nguyên tắc least privilege.\n\n✅ Mô hình chuẩn (lặp lại ở MỖI Availability Zone để có High Availability):\n   • Public subnet: đặt Application Load Balancer + NAT Gateway (route 0.0.0.0/0 → Internet Gateway).\n   • Private subnet (app tier): đặt EC2/ECS chạy ứng dụng, route ra ngoài qua NAT Gateway ở public subnet cùng AZ, KHÔNG có route trực tiếp tới Internet Gateway.\n   • Private subnet (data tier): đặt RDS/ElastiCache, Security Group chỉ cho phép traffic từ SG của app tier, KHÔNG có route ra Internet (kể cả qua NAT) nếu không thực sự cần.\n\n⚠️ Lưu ý: mỗi tầng nên có Security Group RIÊNG, chỉ mở port cần thiết từ tầng liền kề (vd data tier chỉ nhận từ app tier SG, không nhận trực tiếp từ ALB SG) ➜ giảm bề mặt tấn công (attack surface) nếu 1 tầng bị xâm nhập.",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "9784cbc58a70",
+          "title": "ELASTIC IP vs AUTO-ASSIGNED PUBLIC IP",
+          "content": "📌 Tình huống: Instance public subnet được cấp 1 public IP tự động khi khởi động, nhưng sau khi STOP rồi START lại thì địa chỉ IP đó đổi khác, gây gián đoạn cho client đang trỏ tới IP cũ.\n\n✅ Giải thích: Auto-assigned Public IPv4 (khi bật \"Auto-assign Public IP\" ở subnet) chỉ là IP ĐỘNG, KHÔNG cố định — mất đi khi instance Stop/Terminate và được cấp ngẫu nhiên IP MỚI khi Start lại. Muốn IP KHÔNG đổi qua các lần stop/start, phải gán Elastic IP (EIP) — địa chỉ IP TĨNH thuộc về account, chủ động gắn/gỡ khỏi instance.\n\n⚠️ Lưu ý: Reboot (khởi động lại nhưng không Stop hẳn) thì Auto-assigned Public IP KHÔNG đổi; chỉ đổi khi Stop/Start (đổi sang host vật lý khác) hoặc Terminate.",
+          "createdAt": "2026-09-14T00:30:39.247438Z",
+          "updatedAt": "2026-09-14T00:30:39.247438Z"
+        },
+        {
+          "id": "b74aa3d3d916",
+          "title": "VPC QUOTAS & LIMITS MẶC ĐỊNH CẦN NHỚ",
+          "content": "📌 Một số soft-limit (có thể xin tăng qua Service Quotas) hay bị hỏi dưới dạng \"vì sao thao tác bị từ chối\":\n\n   • Tối đa 5 VPC / Region / account (mặc định).\n   • Tối đa 200 subnet / VPC.\n   • Tối đa 5 CIDR block IPv4 / VPC (1 chính + 4 phụ).\n   • Tối đa 200 route table / VPC, tối đa 50 route / route table (không tính propagated route).\n   • Tối đa 5 Security Group / ENI (mặc định), mỗi SG tối đa ~60 rule inbound + 60 rule outbound.\n   • Tối đa 5 Elastic IP / Region / account (mặc định).\n   • Tối đa 125 VPC Peering Connection / VPC (mặc định).\n\n⚠️ Lưu ý: đây đều là SOFT LIMIT — khi gặp lỗi kiểu \"LimitExceeded\" trong bài toán tình huống, đáp án đúng thường là \"request tăng quota qua Service Quotas / AWS Support\" chứ không phải đổi kiến trúc hoàn toàn.",
+          "createdAt": "2026-09-14T00:32:46.843027Z",
+          "updatedAt": "2026-09-14T00:32:46.843027Z"
+        },
+        {
+          "id": "2b0fe98d0e04",
+          "title": "VPC TRAFFIC MIRRORING",
+          "content": "📌 Tình huống: Đội Security cần bắt (capture) toàn bộ traffic mạng ra/vào 1 số EC2 instance cụ thể để đưa vào công cụ phân tích bảo mật/IDS của bên thứ 3, mà KHÔNG được ảnh hưởng đến traffic gốc đang chạy (không thêm độ trễ, không làm gián đoạn).\n\n✅ Đáp án đúng: Dùng VPC Traffic Mirroring — sao chép (mirror) traffic từ 1 ENI nguồn (mirror source) và gửi tới 1 đích giám sát (mirror target: có thể là ENI khác, hoặc Network Load Balancer đứng trước cụm công cụ phân tích), có thể lọc theo filter rule (chỉ mirror traffic cần thiết) để tiết kiệm băng thông.\n\n⚠️ Khác với VPC Flow Logs (chỉ ghi lại METADATA của traffic: IP/port/action), Traffic Mirroring sao chép TOÀN BỘ NỘI DUNG GÓI TIN (packet) ➜ dùng cho deep packet inspection, phát hiện xâm nhập chi tiết, hoặc troubleshoot ở tầng ứng dụng.",
+          "createdAt": "2026-09-14T00:32:46.843027Z",
+          "updatedAt": "2026-09-14T00:32:46.843027Z"
+        },
+        {
+          "id": "02d1a6cbe71e",
+          "title": "AMAZON VPC IP ADDRESS MANAGER (IPAM)",
+          "content": "📌 Tình huống: Tập đoàn có hàng chục account/VPC ở nhiều Region, đội network gặp khó khăn theo dõi dải CIDR nào đã dùng, dải nào còn trống, dễ xảy ra tình trạng cấp trùng CIDR gây xung đột khi cần VPC Peering/Transit Gateway sau này.\n\n✅ Đáp án đúng: Dùng Amazon VPC IP Address Manager (IPAM) — dịch vụ quản lý tập trung việc cấp phát, theo dõi và giám sát dải địa chỉ IP cho toàn bộ VPC trên nhiều account/Region trong 1 AWS Organization, tự động cảnh báo khi có overlap hoặc dải IP sắp hết.\n\n⚠️ Lưu ý: IPAM giải quyết bài toán QUẢN TRỊ/QUY HOẠCH CIDR ở quy mô tổ chức lớn — khác với Subnet CIDR Reservation (chỉ giữ chỗ IP trong 1 subnet đơn lẻ).",
+          "createdAt": "2026-09-14T00:32:46.843027Z",
+          "updatedAt": "2026-09-14T00:32:46.843027Z"
+        },
+        {
+          "id": "8e7446dcf971",
+          "title": "NETWORK ACCESS ANALYZER vs REACHABILITY ANALYZER",
+          "content": "📌 Tình huống: Cần phân biệt 2 công cụ network dễ gây nhầm lẫn tên gọi.\n\n✅ Đáp án đúng:\n   • VPC Reachability Analyzer: kiểm tra 1 CẶP điểm cụ thể (source → destination) xem CÓ kết nối được không, và nếu không thì bị chặn ở đâu (point-to-point path check).\n   • Network Access Analyzer: kiểm tra TOÀN BỘ cấu hình network của bạn có VI PHẠM các yêu cầu bảo mật đã định nghĩa trước (scope) hay không — vd \"không được có bất kỳ đường nào từ Internet vào thẳng database tier\" — quét toàn bộ VPC để tìm những đường đi VI PHẠM rule đó, không cần chỉ định từng cặp source/destination.\n\n⚠️ Cách nhớ: Reachability Analyzer = kiểm tra 1 cặp cụ thể có thông không; Network Access Analyzer = quét toàn diện tìm lỗ hổng vi phạm chính sách đã đề ra.",
+          "createdAt": "2026-09-14T00:32:46.843027Z",
+          "updatedAt": "2026-09-14T00:32:46.843027Z"
+        },
+        {
+          "id": "4b03e0770242",
+          "title": "INTERFACE ENDPOINT: TÙY CHỌN PRIVATE DNS",
+          "content": "📌 Tình huống: Sau khi tạo Interface VPC Endpoint cho 1 dịch vụ AWS, ứng dụng vẫn đang gọi tới endpoint public mặc định của dịch vụ đó (vd sqs.us-east-1.amazonaws.com) thay vì tự động đi qua endpoint riêng tư vừa tạo, dù đã đặt endpoint trong đúng VPC.\n\n✅ Đáp án đúng: Bật tùy chọn \"Enable DNS Name\" (Private DNS) khi tạo Interface Endpoint — AWS sẽ override DNS phân giải của tên miền public dịch vụ đó ngay bên trong VPC để trỏ về private IP của endpoint, ứng dụng KHÔNG CẦN SỬA CODE/endpoint URL vẫn tự động đi qua đường riêng tư.\n\n⚠️ Lưu ý: nếu TẮT Private DNS, phải tự sửa code để gọi vào DNS name riêng của endpoint (dạng vpce-xxxx.sqs.us-east-1.vpce.amazonaws.com) — thường chỉ tắt khi cần đồng thời gọi cả endpoint public lẫn private trong cùng ứng dụng.",
+          "createdAt": "2026-09-14T00:32:46.843027Z",
+          "updatedAt": "2026-09-14T00:32:46.843027Z"
+        },
+        {
+          "id": "3c5d5c74cc2a",
+          "title": "VPC CIDR CHÍNH: KHÔNG THỂ THAY ĐỔI SAU KHI TẠO",
+          "content": "📌 Tình huống: VPC đã tạo với CIDR 10.0.0.0/16 nhưng do sáp nhập hệ thống, dải IP này bị trùng với 1 VPC khác cần peering — đội hạ tầng muốn \"đổi\" CIDR chính của VPC hiện tại sang dải khác để hết trùng.\n\n✅ Sự thật cần nhớ: CIDR block CHÍNH của 1 VPC KHÔNG THỂ chỉnh sửa/thay đổi sau khi VPC đã được tạo. Chỉ có thể:\n   • Thêm CIDR block PHỤ (secondary, tối đa 4 cái) — không dùng để thay thế, chỉ để mở rộng thêm dải mới không trùng dải cũ.\n   • Nếu bắt buộc phải đổi hẳn dải CIDR chính ➜ phải tạo VPC MỚI với CIDR mong muốn, rồi migrate resource (EC2, RDS...) sang VPC mới.\n\n⚠️ Đây là lý do vì sao khi PLAN VPC ban đầu, nên chọn CIDR đủ rộng (vd /16) và tính toán kỹ để tránh phải tạo lại VPC sau này.",
+          "createdAt": "2026-09-14T00:32:46.843027Z",
+          "updatedAt": "2026-09-14T00:32:46.843027Z"
+        },
+        {
+          "id": "7583b50c4356",
+          "title": "SECURITY GROUP: HÀNH VI MẶC ĐỊNH KHI TẠO MỚI",
+          "content": "📌 Tình huống: Vừa tạo 1 Security Group mới (chưa thêm rule nào) và gắn cho EC2 instance, cần biết instance này có nhận/gửi được traffic gì không.\n\n✅ Đáp án đúng: 1 Security Group MỚI TẠO (custom, không phải default SG của VPC) mặc định:\n   • Inbound: KHÔNG cho phép traffic nào (deny all) — phải tự thêm rule để mở port cần thiết.\n   • Outbound: CHO PHÉP TẤT CẢ traffic ra ngoài (allow all, 0.0.0.0/0 mọi port/protocol) — trừ khi bạn tự xóa/sửa lại rule outbound mặc định này.\n\n⚠️ Phân biệt với Default Security Group (SG có sẵn của VPC, tên \"default\"): SG này có sẵn 1 rule inbound đặc biệt cho phép traffic từ CHÍNH NÓ (self-reference) — tức các resource cùng gắn default SG có thể giao tiếp với nhau ngay cả khi chưa cấu hình gì thêm.",
+          "createdAt": "2026-09-14T00:32:46.843027Z",
+          "updatedAt": "2026-09-14T00:32:46.843027Z"
+        },
+        {
+          "id": "f6cad2554bee",
+          "title": "CHI PHÍ DATA TRANSFER: CÙNG AZ vs KHÁC AZ vs PEERING vs TRANSIT GATEWAY",
+          "content": "📌 Tình huống: Cần thiết kế kiến trúc tối ưu chi phí (cost-optimized) khi có nhiều EC2/service giao tiếp với nhau qua lại liên tục, khối lượng data transfer lớn.\n\n✅ Nguyên tắc chi phí data transfer cần nhớ (Domain 4 - Cost Optimization hay khai thác):\n   • Traffic giữa 2 instance CÙNG Availability Zone, dùng private IP: MIỄN PHÍ (nếu cùng subnet) hoặc rất rẻ.\n   • Traffic giữa 2 AZ KHÁC NHAU trong cùng Region: tính phí data transfer theo GB cho CẢ 2 CHIỀU (in & out).\n   • Traffic qua VPC Peering: tính phí data transfer giống như traffic khác AZ/khác Region tương ứng (peering trong cùng Region rẻ hơn peering khác Region).\n   • Traffic qua Transit Gateway: tính thêm phí xử lý theo GB đi qua Transit Gateway, CỘNG THÊM phí data transfer thông thường ➜ đắt hơn Peering trực tiếp nếu chỉ có 2 VPC, nhưng RẺ HƠN & DỄ QUẢN LÝ hơn khi có NHIỀU VPC cần kết nối chéo (tránh phải tạo peering full-mesh).\n\n⚠️ Đáp án sai thường gặp: chọn Transit Gateway khi chỉ có 2 VPC cần kết nối đơn giản ➜ VPC Peering rẻ hơn và đủ dùng; Transit Gateway chỉ thực sự tối ưu khi số lượng VPC cần kết nối chéo nhau từ 3 trở lên.",
+          "createdAt": "2026-09-14T00:32:46.843027Z",
+          "updatedAt": "2026-09-14T00:32:46.843027Z"
         }
       ]
     },
@@ -635,6 +873,13 @@
           "content": "📌 Tình huống: Một công ty dịch vụ tài chính chạy công cụ phân tích rủi ro dạng container bằng Docker trên on-premises, phụ thuộc vào kho lưu trữ dữ liệu bền vững (persistent data storage) gắn cục bộ trên một host. Đội ngũ hạ tầng muốn chuyển đổi nền tảng sang AWS bằng một fully managed service vì họ không muốn quản lý EC2 instances, volumes hay underlying servers . • Yêu cầu: Replatform ứng dụng container lên AWS với dịch vụ hoàn toàn quản lý và hỗ trợ lưu trữ bền vững. • Ràng buộc: Tránh...\n\n✅ Đáp án đúng: Sử dụng Amazon ECS với launch type Fargate . Cấp phát hệ thống tệp Amazon Elastic File System (Amazon EFS) và gắn (mount) volume EFS vào bên trong container khi chạy để cung cấp quyền truy cập lưu trữ bền vững.\n   ➜ ➜ [ ĐÚNG ]: Amazon ECS với Fargate là giải pháp container fully managed giúp loại bỏ hoàn toàn việc quản lý EC2 instances hay server . Amazon EFS cung cấp kho lưu trữ tệp chia sẻ bền vững, có thể dễ dàng mount trực tiếp vào tác vụ Fargate, đáp ứng hoàn hảo yêu cầu lưu trữ kết quả mô phỏng.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Sử dụng Amazon EKS với managed node groups. Cấp phát volume Amazon EBS và mount vào container bằng Kubernetes persistent volume và claim. Quản lý vòng đời lưu trữ thủ công.\n     ➜ ➜ [ SAI ]: Vi phạm yêu cầu tránh quản lý EC2 instances và volumes ; EKS với managed node groups vẫn yêu cầu quản lý worker nodes (EC2) và EBS volumes có cấu hình phức tạp.\n   • Sử dụng AWS Lambda với container image runtime. Lưu trữ dữ liệu stateful trong bộ nhớ cục bộ tạm thời (/tmp) và đồng bộ với Amazon S3 định kỳ.\n     ➜ ➜ [ SAI ]: Bộ nhớ tạm `/tmp` của Lambda không phải là kho lưu trữ bền vững thực sự và không phù hợp để thay thế volume Docker cục bộ của ứng dụng phân tích rủi ro.",
           "createdAt": "2026-09-07T16:40:39.828091Z",
           "updatedAt": "2026-09-07T16:40:39.828092Z"
+        },
+        {
+          "id": "bb96f618c6c0",
+          "title": "ECS LAUNCH TYPE: EC2 vs FARGATE",
+          "content": "📌 Tình huống: Team muốn chạy container trên ECS nhưng không muốn quản lý, patch hay scale EC2 instance làm host. Chi phí cần tính chính xác theo tài nguyên (vCPU/RAM) mà task thực sự dùng.\n\n✅ Đáp án đúng: Dùng ECS Launch Type = Fargate.\n   ➜ Fargate là serverless compute engine cho container: AWS tự quản lý toàn bộ server bên dưới, tự động scale, tính phí theo vCPU/memory x thời gian chạy của từng task (per-second).\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Launch Type = EC2 ➜ phải tự tạo, patch, scale Auto Scaling Group các EC2 instance làm cluster host cho ECS, đổi lại kiểm soát được instance type (GPU, bare-metal...), có thể tận dụng Reserved/Spot Instances để giảm chi phí khi workload ổn định lâu dài.\n   • EC2 phù hợp khi cần tối ưu chi phí ở quy mô lớn/ổn định hoặc cần instance đặc biệt; Fargate phù hợp khi ưu tiên đơn giản hóa vận hành, workload biến động, không muốn quản lý server.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -745,6 +990,13 @@
           "content": "📌 Tình huống: Một công ty muốn di chuyển cơ sở dữ liệu thương mại kế thừa (legacy commercial database) tốn kém bản quyền từ on-premises sang một lựa chọn mã nguồn mở, hiệu quả và tiết kiệm chi phí hơn trên AWS Cloud . CTO yêu cầu giải pháp phải xử lý được các cấu hình cơ sở dữ liệu phức tạp như secondary indexes, foreign keys, và stored procedures . • Yêu cầu: Chuyển đổi lược đồ cơ sở dữ liệu phức tạp (schema conversion) và di chuyển dữ liệu (data migration) sang mã nguồn mở trên AWS. •...\n\n✅ Đáp án đúng 1: AWS Schema Conversion Tool (AWS SCT)\n   ➜ ➜ [ ĐÚNG ]: AWS SCT tự động chuyển đổi schema cơ sở dữ liệu thương mại cũ sang cơ sở dữ liệu mã nguồn mở tương thích trên AWS, bao gồm cả việc chuyển đổi các đoạn mã phức tạp như stored procedures, triggers, foreign keys và secondary indexes .\n✅ Đáp án đúng 2: AWS Database Migration Service (AWS DMS)\n   ➜ ➜ [ ĐÚNG ]: AWS DMS giúp di chuyển dữ liệu từ cơ sở dữ liệu nguồn sang cơ sở dữ liệu đích một cách an toàn, nhanh chóng và hỗ trợ đồng bộ dữ liệu liên tục trong suốt quá trình migration mà không làm gián đoạn ứng dụng.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • AWS Glue\n     ➜ ➜ [ SAI ]: AWS Glue là dịch vụ ETL (Extract, Transform, Load) không máy chủ dùng cho việc chuẩn bị và tích hợp dữ liệu cho phân tích, không phải là công cụ chuyên dụng để chuyển đổi schema hoặc di chuyển database OLTP phức tạp.\n   • Basic Schema Copy\n     ➜ ➜ [ SAI ]: Không có tính năng hay dịch vụ nào của AWS tên là \"Basic Schema Copy\" ; đây là một phương án giả mạo.",
           "createdAt": "2026-09-07T16:40:39.828328Z",
           "updatedAt": "2026-09-07T16:40:39.828329Z"
+        },
+        {
+          "id": "9c2b35e7eed9",
+          "title": "DMS: HOMOGENEOUS vs HETEROGENEOUS MIGRATION & AWS SCT",
+          "content": "📌 Tình huống: Công ty cần chuyển database từ Oracle on-premises sang Amazon Aurora PostgreSQL trên AWS — khác database engine hoàn toàn, cần chuyển đổi cả schema/stored procedure lẫn dữ liệu, và ứng dụng không được downtime lâu.\n\n✅ Đáp án đúng: Dùng AWS SCT (Schema Conversion Tool) để convert schema/code (Oracle ➜ PostgreSQL), sau đó dùng AWS DMS để replicate dữ liệu, hỗ trợ Change Data Capture (CDC) để đồng bộ liên tục tới khi cutover.\n   ➜ Đây là heterogeneous migration (khác engine nguồn/đích) ➜ bắt buộc cần SCT vì cấu trúc/cú pháp SQL khác nhau giữa các engine.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ dùng DMS mà không dùng SCT ➜ DMS chỉ lo phần replicate dữ liệu (rows), không tự chuyển đổi schema/stored procedure khác engine.\n   • Homogeneous migration (cùng engine, vd MySQL on-premises ➜ Aurora MySQL, hoặc Oracle ➜ RDS Oracle) thì KHÔNG cần SCT, chỉ cần DMS vì schema tương thích sẵn.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -762,6 +1014,13 @@
           "content": "📌 Tình huống: Một công ty thương mại điện tử sử dụng Microsoft Active Directory on-premises và đã mở rộng sang AWS dưới dạng hybrid cloud. Nhóm kỹ thuật muốn chạy các workload nhận biết thư mục (directory-aware workloads) cho ứng dụng chạy trên SQL Server , đồng thời muốn cấu hình mối quan hệ tin cậy (trust relationship) để cho phép single sign-on (SSO) cho người dùng truy cập tài nguyên ở cả hai domain. • Yêu cầu: Triển khai dịch vụ thư mục trên AWS hỗ trợ trust relationship với...\n\n✅ Đáp án đúng: AWS Directory Service for Microsoft Active Directory (AWS Managed Microsoft AD)\n   ➜ ➜ [ ĐÚNG ]: AWS Managed Microsoft AD được xây dựng trên Microsoft Active Directory thực tế, hỗ trợ đầy đủ các tính năng doanh nghiệp bao gồm cả thiết lập mối quan hệ tin cậy (trust relationships) với on-premises AD, tích hợp hoàn hảo với SQL Server và hỗ trợ SSO.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Simple Active Directory (Simple AD)\n     ➜ ➜ [ SAI ]: Simple AD là một thư mục tương thích Samba 4 giá rẻ dành cho các tác vụ cơ bản, không hỗ trợ thiết lập mối quan hệ tin cậy (trust relationships) với Active Directory on-premises.\n   • Amazon Cloud Directory\n     ➜ ➜ [ SAI ]: Amazon Cloud Directory cung cấp dịch vụ lưu trữ dữ liệu phân cấp linh hoạt cho các ứng dụng di động/web, không phải là Active Directory để quản lý Windows workloads hay tích hợp trust relationship.",
           "createdAt": "2026-09-07T16:40:39.828372Z",
           "updatedAt": "2026-09-07T16:40:39.828372Z"
+        },
+        {
+          "id": "325c7a725aac",
+          "title": "SO SÁNH CÁC LOẠI AWS DIRECTORY SERVICE",
+          "content": "📌 Tình huống: Công ty đã có Active Directory (AD) chạy on-premises, muốn cho phép user hiện tại đăng nhập (SSO) vào ứng dụng trên AWS mà KHÔNG muốn tạo bản sao/đồng bộ dữ liệu directory lên cloud, chấp nhận độ trễ khi request phải đi qua kết nối VPN/Direct Connect về on-premises.\n\n✅ Đáp án đúng: AD Connector.\n   ➜ AD Connector chỉ là một proxy/gateway, chuyển tiếp (redirect) toàn bộ request authentication về thẳng AD on-premises hiện có — không lưu trữ bất kỳ dữ liệu user nào trên AWS.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • AWS Managed Microsoft AD ➜ tạo ra một AD MỚI hoàn toàn trên AWS (có thể thiết lập trust relationship 2 chiều với AD on-premises), phù hợp khi cần đầy đủ tính năng AD (Group Policy, schema extension...) chạy trên cloud, không phải chỉ proxy.\n   • Simple AD ➜ AD độc lập tương thích Samba, không hỗ trợ trust relationship với AD on-premises, không hỗ trợ MFA hay một số tính năng AD nâng cao, phù hợp nhu cầu cơ bản quy mô nhỏ (<5000 user), độc lập hoàn toàn với AD hiện có.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -779,6 +1038,13 @@
           "content": "📌 Tình huống: Một công ty game muốn cải thiện ứng dụng bằng cách thêm bảng xếp hạng (leaderboard) sử dụng thuật toán phức tạp dựa trên chỉ số hiệu năng của người dùng theo thời gian thực. Yêu cầu kỹ thuật đòi hỏi tính đàn hồi cao (high elasticity), độ trễ thấp (low latency), và xử lý thời gian thực để cung cấp dữ liệu người dùng tùy chỉnh cho hàng triệu người dùng truy cập đồng thời. • Yêu cầu: Lựa chọn hai đặc điểm của Amazon ElastiCache đáp ứng bài toán leaderboard quy mô lớn. • Ràng...\n\n✅ Đáp án đúng 1: Sử dụng Amazon ElastiCache để cải thiện độ trễ và thông lượng cho các khối lượng công việc ứng dụng hướng đọc (read-heavy application workloads).\n   ➜ ➜ [ ĐÚNG ]: Bảng xếp hạng (leaderboard) có hàng triệu người dùng truy cập đồng thời chủ yếu là thao tác đọc dữ liệu xếp hạng liên tục. Amazon ElastiCache lưu trữ dữ liệu trong bộ nhớ (in-memory) giúp cải thiện đáng kể độ trễ và thông lượng đọc cho hệ thống, đáp ứng hoàn hảo yêu cầu độ trễ thấp và xử lý thời gian thực .\n✅ Đáp án đúng 2: Sử dụng Amazon ElastiCache để cải thiện hiệu năng của các tác vụ đòi hỏi tính toán mạnh (compute-intensive workloads).\n   ➜ ➜ [ ĐÚNG ]: Các cấu trúc dữ liệu nâng cao trong Redis (như Sorted Sets) cho phép thực hiện các thao tác xếp hạng, tính toán điểm số và sắp xếp thời gian thực cực kỳ hiệu quả trong bộ nhớ, giảm tải đáng kể cho cơ sở dữ liệu chính đối với các thuật toán leaderboard phức tạp, thỏa mãn trực tiếp tính đàn hồi cao và xử lý thời gian thực .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Sử dụng Amazon ElastiCache để cải thiện hiệu năng của các tác vụ Extract-Transform-Load (ETL).\n     ➜ ➜ [ SAI ]: Amazon ElastiCache là kho dữ liệu in-memory tốc độ cao, không phải là công cụ xử lý ETL , do đó không thoả mãn yêu cầu xử lý dữ liệu người dùng tùy chỉnh thời gian thực cho hệ thống leaderboard.\n   • Sử dụng Amazon ElastiCache để chạy các câu lệnh JOIN cực kỳ phức tạp.\n     ➜ ➜ [ SAI ]: ElastiCache (Redis/Memcached) là cơ sở dữ liệu dạng Key-Value / NoSQL trong bộ nhớ, không hỗ trợ các câu lệnh JOIN phức tạp , hoàn toàn vi phạm ràng buộc xử lý các thuật toán truy vấn cấu trúc phức tạp của bảng xếp hạng.",
           "createdAt": "2026-09-07T16:40:39.828396Z",
           "updatedAt": "2026-09-07T16:40:39.828397Z"
+        },
+        {
+          "id": "de63a599c288",
+          "title": "REDIS vs MEMCACHED TRONG ELASTICACHE",
+          "content": "📌 Tình huống: Ứng dụng cần cache session data cho user, yêu cầu high availability với automatic failover khi node chính gặp sự cố, và không được mất dữ liệu cache khi node restart.\n\n✅ Đáp án đúng: ElastiCache for Redis.\n   ➜ Redis hỗ trợ Multi-AZ với automatic failover, replication (primary + read replicas), persistence (snapshot / AOF) để backup & restore dữ liệu, hỗ trợ cấu trúc dữ liệu phức tạp (sorted set, pub/sub, transaction).\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • ElastiCache for Memcached ➜ đơn giản hơn, multi-threaded, dữ liệu được sharding (phân mảnh) giữa nhiều node để scale ngang nhanh, NHƯNG không có replication, không có Multi-AZ/failover, không có persistence/backup — mất node là mất luôn data trên node đó.\n   • Chọn Memcached khi: cache đơn giản (không cần persistence/HA), cần tận dụng multi-core threads, cần scale ngang dễ dàng bằng cách thêm/bớt node.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -848,6 +1114,13 @@
           "content": "📌 Tình huống: Một AWS Organization đang sử dụng Service Control Policies (SCPs) để kiểm soát tập trung các quyền tối đa có sẵn cho tất cả các tài khoản trong tổ chức. Điều này giúp đảm bảo tất cả các tài khoản tuân thủ hướng dẫn kiểm soát truy cập của tổ chức. • Yêu cầu: Xác định 3 phát biểu chính xác về phạm vi ảnh hưởng và cách hoạt động của quyền hạn SCP so với IAM policies. • Ràng buộc: Chọn đúng 3 đáp án phản ánh đúng bản chất bảo mật của SCPs .\n\n✅ Đáp án đúng 1: Service control policy (SCP) ảnh hưởng đến tất cả users và roles trong các member accounts, bao gồm cả root user của các member accounts.\n   ➜ ➜ [ ĐÚNG ]: SCPs thiết lập ranh giới quyền hạn tối đa (maximum available permissions) cho tất cả các thực thể bên trong tài khoản thành viên, và nó áp dụng cho cả tài khoản root (root user) của các tài khoản đó, đáp ứng tuyệt đối mô hình kiểm soát tập trung.\n✅ Đáp án đúng 2: Nếu một user hoặc role có IAM permission policy cấp quyền cho một action nhưng action đó bị từ chối hoặc không được cho phép bởi SCP, thì user hoặc role đó không thể thực hiện action đó .\n   ➜ ➜ [ ĐÚNG ]: SCP hoạt động như một rào chắn an ninh (guardrail). Ngay cả khi IAM policy cho phép, nếu SCP chặn (deny hoặc không cho phép) , kết quả cuối cùng vẫn là từ chối (Explicit/Implicit Deny), đảm bảo không ai có thể vượt quá giới hạn của tổ chức.\n✅ Đáp án đúng 3: Service control policy (SCP) không ảnh hưởng đến service-linked roles .\n   ➜ ➜ [ ĐÚNG ]: Service-linked roles là các role do AWS services tự tạo để quản lý tài nguyên thay mặt cho bạn (ví dụ: Auto Scaling, RDS). Để đảm bảo các dịch vụ AWS hoạt động bình thường mà không bị gián đoạn, SCPs không bao giờ áp dụng hoặc hạn chế service-linked roles .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Nếu user hoặc role có IAM permission policy cấp quyền nhưng bị chặn bởi SCP, user hoặc role đó vẫn có thể thực hiện action đó.\n     ➜ ➜ [ SAI ]: Phát biểu này sai hoàn toàn vì SCP có quyền lực tối cao trong việc giới hạn quyền trên phạm vi tổ chức; nếu bị SCP chặn, IAM policy thông thường không thể ghi đè được.\n   • Service control policy (SCP) ảnh hưởng đến tất cả users và roles trong member accounts, ngoại trừ root user của các member accounts.\n     ➜ ➜ [ SAI ]: Phát biểu này sai vì root user của member accounts vẫn chịu sự chi phối của SCP (ngoại trừ tài khoản Management/Master account có một số đặc quyền riêng biệt đối với một số thao tác quản lý organization).",
           "createdAt": "2026-09-07T16:40:39.829476Z",
           "updatedAt": "2026-09-07T16:40:39.829477Z"
+        },
+        {
+          "id": "b4f06a3c3794",
+          "title": "IAM POLICY EVALUATION LOGIC & PERMISSIONS BOUNDARY",
+          "content": "📌 Tình huống: Công ty muốn cho phép Dev team tự tạo IAM roles cho project riêng của họ, nhưng phải đảm bảo các role đó KHÔNG BAO GIỜ có quyền vượt quá một giới hạn nhất định (vd không thể tự cấp quyền admin toàn cục), dù dev có gán policy nào đi nữa.\n\n✅ Đáp án đúng: Gán Permissions Boundary lên IAM user/role của Dev.\n   ➜ Permissions Boundary là 1 managed policy đặt \"trần\" quyền tối đa mà entity đó (và các role nó tạo ra) có thể có. Quyền thực tế = giao (intersection) giữa Identity-based policy và Permissions Boundary — dù identity policy có allow rộng đến đâu cũng không vượt qua được boundary.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ dùng SCP (Service Control Policy) ➜ SCP áp dụng ở cấp AWS Organizations/OU, ảnh hưởng đến TOÀN BỘ account, không đủ linh hoạt để giới hạn riêng lẻ từng user/role trong 1 account.\n   • Nguyên tắc đánh giá policy IAM: mặc định DENY tất cả ➜ có Allow rõ ràng thì được phép ➜ nhưng nếu có BẤT KỲ Explicit Deny nào ở bất kỳ policy nào (identity, resource, SCP, permissions boundary...) thì luôn thắng, kết quả cuối cùng là DENY.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -872,6 +1145,13 @@
           "content": "📌 Tình huống: Một e-commerce analytics company chuẩn bị archive dữ liệu transaction records và customer analytics reports trong Amazon S3 để lưu trữ lâu dài. Để đáp ứng compliance requirements, dữ liệu phải được encrypted at rest bằng AWS-managed/AWS encryption keys , cost-effective và key rotation phải diễn ra tự động mỗi 12 tháng theo data governance policy. • Yêu cầu: Chọn giải pháp đáp ứng yêu cầu mã hóa và tự động xoay vòng khóa mỗi 12 tháng với chi phí vận hành thấp nhất (least...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Tạo một Customer Managed Key (CMK) trong AWS KMS và bật tính năng tự động xoay vòng khóa ( automatic key rotation , mặc định AWS KMS xoay vòng KMS key đối xứng mỗi 1 năm / 365 ngày) hoàn toàn đáp ứng chính sách quản trị dữ liệu. Bằng cách thiết lập default encryption trên S3 bucket với KMS key này, mọi dữ liệu đưa vào sẽ tự động mã hóa mà không cần code phức tạp hay vận hành thủ công , mang lại operational overhead thấp nhất.",
           "createdAt": "2026-09-07T16:40:39.830857Z",
           "updatedAt": "2026-09-07T16:40:39.830858Z"
+        },
+        {
+          "id": "f8ac8b7f622f",
+          "title": "ENVELOPE ENCRYPTION & KEY POLICY TRONG KMS",
+          "content": "📌 Tình huống: Ứng dụng cần mã hóa 1 file dung lượng 1GB trước khi lưu, dùng CMK (Customer Master Key) trong KMS. Tuy nhiên API Encrypt của KMS chỉ hỗ trợ mã hóa tối đa 4KB dữ liệu mỗi lần gọi.\n\n✅ Đáp án đúng: Envelope Encryption.\n   ➜ Gọi GenerateDataKey API để KMS trả về 1 cặp Data Key (bản Plaintext + bản đã mã hóa bằng CMK). Dùng bản Plaintext Data Key để mã hóa dữ liệu lớn ở phía client (thuật toán như AES-256), sau đó XÓA Plaintext Data Key khỏi memory ngay và chỉ lưu lại Encrypted Data Key kèm ciphertext của file.\n   ➜ Đây chính là cơ chế mà S3 SSE-KMS/EBS encryption dùng bên dưới để mã hóa object/volume lớn hơn giới hạn 4KB.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Gọi trực tiếp Encrypt API cho toàn bộ file 1GB ➜ lỗi vì vượt giới hạn 4KB của API này.\n   • Key Policy: là resource-based policy BẮT BUỘC phải có trên mọi CMK (khác với IAM policy là identity-based) — kiểm soát ai được quyền quản lý/sử dụng key; quyền thực tế = giao (intersection) giữa Key Policy và IAM policy của principal.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -927,6 +1207,13 @@
           "content": "📌 Tình huống: Một công ty dược phẩm toàn cầu muốn chuyển phần lớn dữ liệu on-premises lên Amazon S3 , Amazon Elastic File System (Amazon EFS) , và Amazon FSx for Windows File Server một cách dễ dàng, nhanh chóng và tiết kiệm chi phí . • Yêu cầu: Tự động hóa và tăng tốc quá trình chuyển dữ liệu trực tuyến (online data transfers) vào các dịch vụ lưu trữ AWS kể trên. • Ràng buộc: Chuyển dữ liệu trực tuyến quy mô lớn sang cả S3, EFS và FSx .\n\n✅ Đáp án đúng: Sử dụng AWS DataSync để tự động hóa và tăng tốc quá trình truyền dữ liệu trực tuyến đến các dịch vụ lưu trữ AWS đã cho.\n   ➜ ➜ [ ĐÚNG ]: AWS DataSync là dịch vụ được thiết kế chuyên biệt để tự động hóa và tăng tốc độ di chuyển dữ liệu trực tuyến (online migration) quy mô lớn từ on-premises lên các kho lưu trữ AWS như Amazon S3 , Amazon EFS và Amazon FSx nhanh hơn tới 10 lần so với các công cụ thông thường, đáp ứng hoàn hảo toàn bộ yêu cầu của bài toán .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Sử dụng AWS Transfer Family để tự động hóa và tăng tốc quá trình truyền dữ liệu trực tuyến đến các dịch vụ lưu trữ AWS.\n     ➜ ➜ [ SAI ]: AWS Transfer Family cung cấp các managed endpoints cho giao thức SFTP, FTPS và FTP để người dùng/client kết nối tải file lên S3 hoặc EFS thủ công, không phải là công cụ tự động hóa di chuyển dữ liệu hàng loạt từ hệ thống on-premises, do đó hoàn toàn không thoả mãn yêu cầu tăng tốc migration tự động.\n   • Sử dụng File Gateway để tự động hóa và tăng tốc quá trình truyền dữ liệu trực tuyến đến các dịch vụ lưu trữ AWS.\n     ➜ ➜ [ SAI ]: Storage Gateway (File Gateway) là giải pháp lưu trữ lai (hybrid storage) để các ứng dụng on-premises truy cập S3 thông qua giao diện file, không tối ưu cho việc di chuyển toàn bộ lượng lớn dữ liệu lịch sử từ on-premises lên nhiều dịch vụ lưu trữ khác nhau một cách nhanh chóng, hoàn toàn không thoả mãn mục tiêu migration quy mô lớn .",
           "createdAt": "2026-09-07T16:40:39.828686Z",
           "updatedAt": "2026-09-07T16:40:39.828687Z"
+        },
+        {
+          "id": "fbc4e41cb690",
+          "title": "CHỌN DATASYNC vs STORAGE GATEWAY vs SNOWBALL",
+          "content": "📌 Tình huống: Công ty cần di chuyển 200TB dữ liệu MỘT LẦN từ hệ thống NAS on-premises lên Amazon S3. Đường truyền Internet hiện tại chỉ 100Mbps, nếu transfer online sẽ mất nhiều tuần và ảnh hưởng băng thông làm việc hàng ngày.\n\n✅ Đáp án đúng: AWS Snowball (offline data transfer bằng thiết bị vật lý).\n   ➜ Khi dữ liệu cực lớn (hàng chục-hàng trăm TB/PB) và băng thông mạng không đủ để hoàn tất trong thời gian hợp lý ➜ Snowball là lựa chọn nhanh & rẻ hơn nhiều so với chờ transfer online.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • AWS DataSync ➜ vẫn phụ thuộc network hiện có, tối ưu tốc độ transfer nhưng KHÔNG giải quyết được vấn đề băng thông quá thấp cho khối lượng cực lớn; phù hợp cho transfer định kỳ/liên tục (scheduled/incremental) khi network đủ tốt.\n   • AWS Storage Gateway ➜ dùng cho nhu cầu truy cập HYBRID LIÊN TỤC (ongoing), không phải công cụ chuyên cho di chuyển một lần khối lượng lớn: File Gateway (NFS/SMB ⇄ S3), Volume Gateway (iSCSI block, cached/stored mode), Tape Gateway (thay thế tape backup vật lý).",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -996,6 +1283,13 @@
           "content": "📌 Tình huống: Một công ty dịch vụ tài chính muốn định danh bất kỳ dữ liệu nhạy cảm (sensitive data) nào được lưu trữ trên Amazon S3 buckets . Công ty cũng muốn giám sát và bảo vệ toàn bộ dữ liệu trên Amazon S3 chống lại mọi hoạt động độc hại (malicious activity) . • Yêu cầu: Phát hiện dữ liệu nhạy cảm trên S3 và giám sát các hoạt động/mối đe dọa độc hại trên S3. • Ràng buộc: Sử dụng đúng các dịch vụ chuyên biệt của AWS cho từng mục đích bảo mật cụ thể .\n\n✅ Đáp án đúng: Sử dụng Amazon GuardDuty để giám sát bất kỳ hoạt động độc hại nào trên dữ liệu được lưu trữ trong Amazon S3. Sử dụng Amazon Macie để nhận diện bất kỳ dữ liệu nhạy cảm nào được lưu trữ trên Amazon S3.\n   ➜ ➜ [ ĐÚNG ]: Amazon GuardDuty (S3 Protection) giám sát liên tục các sự kiện lưu trữ dữ liệu S3 để phát hiện hành vi nguy hiểm hoặc độc hại, trong khi Amazon Macie sử dụng học máy (machine learning) để tự động phát hiện và bảo vệ dữ liệu nhạy cảm (như PII, thông tin thẻ tín dụng) trên S3, đáp ứng hoàn hảo cả hai yêu cầu của bài toán .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Sử dụng Amazon Macie để giám sát hoạt động độc hại trên dữ liệu S3 cũng như nhận diện dữ liệu nhạy cảm trên Amazon S3.\n     ➜ ➜ [ SAI ]: Amazon Macie chuyên dùng để phát hiện dữ liệu nhạy cảm chứ không phải là công cụ giám sát mối đe dọa bảo mật hay hoạt động độc hại thời gian thực , do đó hoàn toàn không thoả mãn yêu cầu giám sát malicious activity của hệ thống.\n   • Sử dụng Amazon GuardDuty để giám sát hoạt động độc hại trên dữ liệu S3 cũng như nhận diện dữ liệu nhạy cảm trên Amazon S3.\n     ➜ ➜ [ SAI ]: Mặc dù GuardDuty bảo vệ S3 khỏi các mối đe dọa, nhưng nó không có tính năng quét nội dung file để định danh dữ liệu nhạy cảm (sensitive data discovery) như PII, do đó hoàn toàn không thoả mãn yêu cầu phân loại dữ liệu của Macie.",
           "createdAt": "2026-09-07T16:40:39.828766Z",
           "updatedAt": "2026-09-07T16:40:39.828767Z"
+        },
+        {
+          "id": "f5058e937715",
+          "title": "GUARDDUTY + EVENTBRIDGE: TỰ ĐỘNG CÔ LẬP THREAT",
+          "content": "📌 Tình huống: Security team muốn hệ thống TỰ ĐỘNG cô lập (quarantine) một EC2 instance ngay khi GuardDuty phát hiện instance đó có hành vi độc hại (vd giao tiếp với địa chỉ IP C2/cryptomining), không chờ admin xử lý thủ công vì phản ứng chậm sẽ gây thiệt hại.\n\n✅ Đáp án đúng: GuardDuty finding ➜ Amazon EventBridge rule bắt sự kiện ➜ trigger AWS Lambda function tự động: đổi Security Group của instance sang nhóm \"quarantine\" (chặn toàn bộ traffic in/out) và tạo snapshot để phục vụ điều tra (forensics).\n   ➜ GuardDuty là dịch vụ threat detection dùng ML + threat intelligence, phân tích VPC Flow Logs, CloudTrail logs, DNS logs để phát hiện hành vi bất thường mà không cần cài agent.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ bật GuardDuty và theo dõi dashboard/console thủ công ➜ không đáp ứng yêu cầu tự động hóa (automated remediation), phụ thuộc con người phản ứng kịp thời.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -1013,6 +1307,13 @@
           "content": "📌 Tình huống: Một công ty dịch vụ tài chính muốn định danh bất kỳ dữ liệu nhạy cảm (sensitive data) nào được lưu trữ trên Amazon S3 buckets . Công ty cũng muốn giám sát và bảo vệ toàn bộ dữ liệu trên Amazon S3 chống lại mọi hoạt động độc hại (malicious activity) . • Yêu cầu: Phát hiện dữ liệu nhạy cảm trên S3 và giám sát các hoạt động/mối đe dọa độc hại trên S3. • Ràng buộc: Sử dụng đúng các dịch vụ chuyên biệt của AWS cho từng mục đích bảo mật cụ thể .\n\n✅ Đáp án đúng: Sử dụng Amazon GuardDuty để giám sát bất kỳ hoạt động độc hại nào trên dữ liệu được lưu trữ trong Amazon S3. Sử dụng Amazon Macie để nhận diện bất kỳ dữ liệu nhạy cảm nào được lưu trữ trên Amazon S3.\n   ➜ ➜ [ ĐÚNG ]: Amazon GuardDuty (S3 Protection) giám sát liên tục các sự kiện lưu trữ dữ liệu S3 để phát hiện hành vi nguy hiểm hoặc độc hại, trong khi Amazon Macie sử dụng học máy (machine learning) để tự động phát hiện và bảo vệ dữ liệu nhạy cảm (như PII, thông tin thẻ tín dụng) trên S3, đáp ứng hoàn hảo cả hai yêu cầu của bài toán .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Sử dụng Amazon Macie để giám sát hoạt động độc hại trên dữ liệu S3 cũng như nhận diện dữ liệu nhạy cảm trên Amazon S3.\n     ➜ ➜ [ SAI ]: Amazon Macie chuyên dùng để phát hiện dữ liệu nhạy cảm chứ không phải là công cụ giám sát mối đe dọa bảo mật hay hoạt động độc hại thời gian thực , do đó hoàn toàn không thoả mãn yêu cầu giám sát malicious activity của hệ thống.\n   • Sử dụng Amazon GuardDuty để giám sát hoạt động độc hại trên dữ liệu S3 cũng như nhận diện dữ liệu nhạy cảm trên Amazon S3.\n     ➜ ➜ [ SAI ]: Mặc dù GuardDuty bảo vệ S3 khỏi các mối đe dọa, nhưng nó không có tính năng quét nội dung file để định danh dữ liệu nhạy cảm (sensitive data discovery) như PII, do đó hoàn toàn không thoả mãn yêu cầu phân loại dữ liệu của Macie.",
           "createdAt": "2026-09-07T16:40:39.828770Z",
           "updatedAt": "2026-09-07T16:40:39.828771Z"
+        },
+        {
+          "id": "44caabc27b79",
+          "title": "MACIE: PHÁT HIỆN DỮ LIỆU NHẠY CẢM (PII) TRONG S3",
+          "content": "📌 Tình huống: Công ty lưu trữ hàng chục nghìn file khách hàng trong nhiều bucket S3, cần xác định bucket/file nào đang chứa dữ liệu cá nhân nhạy cảm (PII: số CMND/passport, thẻ tín dụng, email...) để áp dụng chính sách bảo vệ phù hợp và đáp ứng compliance (GDPR...), không muốn tự viết script quét thủ công.\n\n✅ Đáp án đúng: Amazon Macie.\n   ➜ Dùng Machine Learning + pattern matching để tự động quét S3, phát hiện & phân loại dữ liệu nhạy cảm, sinh ra finding kèm mức độ rủi ro trên dashboard.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Amazon Inspector ➜ chỉ dùng để quét LỖ HỔNG BẢO MẬT (vulnerability) trên EC2/container image/Lambda (CVE, network reachability...), không liên quan đến phát hiện nội dung dữ liệu nhạy cảm trong S3.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -1030,6 +1331,13 @@
           "content": "📌 Tình huống: Nhóm kỹ thuật đang chuyển static content của trang web logistics từ Amazon EC2 instances sang Amazon S3 bucket và sử dụng Amazon CloudFront distribution để phân phối. Security group của EC2 trước đây chỉ cho phép một tập hợp giới hạn các IP ranges từ các nhà cung cấp truy cập. Sau khi migrate sang CloudFront, việc truy cập nội dung tĩnh chỉ được phép xuất phát từ các địa chỉ IP nói trên . • Yêu cầu: Bảo vệ S3 origin (chỉ cho phép CloudFront đọc) kết hợp với việc hạn chế truy...\n\n✅ Đáp án đúng 1: Cấu hình một origin access identity (OAI) và liên kết nó với Amazon CloudFront distribution . Thiết lập quyền trong Amazon S3 bucket policy sao cho chỉ có OAI mới có quyền đọc các đối tượng.\n   ➜ ➜ [ ĐÚNG ]: Sử dụng Origin Access Identity (OAI) kết hợp với S3 bucket policy là phương pháp chuẩn (best practice) để chặn hoàn toàn việc người dùng truy cập trực tiếp vào S3 bucket mà bắt buộc phải thông qua CloudFront distribution, đáp ứng một nửa yêu cầu kiến trúc an toàn.\n✅ Đáp án đúng 2: Tạo một AWS WAF ACL và sử dụng IP match condition để chỉ cho phép traffic từ những IP được phép trong security group cũ của EC2. Liên kết AWS WAF ACL mới này với Amazon CloudFront distribution .\n   ➜ ➜ [ ĐÚNG ]: AWS WAF tích hợp trực tiếp với Amazon CloudFront tại các biên (edge locations) và cung cấp IP match condition giúp lọc, hạn chế truy cập chính xác theo các dải IP của nhà cung cấp như yêu cầu, đáp ứng hoàn hảo phần ràng buộc kiểm soát nguồn truy cập client.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Tạo một NACL mới cho phép traffic từ các IP tương tự như security group cũ của EC2. Liên kết NACL mới này với Amazon CloudFront distribution.\n     ➜ ➜ [ SAI ]: Network ACLs (NACLs) chỉ áp dụng cho các subnet bên trong VPC, hoàn toàn không thể liên kết hay gắn kết với Amazon CloudFront distribution (vốn là dịch vụ biên toàn cầu), do đó phương án này hoàn toàn sai lệch về mặt kỹ thuật.\n   • Tạo một AWS WAF ACL sử dụng IP match condition để lọc IP, sau đó liên kết AWS WAF ACL mới này với Amazon S3 bucket policy.\n     ➜ ➜ [ SAI ]: AWS WAF ACL không thể tích hợp trực tiếp vào S3 bucket policy; WAF chỉ gắn được với CloudFront distributions, Application Load Balancers, API Gateways hoặc App Runner, do đó đây là một cấu hình không hợp lệ .",
           "createdAt": "2026-09-07T16:40:39.828839Z",
           "updatedAt": "2026-09-07T16:40:39.828840Z"
+        },
+        {
+          "id": "ba22d5dd67fc",
+          "title": "CÁC LOẠI WAF RULES: RATE-BASED, GEO-MATCH, IP SET",
+          "content": "📌 Tình huống: Website đang bị một số địa chỉ IP cụ thể gửi liên tục hàng nghìn request/phút vào 1 endpoint gây quá tải ứng dụng, nhưng đây không phải là volumetric DDoS quy mô lớn ở tầng mạng.\n\n✅ Đáp án đúng: Tạo AWS WAF Rate-based rule, tự động chặn (block) IP nào vượt ngưỡng số request trong 5 phút, gắn WAF vào CloudFront/ALB/API Gateway phía trước ứng dụng.\n   ➜ AWS WAF hoạt động ở Layer 7 (HTTP/HTTPS), hỗ trợ nhiều loại rule: Rate-based (giới hạn theo IP), Geo-match (chặn/cho phép theo quốc gia), IP set (block/allow list theo IP/CIDR), String/Regex match (chặn theo pattern trong header/body/URI như SQL injection, XSS), và Managed Rule Groups (bộ rule dựng sẵn cho OWASP Top 10...).\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ dùng AWS Shield Advanced ➜ Shield chủ yếu bảo vệ tầng Network/Transport (Layer 3/4) khỏi DDoS thể tích lớn, KHÔNG có cơ chế rate-limit chi tiết theo IP ở tầng ứng dụng (Layer 7) như WAF; 2 dịch vụ thường dùng bổ trợ cho nhau.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -1047,6 +1355,13 @@
           "content": "📌 Tình huống: Một công ty sử dụng AWS Organizations để quản lý nhiều departments chạy các tài khoản AWS riêng biệt ở các quốc gia và Regions khác nhau. Công ty muốn thiết lập một quy trình cung cấp tài nguyên nhất quán trên các departments để mỗi tài nguyên tuân theo cấu hình định trước (ví dụ: loại EC2 instance cụ thể, IAM roles cụ thể cho Lambda, v.v.). • Yêu cầu: Triển khai đồng bộ mẫu cấu hình (templates) hàng loạt ra nhiều tài khoản AWS và nhiều Regions khác nhau từ một trung tâm...\n\n✅ Đáp án đúng: Sử dụng AWS CloudFormation StackSets để triển khai cùng một template trên nhiều AWS accounts và regions.\n   ➜ ➜ [ ĐÚNG ]: AWS CloudFormation StackSets mở rộng khả năng của CloudFormation, cho phép tạo, cập nhật hoặc xóa các stacks trên nhiều tài khoản AWS và nhiều Regions cùng lúc thông qua một thao tác duy nhất từ tài khoản quản trị (administrator account), tích hợp hoàn hảo với AWS Organizations để quản trị quy mô lớn, đáp ứng tuyệt đối toàn bộ yêu cầu của bài toán .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Sử dụng AWS CloudFormation stacks để triển khai cùng một template trên nhiều AWS accounts và regions.\n     ➜ ➜ [ SAI ]: CloudFormation stacks truyền thống chỉ cho phép triển khai trong một tài khoản và một Region đơn lẻ tại một thời điểm, không hỗ trợ tự động mở rộng đa tài khoản (multi-account orchestration) , do đó không thoả mãn yêu cầu tự động hóa quy mô lớn của tổ chức.\n   • Sử dụng AWS Resource Access Manager (AWS RAM) để triển khai cùng một template trên nhiều AWS accounts và regions.\n     ➜ ➜ [ SAI ]: AWS RAM là dịch vụ dùng để chia sẻ các tài nguyên AWS cụ thể (như Subnets, VPC Endpoints, Transit Gateways) giữa các tài khoản chứ hoàn toàn không phải là công cụ triển khai template CloudFormation, dẫn đến việc dùng sai mục đích và không thoả mãn yêu cầu kỹ thuật.",
           "createdAt": "2026-09-07T16:40:39.828872Z",
           "updatedAt": "2026-09-07T16:40:39.828873Z"
+        },
+        {
+          "id": "09f03bed67b1",
+          "title": "CLOUDFORMATION STACKSETS & DRIFT DETECTION",
+          "content": "📌 Tình huống: Công ty có 50 AWS account con trong AWS Organizations, cần deploy đồng loạt cùng một baseline hạ tầng (vd bật sẵn CloudTrail, GuardDuty, cấu hình VPC chuẩn) cho TẤT CẢ account, quản lý tập trung từ management account, và cập nhật đồng bộ khi baseline thay đổi.\n\n✅ Đáp án đúng: CloudFormation StackSets.\n   ➜ Cho phép deploy 1 template ra NHIỀU account + NHIỀU Region cùng lúc từ 1 admin account trung tâm, cập nhật/xóa hàng loạt chỉ với 1 thao tác.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Deploy CloudFormation stack riêng lẻ ở từng account ➜ tốn công vận hành, dễ bị lệch version giữa các account khi có thay đổi.\n   • Drift Detection: tính năng phát hiện khi tài nguyên trong stack bị SỬA THỦ CÔNG (ngoài luồng CloudFormation, vd ai đó vào Console đổi trực tiếp) khiến trạng thái thực tế lệch so với template gốc — dùng để đảm bảo tuân thủ Infrastructure as Code.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -1150,6 +1465,13 @@
           "content": "📌 Tình huống: Nhóm kỹ thuật tại một công ty mạng xã hội muốn sử dụng Amazon CloudWatch alarms để tự động khôi phục Amazon EC2 instances khi chúng bị lỗi (impaired). Bạn được thuê làm solutions architect để cung cấp chuyên môn. • Yêu cầu: Xác định 2 phát biểu chính xác về quy trình và đặc tính của tính năng tự động khôi phục EC2 instance (instance recovery). • Ràng buộc: Chọn đúng 2 đáp án phản ánh đúng cơ chế giữ nguyên ID, IP và trạng thái của instance recovery .\n\n✅ Đáp án đúng 1: Một recovered instance sẽ giống hệt instance ban đầu, bao gồm instance ID, private IP addresses, Elastic IP addresses, và tất cả instance metadata .\n   ➜ ➜ [ ĐÚNG ]: Khi một EC2 instance được tự động khôi phục bởi CloudWatch alarm (do lỗi phần cứng bên dưới), AWS sẽ tiến hành migrate instance sang phần cứng mới khỏe mạnh. Quá trình này giữ nguyên vẹn mọi thông tin định danh cốt lõi bao gồm instance ID, private IP, EIP và metadata, đáp ứng hoàn hảo tính liên tục của hạ tầng hệ thống .\n✅ Đáp án đúng 2: Nếu instance của bạn có một public IPv4 address , nó vẫn giữ nguyên public IPv4 address đó sau khi recovery .\n   ➜ ➜ [ ĐÚNG ]: Khác với việc dừng và khởi động lại thủ công (stop/start) một instance thông thường trên Non-VPC/Standard VPC (có thể làm mất public IP nếu không dùng EIP), cơ chế CloudWatch automated recovery duy trì nguyên trạng public IPv4 address của instance trên các VPC hiện đại, đảm bảo tính nhất quán kết nối mạng.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Terminated Amazon EC2 instances có thể được khôi phục nếu chúng được cấu hình từ lúc launch instance.\n     ➜ ➜ [ SAI ]: Tính năng auto-recovery chỉ áp dụng cho các instance đang ở trạng thái chạy mà gặp sự cố phần cứng cơ sở hạ tầng ( system status check failure ). Nó hoàn toàn không thể khôi phục một instance đã bị terminate (xóa vĩnh viễn) , do đó phát biểu này sai lệch bản chất.\n   • Nếu instance của bạn có một public IPv4 address, nó không giữ lại public IPv4 address sau khi recovery.\n     ➜ ➜ [ SAI ]: Phát biểu này trái ngược hoàn toàn với cơ chế kỹ thuật thực tế của CloudWatch recovery. Instance vẫn giữ nguyên public IPv4 address chứ không bị thay đổi hay mất đi.",
           "createdAt": "2026-09-07T16:40:39.829204Z",
           "updatedAt": "2026-09-07T16:40:39.829205Z"
+        },
+        {
+          "id": "f1bd735beef7",
+          "title": "CLOUDWATCH: METRIC FILTER, LOGS INSIGHTS & COMPOSITE ALARM",
+          "content": "📌 Tình huống: Hệ thống hiện có 3 alarm riêng lẻ (CPU cao, Memory cao, Disk cao) gây quá nhiều thông báo nhiễu (alarm noise) vì chỉ cần 1 điều kiện phụ vi phạm là đã báo động, trong khi team chỉ muốn được cảnh báo khi tình huống thực sự nghiêm trọng (ít nhất 2/3 điều kiện xảy ra ĐỒNG THỜI).\n\n✅ Đáp án đúng: Tạo CloudWatch Composite Alarm, gộp 3 alarm con bằng logic AND/OR (vd ít nhất 2 trong 3 alarm con ở trạng thái ALARM) thành 1 alarm tổng duy nhất để gửi thông báo.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Tự xử lý logic kết hợp bằng SNS + Lambda riêng ➜ phức tạp không cần thiết khi CloudWatch đã có sẵn Composite Alarm.\n   • Metric Filter: trích xuất metric số từ pattern trong CloudWatch Logs (vd đếm số dòng log chứa từ \"ERROR\") để tạo alarm dựa trên nội dung log thay vì chỉ số hệ thống.\n   • CloudWatch Logs Insights: cho phép query log bằng cú pháp riêng (gần giống SQL) để tìm kiếm, lọc, tổng hợp log nhanh trực tiếp trên console mà không cần export log ra công cụ khác.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -1167,6 +1489,13 @@
           "content": "📌 Tình huống: Một công ty phần mềm quản lý một đội ngũ Amazon EC2 instances chạy các ứng dụng phân tích nội bộ. Các instances này đang sử dụng một IAM role với custom policies để kết nối đến Amazon RDS và AWS Secrets Manager nhằm truy xuất thông tin đăng nhập và database endpoints. Nhóm vận hành IT muốn triển khai một giải pháp quản lý bản vá tập trung (centralized patch management solution) giúp đơn giản hóa các tác vụ tuân thủ và bảo mật. Mục tiêu của họ là tự động hóa việc vá lỗi hệ...\n\n✅ Đáp án đúng: Bật tính năng Default Host Management Configuration trong AWS Systems Manager Quick Setup .\n   ➜ ➜ [ ĐÚNG ]: Default Host Management Configuration (DHMC) trong AWS Systems Manager Quick Setup cho phép tự động kích hoạt quản lý Systems Manager (SSM) cho tất cả các EC2 instances hiện tại và tương lai trong một tài khoản và Region mà không yêu cầu phải sửa đổi thủ công IAM instances profile, không cần gắn lại policy, và không làm gián đoạn các ứng dụng . Nó tự động cấu hình các quyền tối thiểu cần thiết ở cấp độ dịch vụ, đáp ứng hoàn hảo tiêu chí ít chi phí quản lý nhất (least administrative overhead) .\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Tạo một IAM role thứ hai với policy AmazonSSMManagedInstanceCore và gắn cả role mới lẫn role cũ vào mỗi EC2 instance bằng Systems Manager Hybrid Activation.\n     ➜ ➜ [ SAI ]: Một Amazon EC2 instance chạy trực tiếp trên AWS chỉ có thể được gắn tối đa một IAM instance profile tại một thời điểm . Hơn nữa, Hybrid Activations chỉ được sử dụng cho các máy chủ ở môi trường bên ngoài AWS (on-premises servers hoặc máy chủ ảo cloud khác), do đó phương án này hoàn toàn sai về mặt kỹ thuật.\n   • Tách (detach) IAM role hiện tại khỏi tất cả các EC2 instances. Thay thế nó bằng một role mới có cả quyền ban đầu lẫn policy AmazonSSMManagedInstanceCore để bật các tính năng của Systems Manager.\n     ➜ ➜ [ SAI ]: Việc phải thủ công detach và thay thế IAM role trên toàn bộ đội ngũ instances gây ra administrative overhead lớn và có nguy cơ làm gián đoạn quyền truy cập RDS và Secrets Manager của ứng dụng trong quá trình thay đổi, vi phạm tiêu chí giảm thiểu chi phí quản lý.",
           "createdAt": "2026-09-07T16:40:39.829140Z",
           "updatedAt": "2026-09-07T16:40:39.829141Z"
+        },
+        {
+          "id": "609b64ec7581",
+          "title": "SSM: PARAMETER STORE vs SECRETS MANAGER & SESSION MANAGER",
+          "content": "📌 Tình huống: Đội DevOps cần (1) lưu trữ password của database và TỰ ĐỘNG xoay vòng (rotate) mỗi 30 ngày mà không phải code thủ công cơ chế rotation, và (2) cần SSH vào các EC2 instance nằm trong private subnet mà KHÔNG được phép mở port 22 ra ngoài Internet và không muốn dựng bastion host.\n\n✅ Đáp án đúng:\n   • Dùng AWS Secrets Manager để lưu DB credentials — hỗ trợ automatic rotation có sẵn (built-in Lambda rotation function tích hợp cho RDS/Aurora/DocumentDB/Redshift).\n   • Dùng AWS Systems Manager Session Manager để truy cập shell vào EC2 qua SSM Agent, không cần mở port 22/3389, không cần SSH key hay bastion host, toàn bộ session được log qua CloudTrail/S3.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • SSM Parameter Store ➜ cũng lưu được config/secret (kiểu SecureString mã hóa bằng KMS) và MIỄN PHÍ ở tier Standard, nhưng KHÔNG có tính năng automatic rotation tích hợp sẵn như Secrets Manager ➜ chọn Parameter Store cho config/secret tĩnh, ít thay đổi; chọn Secrets Manager khi cần rotation tự động.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -1263,6 +1592,13 @@
           "content": "📌 Tình huống: Development team tại một social media company muốn xử lý các truy vấn phức tạp như \"What are the number of likes on the videos that have been posted by friends of a user A?\" . • Yêu cầu: Đề xuất AWS database service phù hợp nhất để xử lý các bài toán truy vấn mạng lưới quan hệ kết nối (connected datasets) . • Ràng buộc: Truy vấn độ sâu mạng xã hội (user, friends, videos, likes) đòi hỏi khả năng duyệt đồ thị (graph traversal) hiệu quả cao .\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Amazon Neptune là dịch vụ **graph database** nhanh, đáng tin cậy và được quản lý hoàn toàn, được xây dựng đặc biệt để phục vụ cho các ứng dụng làm việc với tập dữ liệu có tính liên kết cao (highly connected datasets) như mạng xã hội, công cụ gợi ý (recommendation engines) và phát hiện gian lận. Các truy vấn dạng \"bạn của bạn đăng video gì và có bao nhiêu like\" đòi hỏi duyệt qua các mối quan hệ (nodes và edges), đây là sở trường tuyệt đối của Neptune bằng cách sử dụng các ngôn ngữ truy vấn đồ thị như Gremlin hoặc SPARQL .",
           "createdAt": "2026-09-07T16:40:39.830218Z",
           "updatedAt": "2026-09-07T16:40:39.830219Z"
+        },
+        {
+          "id": "162ed4370883",
+          "title": "AMAZON NEPTUNE: GRAPH DATABASE USE CASE",
+          "content": "📌 Tình huống: Ứng dụng mạng xã hội cần lưu trữ và truy vấn NHANH mối quan hệ nhiều tầng giữa hàng triệu user (vd \"bạn của bạn\", gợi ý kết bạn, phát hiện gian lận qua mạng lưới giao dịch liên kết).\n\n✅ Đáp án đúng: Amazon Neptune — managed graph database, tối ưu cho việc lưu trữ & truy vấn dữ liệu có QUAN HỆ PHỨC TẠP nhiều chiều, hỗ trợ các ngôn ngữ truy vấn đồ thị Gremlin, SPARQL, openCypher. Use case điển hình: mạng xã hội, recommendation engine, fraud detection, knowledge graph.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Amazon RDS/Aurora (relational database) ➜ để truy vấn quan hệ nhiều tầng (multi-hop relationship traversal) phải JOIN qua nhiều bảng, hiệu năng giảm mạnh khi dữ liệu lớn — không tối ưu bằng graph database chuyên dụng như Neptune.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
         }
       ]
     },
@@ -1297,6 +1633,51 @@
           "content": "📌 Tình huống: Một company muốn áp dụng hybrid cloud infrastructure sử dụng các dịch vụ AWS như Amazon S3 song song với on-premises data center. Công ty muốn có một dedicated private connection chuyên dụng giữa on-premise và AWS. Tuy nhiên, trong trường hợp xảy ra sự cố, công ty cần đảm bảo uptime và sẵn sàng sử dụng public internet với một kết nối được mã hóa làm dự phòng. • Yêu cầu: Chọn 2 phương án cấu hình chính xác cho kết nối chính và kết nối dự phòng (backup) . • Ràng buộc: Kết nối...\n\n✅ Đáp án đúng 1: \n   ➜ ➜ [ ĐÚNG ]: AWS Direct Connect (DX) cung cấp một đường truyền mạng riêng tư, chuyên dụng (dedicated private connection) tốc độ cao, bỏ qua internet công cộng, hoàn toàn đáp ứng yêu cầu kết nối chính bảo mật và ổn định cho hạ tầng hybrid cloud.\n✅ Đáp án đúng 2: \n   ➜ ➜ [ ĐÚNG ]: AWS Site-to-Site VPN sử dụng internet công cộng để thiết lập đường hầm mã hóa an toàn (encrypted connection), là giải pháp chi phí hợp lý và hoàn hảo để làm kết nối failover/backup tự động khi kết nối chính Direct Connect gặp sự cố.",
           "createdAt": "2026-09-07T16:40:39.830403Z",
           "updatedAt": "2026-09-07T16:40:39.830404Z"
+        },
+        {
+          "id": "156307b02e33",
+          "title": "DIRECT CONNECT GATEWAY & MÔ HÌNH RESILIENCY",
+          "content": "📌 Tình huống: Công ty cần kết nối riêng, băng thông ổn định từ on-premises đến AWS cho hệ thống production, nhưng ngân sách hạn chế, không đủ chi phí để đầu tư 2 Direct Connect connection song song để đạt độ dự phòng cao (high resiliency).\n\n✅ Đáp án đúng: Dùng 1 Direct Connect connection cho traffic chính, kết hợp Site-to-Site VPN làm backup — tự động failover sang VPN (qua Internet, mã hóa IPSec) khi Direct Connect gặp sự cố.\n   ➜ Đây là giải pháp cân bằng giữa chi phí và độ sẵn sàng, rẻ hơn nhiều so với việc dùng 2 Direct Connect connections độc lập.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ dùng 1 Direct Connect connection, không có backup ➜ vi phạm yêu cầu resilience, tạo single point of failure cho production.\n   • Direct Connect Gateway: cho phép 1 Direct Connect connection (qua 1 Private VIF) kết nối tới NHIỀU VPC ở NHIỀU Region khác nhau mà không cần VPC Peering — hữu ích khi hạ tầng multi-Region cần dùng chung 1 kết nối vật lý.\n   • Mức độ resiliency theo khuyến nghị AWS: High Resiliency cần tối thiểu 2 connection từ 2 Direct Connect location khác nhau; Maximum Resiliency cần 4 connection qua 2 location, mỗi location 2 device riêng biệt để loại bỏ mọi single point of failure kể cả ở cấp thiết bị.",
+          "createdAt": "2026-09-08T10:40:25.557690Z",
+          "updatedAt": "2026-09-08T10:40:25.557690Z"
+        }
+      ]
+    },
+    {
+      "id": "2dc7831ca1c6",
+      "name": "SAA-C03 Exam Guide (Tổng quan kỳ thi)",
+      "category": "Exam Guide",
+      "region": "",
+      "description": "Tóm tắt Exam Guide chính thức bản 1.1 của AWS: cấu trúc/cách chấm điểm, 4 domain & trọng số nội dung thi, danh sách dịch vụ in-scope/out-of-scope.",
+      "createdAt": "2026-09-08T10:25:48.328601Z",
+      "notes": [
+        {
+          "id": "85ed24577342",
+          "title": "CẤU TRÚC ĐỀ THI & CÁCH CHẤM ĐIỂM (SAA-C03)",
+          "content": "📋 Tổng quan kỳ thi AWS Certified Solutions Architect – Associate (SAA-C03), theo Exam Guide bản 1.1 chính thức của AWS.\n\n• Đối tượng: người đảm nhiệm vai trò Solutions Architect, có tối thiểu 1 năm kinh nghiệm thực chiến thiết kế giải pháp cloud trên AWS.\n• Exam validate khả năng thiết kế dựa trên AWS Well-Architected Framework: đáp ứng yêu cầu nghiệp vụ hiện tại + nhu cầu tương lai, kiến trúc secure/resilient/high-performing/cost-optimized, và review giải pháp hiện có để cải tiến.\n• Tổng số câu: 65 câu, gồm 50 câu tính điểm + 15 câu unscored (AWS chèn vào để thử nghiệm câu hỏi mới cho các kỳ thi sau) — không có cách nào phân biệt được câu nào là unscored khi làm bài.\n• 2 dạng câu hỏi:\n   - Multiple choice: 1 đáp án đúng trong 4 lựa chọn (3 distractor).\n   - Multiple response: ≥2 đáp án đúng trong ≥5 lựa chọn.\n• Không bị trừ điểm khi đoán bừa (no penalty for guessing); bỏ trống câu = tự động tính sai ➜ luôn chọn 1 đáp án trước khi hết giờ, kể cả không chắc.\n• Thang điểm: scaled score 100–1000, điểm đậu (pass) tối thiểu là 720.\n• Compensatory scoring model: không cần đạt điểm sàn ở từng domain riêng lẻ, chỉ cần tổng điểm toàn bài ≥720 là đậu ➜ có thể yếu 1 domain nhưng bù lại ở domain khác.\n• Score report có bảng phân loại theo từng domain (strength/weakness) nhưng chỉ mang tính tham khảo tổng quát, không phản ánh chính xác tuyệt đối.",
+          "createdAt": "2026-09-08T10:25:48.328601Z",
+          "updatedAt": "2026-09-08T10:25:48.328601Z"
+        },
+        {
+          "id": "9bcf665e0c99",
+          "title": "4 DOMAIN & TRỌNG SỐ NỘI DUNG THI",
+          "content": "🗂️ Đề thi chia làm 4 domain với trọng số khác nhau — nên phân bổ thời gian ôn tập theo đúng tỷ lệ này.\n\n① Domain 1: Design Secure Architectures — 30% (trọng số cao nhất)\n   • Task 1.1 – Thiết kế secure access to AWS resources: IAM users/roles/groups/policies, IAM Identity Center (SSO), least privilege, MFA, AWS STS (role switching, cross-account access), AWS Control Tower, Service Control Policies (SCP), resource policy, liên kết directory service với IAM roles.\n   • Task 1.2 – Thiết kế secure workloads & applications: security group, NACL, subnet public/private, AWS Shield, AWS WAF, Amazon Cognito, GuardDuty, Macie, Secrets Manager, VPN/Direct Connect, phòng chống threat bên ngoài (DDoS, SQL injection).\n   • Task 1.3 – Data security controls: mã hóa at-rest (AWS KMS) và in-transit (ACM + TLS), phân quyền truy cập key, backup & replication, data lifecycle/retention/classification, xoay vòng (rotate) key và certificate.\n\n② Domain 2: Design Resilient Architectures — 26%\n   • Task 2.1 – Scalable & loosely coupled architectures: API Gateway, SQS, Secrets Manager, caching, microservices (stateless vs stateful), event-driven architecture, horizontal/vertical scaling, CDN, container (ECS/EKS), serverless (Lambda, Fargate), Step Functions, read replica.\n   • Task 2.2 – Highly available / fault-tolerant architectures: Multi-AZ/Multi-Region, DR strategy (backup & restore, pilot light, warm standby, active-active failover), RPO/RTO, load balancing, RDS Proxy, immutable infrastructure, X-Ray, mitigate single point of failure.\n\n③ Domain 3: Design High-Performing Architectures — 24%\n   • Task 3.1 – High-performing storage: S3, EFS, EBS — chọn đúng loại (object/file/block) theo use case.\n   • Task 3.2 – High-performing & elastic compute: AWS Batch, EMR, Fargate, EC2 Auto Scaling, ECS/EKS, chọn instance type/size phù hợp.\n   • Task 3.3 – High-performing database: read replica, ElastiCache, Aurora, DynamoDB, database proxy, capacity planning (IOPS, capacity units).\n   • Task 3.4 – High-performing network: CloudFront, Global Accelerator, load balancing, VPN/Direct Connect/PrivateLink, thiết kế subnet/routing/IP addressing.\n   • Task 3.5 – Data ingestion & transformation: Kinesis, Glue, Athena, Lake Formation, QuickSight, DataSync, Storage Gateway, EMR, transform format (csv → parquet).\n\n④ Domain 4: Design Cost-Optimized Architectures — 20% (trọng số thấp nhất nhưng vẫn hay ra đề tình huống \"most cost-effective\")\n   • Task 4.1 – Cost-optimized storage: S3 lifecycle/tiering, Requester Pays, EBS volume type (HDD vs SSD), backup strategy, hybrid storage (DataSync, Transfer Family, Storage Gateway).\n   • Task 4.2 – Cost-optimized compute: Spot Instances, Reserved Instances, Savings Plans, right-sizing instance family/size, Lambda/Fargate/EC2 so sánh chi phí, hibernation.\n   • Task 4.3 – Cost-optimized database: Aurora Serverless, DynamoDB on-demand, backup/retention policy, chọn engine phù hợp (MySQL vs PostgreSQL...).\n   • Task 4.4 – Cost-optimized network: NAT instance vs NAT gateway, Direct Connect vs VPN vs Internet, VPC endpoint, Transit Gateway, VPC peering, giảm chi phí data transfer liên Region/AZ.",
+          "createdAt": "2026-09-08T10:25:48.328601Z",
+          "updatedAt": "2026-09-08T10:25:48.328601Z"
+        },
+        {
+          "id": "6a123f7a20fd",
+          "title": "DANH SÁCH DỊCH VỤ IN-SCOPE THEO NHÓM (Appendix Exam Guide)",
+          "content": "✅ Các dịch vụ AWS nằm trong phạm vi thi SAA-C03 (danh sách không đầy đủ tuyệt đối, có thể thay đổi), phân theo nhóm chức năng chính:\n\n• Analytics: Amazon Athena, AWS Data Exchange, AWS Data Pipeline, Amazon EMR, AWS Glue, Amazon Kinesis, AWS Lake Formation, Amazon MSK, Amazon OpenSearch Service, Amazon QuickSight, Amazon Redshift.\n• Application Integration: Amazon AppFlow, AWS AppSync, Amazon EventBridge, Amazon MQ, Amazon SNS, Amazon SQS, AWS Step Functions.\n• Cost Management: AWS Budgets, AWS Cost and Usage Report, AWS Cost Explorer, Savings Plans.\n• Compute: AWS Batch, Amazon EC2, Amazon EC2 Auto Scaling, AWS Elastic Beanstalk, AWS Outposts, AWS Serverless Application Repository, VMware Cloud on AWS, AWS Wavelength.\n• Containers: Amazon ECS/EKS Anywhere, Amazon EKS Distro, Amazon ECR, Amazon ECS, Amazon EKS.\n• Database: Amazon Aurora (+ Serverless), Amazon DocumentDB, Amazon DynamoDB, Amazon ElastiCache, Amazon Keyspaces, Amazon Neptune, Amazon QLDB, Amazon RDS, Amazon Redshift.\n• Developer Tools: AWS X-Ray.\n• Front-End Web & Mobile: AWS Amplify, Amazon API Gateway, AWS Device Farm, Amazon Pinpoint.\n• Machine Learning: Amazon Comprehend, Forecast, Fraud Detector, Kendra, Lex, Polly, Rekognition, SageMaker, Textract, Transcribe, Translate.\n• Management & Governance: AWS Auto Scaling, CloudFormation, CloudTrail, Amazon CloudWatch, AWS CLI, Compute Optimizer, Config, Control Tower, Health Dashboard, License Manager, Amazon Managed Grafana/Prometheus, Management Console, Organizations, Proton, Service Catalog, Systems Manager, Trusted Advisor, Well-Architected Tool.\n• Media Services: Amazon Elastic Transcoder, Amazon Kinesis Video Streams.\n• Migration & Transfer: Application Discovery Service, Application Migration Service, AWS DMS, AWS DataSync, AWS Migration Hub, AWS Snow Family, AWS Transfer Family.\n• Networking & Content Delivery: AWS Client VPN, Amazon CloudFront, AWS Direct Connect, Elastic Load Balancing, AWS Global Accelerator, AWS PrivateLink, Amazon Route 53, AWS Site-to-Site VPN, AWS Transit Gateway, Amazon VPC.\n• Security, Identity & Compliance: AWS Artifact, Audit Manager, ACM, CloudHSM, Amazon Cognito, Detective, Directory Service, Firewall Manager, GuardDuty, IAM Identity Center, IAM, Inspector, AWS KMS, Macie, Network Firewall, RAM, Secrets Manager, Security Hub, Shield, WAF.\n• Serverless: AWS AppSync, AWS Fargate, AWS Lambda.\n• Storage: AWS Backup, Amazon EBS, Amazon EFS, Amazon FSx (mọi loại), Amazon S3, Amazon S3 Glacier, AWS Storage Gateway.",
+          "createdAt": "2026-09-08T10:25:48.328601Z",
+          "updatedAt": "2026-09-08T10:25:48.328601Z"
+        },
+        {
+          "id": "701dcac97558",
+          "title": "DANH SÁCH DỊCH VỤ OUT-OF-SCOPE (Appendix Exam Guide) — không xuất hiện trong đề thi chính thức",
+          "content": "⚠️ Các dịch vụ/tính năng sau nằm ngoài phạm vi thi SAA-C03 — nếu gặp trong đề luyện tập không chính thức có nhắc tới các dịch vụ này thì có thể bỏ qua, không cần ôn sâu:\n\n• Analytics: Amazon CloudSearch.\n• Application Integration: Amazon MWAA (Managed Workflows for Apache Airflow).\n• AR/VR: Amazon Sumerian.\n• Blockchain: Amazon Managed Blockchain.\n• Compute: Amazon Lightsail.\n• Database: Amazon RDS on VMware.\n• Developer Tools: Cloud9, AWS CDK, CloudShell, CodeArtifact, CodeBuild, CodeCommit, CodeDeploy, CodeGuru, CodeStar, Corretto, AWS FIS, AWS Tools & SDKs.\n• Front-End Web & Mobile: Amazon Location Service.\n• Game Tech: Amazon GameLift, Amazon Lumberyard.\n• Internet of Things (IoT): TOÀN BỘ dịch vụ IoT đều out-of-scope.\n• Machine Learning: Apache MXNet on AWS, Amazon A2I, DeepComposer, DLAMI, Deep Learning Containers, DeepLens, DeepRacer, DevOps Guru, Elastic Inference, HealthLake, Inferentia, Lookout for Equipment/Metrics/Vision, Monitron, Panorama, Personalize, PyTorch on AWS, SageMaker Data Wrangler/Ground Truth, TensorFlow on AWS.\n• Management & Governance: AWS Chatbot, Console Mobile App, Distro for OpenTelemetry, AWS OpsWorks.\n• Media Services: toàn bộ dòng AWS Elemental (Appliances, MediaConnect, MediaConvert, MediaLive, MediaPackage, MediaStore, MediaTailor), Amazon IVS.\n• Migration & Transfer: Migration Evaluator.\n• Networking: AWS App Mesh, AWS Cloud Map.\n• Quantum Technologies: Amazon Braket.\n• Robotics: AWS RoboMaker.\n• Satellite: AWS Ground Station.",
+          "createdAt": "2026-09-08T10:25:48.328601Z",
+          "updatedAt": "2026-09-08T10:25:48.328601Z"
         }
       ]
     }

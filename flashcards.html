@@ -1,0 +1,979 @@
+<title>Thẻ Ghi Nhớ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#DCD2AF;
+    --bg-shadow:#C7BB93;
+    --paper:#F1E7C6;
+    --paper-2:#E7DAAE;
+    --ink:#241F16;
+    --ink-soft:#6E6349;
+    --line:#C6B588;
+    --line-strong:#B7A377;
+    --navy:#26365A;
+    --navy-2:#324875;
+    --navy-ink:#F1E7C6;
+    --red:#9C3B30;
+    --red-ink:#FBEFEA;
+    --gold:#A9781E;
+    --gold-ink:#2A1F05;
+    --gold-fill:#DDBB63;
+    --focus:#26365A;
+    --shadow: 0 1px 0 rgba(36,31,22,.08), 0 6px 16px -8px rgba(36,31,22,.35);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171510;
+      --bg-shadow:#0F0D09;
+      --paper:#26221A;
+      --paper-2:#332C20;
+      --ink:#EDE3C8;
+      --ink-soft:#A99B7A;
+      --line:#4A4130;
+      --line-strong:#5C5138;
+      --navy:#3B4E78;
+      --navy-2:#4A6091;
+      --navy-ink:#F1E7C6;
+      --red:#D2685A;
+      --red-ink:#2A0E0A;
+      --gold:#D9A93F;
+      --gold-ink:#221904;
+      --gold-fill:#8A6A2A;
+      --focus:#D9A93F;
+      --shadow: 0 1px 0 rgba(0,0,0,.4), 0 10px 24px -10px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171510;
+    --bg-shadow:#0F0D09;
+    --paper:#26221A;
+    --paper-2:#332C20;
+    --ink:#EDE3C8;
+    --ink-soft:#A99B7A;
+    --line:#4A4130;
+    --line-strong:#5C5138;
+    --navy:#3B4E78;
+    --navy-2:#4A6091;
+    --navy-ink:#F1E7C6;
+    --red:#D2685A;
+    --red-ink:#2A0E0A;
+    --gold:#D9A93F;
+    --gold-ink:#221904;
+    --gold-fill:#8A6A2A;
+    --focus:#D9A93F;
+    --shadow: 0 1px 0 rgba(0,0,0,.4), 0 10px 24px -10px rgba(0,0,0,.7);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    background-image: radial-gradient(ellipse at 50% -10%, var(--paper-2) 0%, transparent 55%);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{ text-wrap:balance; margin:0; }
+  button{ font-family:inherit; }
+  textarea{ font-family:inherit; }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono','Courier New',monospace;
+    font-weight:600;
+    font-size:.72rem;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .mono{ font-family:'IBM Plex Mono','Courier New',monospace; font-variant-numeric:tabular-nums; }
+
+  .page{
+    max-width:760px;
+    margin:0 auto;
+    padding:clamp(16px,4vw,36px) clamp(14px,4vw,28px) 40px;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:12px;
+    padding-bottom:18px;
+    border-bottom:2px solid var(--line-strong);
+    margin-bottom:20px;
+  }
+  .masthead h1{
+    font-family:'IBM Plex Mono','Courier New',monospace;
+    font-weight:700;
+    font-size:clamp(1.4rem,5vw,1.9rem);
+    letter-spacing:.02em;
+  }
+  .masthead p{
+    margin:.35rem 0 0;
+    font-size:.85rem;
+    color:var(--ink-soft);
+    max-width:34ch;
+  }
+  .deck-total{
+    text-align:right;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.75rem;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .deck-total b{
+    display:block;
+    font-size:1.4rem;
+    color:var(--ink);
+    line-height:1;
+  }
+
+  /* ---------- deck rail (catalog tabs) ---------- */
+  .deck-rail{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding:0 0 4px;
+    margin-bottom:2px;
+    scrollbar-width:thin;
+  }
+  .deck-tab{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 14px;
+    background:var(--paper-2);
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    border-bottom:none;
+    border-radius:8px 8px 0 0;
+    font-size:.85rem;
+    font-weight:500;
+    cursor:pointer;
+    transform:translateY(3px);
+    transition:transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .deck-tab:hover{ color:var(--ink); }
+  .deck-tab.active{
+    background:var(--paper);
+    color:var(--ink);
+    border-color:var(--line-strong);
+    transform:translateY(0);
+    box-shadow:0 -2px 0 0 var(--red) inset;
+  }
+  .deck-tab .count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.7rem;
+    background:var(--bg);
+    color:var(--ink-soft);
+    padding:1px 6px;
+    border-radius:999px;
+    min-width:1.4em;
+    text-align:center;
+  }
+  .deck-tab.active .count{ background:var(--paper-2); color:var(--ink);}
+  .deck-tab-new{
+    flex:0 0 auto;
+    padding:9px 14px;
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px dashed var(--line-strong);
+    border-radius:8px 8px 0 0;
+    font-size:.85rem;
+    cursor:pointer;
+    transform:translateY(3px);
+  }
+  .deck-tab-new:hover{ color:var(--ink); border-color:var(--red); }
+
+  /* ---------- deck panel ---------- */
+  .deck-panel{
+    background:var(--paper);
+    border:1px solid var(--line-strong);
+    border-radius:0 10px 10px 10px;
+    padding:clamp(14px,3.5vw,22px);
+    box-shadow:var(--shadow);
+  }
+
+  .new-deck-form{
+    display:flex;
+    gap:8px;
+    margin-bottom:4px;
+  }
+  .new-deck-form input{
+    flex:1;
+    min-width:0;
+    padding:10px 12px;
+    border:1px solid var(--line-strong);
+    border-radius:6px;
+    background:var(--bg);
+    color:var(--ink);
+    font-size:.95rem;
+  }
+  .new-deck-form input:focus-visible{ outline:2px solid var(--focus); outline-offset:1px; }
+
+  .deck-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+  }
+  .deck-name-input{
+    flex:1;
+    min-width:120px;
+    font-family:'IBM Plex Mono','Courier New',monospace;
+    font-weight:600;
+    font-size:1.05rem;
+    background:transparent;
+    border:none;
+    border-bottom:1px dashed transparent;
+    color:var(--ink);
+    padding:2px 0;
+  }
+  .deck-name-input:hover, .deck-name-input:focus{
+    border-bottom-color:var(--line-strong);
+    outline:none;
+  }
+  .icon-btn{
+    background:none;
+    border:1px solid var(--line-strong);
+    color:var(--ink-soft);
+    border-radius:6px;
+    padding:6px 10px;
+    font-size:.78rem;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .icon-btn:hover{ color:var(--ink); border-color:var(--red); }
+  .icon-btn:focus-visible{ outline:2px solid var(--focus); outline-offset:1px; }
+  .icon-btn.danger:hover{ color:var(--red); }
+
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+    font-size:.75rem;
+    color:var(--ink-soft);
+  }
+  .progress-track{
+    flex:1;
+    height:6px;
+    border-radius:999px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--gold);
+    border-radius:999px;
+  }
+
+  /* ---------- card ---------- */
+  .stage{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+  }
+  .card-shell{
+    width:100%;
+    max-width:560px;
+    aspect-ratio:5/3.2;
+    perspective:1400px;
+    touch-action:pan-y;
+  }
+  .card{
+    position:relative;
+    width:100%;
+    height:100%;
+    cursor:pointer;
+    transform-style:preserve-3d;
+    transition:transform .5s cubic-bezier(.4,.1,.2,1);
+  }
+  .card.flipped{ transform:rotateY(180deg); }
+  .card-face{
+    position:absolute;
+    inset:0;
+    backface-visibility:hidden;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:22px 22px 18px;
+    overflow:auto;
+    white-space:pre-line;
+  }
+  .card-face.front{
+    background:var(--paper);
+    border:1px solid var(--line-strong);
+    box-shadow:var(--shadow);
+    color:var(--ink);
+    font-family:'IBM Plex Mono','Courier New',monospace;
+    font-weight:500;
+    font-size:clamp(1.1rem,4vw,1.75rem);
+    line-height:1.4;
+  }
+  .card-face.back{
+    background:var(--navy);
+    border:1px solid var(--navy-2);
+    box-shadow:var(--shadow);
+    color:var(--navy-ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:500;
+    font-size:clamp(1rem,3.4vw,1.4rem);
+    line-height:1.45;
+    transform:rotateY(180deg);
+    flex-direction:column;
+    gap:10px;
+  }
+  .card-face.back .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:.68rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--gold-fill);
+    position:absolute;
+    top:16px;
+    left:0;
+    right:0;
+    text-align:center;
+  }
+  .hole{
+    position:absolute;
+    top:8px;
+    left:50%;
+    transform:translateX(-50%);
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--bg);
+    box-shadow:inset 0 0 0 1px var(--line-strong), inset 0 1px 2px rgba(0,0,0,.25);
+    z-index:2;
+  }
+  .card-face.back .hole{
+    background:var(--navy);
+    box-shadow:inset 0 0 0 1px var(--navy-2), inset 0 1px 2px rgba(0,0,0,.4);
+  }
+  .card-empty{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    padding:20px;
+  }
+
+  .card-hint{
+    font-size:.72rem;
+    color:var(--ink-soft);
+    letter-spacing:.02em;
+  }
+
+  .controls{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    max-width:560px;
+    flex-wrap:wrap;
+  }
+  .nav-btn{
+    min-width:44px;
+    min-height:44px;
+    border-radius:8px;
+    border:1px solid var(--line-strong);
+    background:var(--paper-2);
+    color:var(--ink);
+    font-size:1.1rem;
+    cursor:pointer;
+  }
+  .nav-btn:hover{ border-color:var(--red); }
+  .nav-btn:focus-visible, .mark-btn:focus-visible, .nav-btn:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .counter{
+    font-size:.85rem;
+    color:var(--ink-soft);
+    min-width:4.5em;
+    text-align:center;
+  }
+  .mark-row{
+    display:flex;
+    gap:10px;
+    width:100%;
+    max-width:560px;
+  }
+  .mark-btn{
+    flex:1;
+    min-height:48px;
+    border-radius:9px;
+    border:1px solid var(--line-strong);
+    background:var(--paper-2);
+    color:var(--ink);
+    font-size:.9rem;
+    font-weight:600;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .mark-btn.unknown:hover{ background:var(--red); color:var(--red-ink); border-color:var(--red); }
+  .mark-btn.known:hover{ background:var(--gold); color:var(--gold-ink); border-color:var(--gold); }
+  .mark-btn.active.unknown{ background:var(--red); color:var(--red-ink); border-color:var(--red); }
+  .mark-btn.active.known{ background:var(--gold); color:var(--gold-ink); border-color:var(--gold); }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    margin-top:18px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+    flex-wrap:wrap;
+  }
+  .toolbar .left{ display:flex; gap:8px; flex-wrap:wrap; }
+  label.switch{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:.78rem;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  label.switch input{ accent-color:var(--red); width:15px; height:15px; }
+
+  /* ---------- edit panel ---------- */
+  .edit-panel{
+    margin-top:18px;
+    padding-top:16px;
+    border-top:2px solid var(--line-strong);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .edit-card{
+    display:grid;
+    grid-template-columns:1fr 1fr auto;
+    gap:8px;
+    align-items:stretch;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:8px;
+  }
+  @media (max-width:520px){
+    .edit-card{ grid-template-columns:1fr; }
+  }
+  .edit-card textarea{
+    resize:none;
+    min-height:52px;
+    max-height:220px;
+    padding:8px 10px;
+    border:1px solid var(--line-strong);
+    border-radius:6px;
+    background:var(--paper);
+    color:var(--ink);
+    font-size:.9rem;
+    line-height:1.4;
+  }
+  .edit-card textarea:focus-visible{ outline:2px solid var(--focus); outline-offset:1px; }
+  .edit-card .del{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    border-radius:6px;
+    padding:6px 10px;
+    cursor:pointer;
+    font-size:.85rem;
+    align-self:center;
+  }
+  .edit-card .del:hover{ color:var(--red); border-color:var(--red); }
+  .add-card-btn{
+    align-self:flex-start;
+    padding:10px 16px;
+    border-radius:8px;
+    border:1px dashed var(--line-strong);
+    background:transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-size:.88rem;
+  }
+  .add-card-btn:hover{ color:var(--ink); border-color:var(--red); }
+
+  .empty-state{
+    text-align:center;
+    padding:40px 12px;
+    color:var(--ink-soft);
+  }
+  .empty-state p{ margin:0 0 14px; font-size:.92rem; }
+  .primary-btn{
+    padding:11px 20px;
+    border-radius:8px;
+    border:1px solid var(--red);
+    background:var(--red);
+    color:var(--red-ink);
+    font-weight:600;
+    font-size:.9rem;
+    cursor:pointer;
+  }
+  .primary-btn:hover{ filter:brightness(1.08); }
+  .primary-btn:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+
+  footer.hint{
+    margin-top:22px;
+    text-align:center;
+    font-size:.75rem;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card{ transition:none; }
+    .deck-tab{ transition:none; }
+  }
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <div>
+      <h1>THẺ GHI NHỚ</h1>
+      <p>Tự soạn thẻ của riêng bạn, ôn tập ở bất cứ đâu. Dữ liệu lưu ngay trên trình duyệt này.</p>
+    </div>
+    <div class="deck-total" id="deckTotal"></div>
+  </header>
+
+  <div id="app"></div>
+
+  <footer class="hint">
+    Chạm vào thẻ để lật · vuốt trái/phải để chuyển thẻ trên điện thoại · phím ← → để chuyển, Space để lật trên máy tính.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "thecard.flashcards.v3";
+  var app = document.getElementById('app');
+  var deckTotalEl = document.getElementById('deckTotal');
+
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+  function defaultState(){
+    var deckId = uid();
+    return {
+      activeDeckId: deckId,
+      decks: [
+        {
+          id: deckId,
+          name: "Prompt & Context Engineering",
+          cards: [
+            { id: uid(),
+              front: "4 thành phần cơ bản của một prompt (Fundamentals)?",
+              back: "1. CONTEXT — bối cảnh, dự án, điều gì quan trọng\n2. TASK — điều bạn muốn AI làm\n3. CONSTRAINTS — quy tắc, khung, phong cách\n4. OUTPUT — định dạng câu trả lời",
+              known:false },
+            { id: uid(),
+              front: "5 Core Prompting Patterns là gì?",
+              back: "1. Triển khai một tính năng nhỏ\n2. Sửa lỗi (fix a bug)\n3. Review code\n4. Giải thích điều chưa hiểu\n5. Viết tài liệu",
+              known:false },
+            { id: uid(),
+              front: "Progressive Prompt Refinement — insight chính?",
+              back: "Prompt nâng cao tốn nhiều token hơn lúc đầu, nhưng cần ít công dọn dẹp tay hơn về sau.\nKhoản đầu tư token đó thường đáng giá.",
+              known:false },
+            { id: uid(),
+              front: "7 Advanced Techniques (kỹ thuật prompt nâng cao)?",
+              back: "1. Decomposition — chia nhỏ việc lớn\n2. Few-shot — cho ví dụ mẫu\n3. Chain-of-thought — bắt suy luận từng bước\n4. Output format — kiểm soát định dạng trả về\n5. System prompts — bối cảnh xuyên suốt hội thoại\n6. Confusion — phát hiện AI đoán mò, khôi phục chất lượng\n7. Meta prompting — nhờ AI cải thiện prompt trước",
+              known:false },
+            { id: uid(),
+              front: "Vì sao Chain-of-thought hữu ích?",
+              back: "Bắt được lỗi mà AI sẽ 'ỉm đi' bằng một câu trả lời nghe tự tin nhưng sai.",
+              known:false },
+            { id: uid(),
+              front: "Cách phòng ngừa tốt nhất để AI đỡ 'Confusion' (đoán mò)?",
+              back: "Đặt 3 ràng buộc quan trọng nhất lên đầu prompt.\nAI chú ý nhiều hơn đến điều được nói trước.",
+              known:false },
+            { id: uid(),
+              front: "Phân biệt Prompt engineering và Context engineering?",
+              back: "Prompt engineering: cách diễn đạt yêu cầu — câu lệnh, ví dụ, định dạng. Bạn tự tay viết.\nContext engineering: chọn lọc mọi thứ model thấy trong context window mỗi lượt — lịch sử hội thoại, dữ liệu truy xuất, tool, kết quả tool trước. Là bài toán lọc bớt vì window có giới hạn.",
+              known:false },
+            { id: uid(),
+              front: "RAG/GraphRAG nằm ở đâu trong bức tranh context engineering?",
+              back: "Là công cụ nạp đúng dữ liệu vào context → một kỹ thuật cụ thể trong context engineering, không phải khái niệm ngang hàng với nó.",
+              known:false },
+            { id: uid(),
+              front: "Harness engineering là gì?",
+              back: "Code/hạ tầng bao quanh model để thực thi: chạy tool, đọc kết quả, retry khi lỗi, kiểm soát quyền hạn.\nModel là trí tuệ, harness biến trí tuệ đó thành việc làm được.",
+              known:false },
+            { id: uid(),
+              front: "Loop engineering là gì?",
+              back: "Quyết định khi nào gọi model tiếp, khi nào dừng — thiết kế hệ thống tự ra lệnh cho model, thay vì bạn gõ từng bước.",
+              known:false },
+            { id: uid(),
+              front: "4 điều có thể xảy ra khi dùng AI không an toàn?",
+              back: "1. Data exposure — lộ email/thông tin đăng nhập khách hàng\n2. Regulatory issues — vi phạm GDPR, HIPAA, hợp đồng khách hàng\n3. IP leaks — thuật toán độc quyền bị chia sẻ ra ngoài\n4. Security bugs — code AI viết dính lỗi SQL injection, XSS",
+              known:false },
+            { id: uid(),
+              front: "5 lỗi thường gặp cần tránh khi dùng AI?",
+              back: "1. Dùng dữ liệu database thật → dùng dữ liệu giả lập\n2. Tên/email/PII khách hàng → thay bằng ví dụ giả\n3. API key, mật khẩu, token → redact trước (API_KEY=xxx-redacted)\n4. Extension trình duyệt lạ → chỉ dùng công cụ được duyệt\n5. Train model cá nhân bằng dữ liệu công ty → vi phạm thỏa thuận IP",
+              known:false },
+            { id: uid(),
+              front: "Prompt khác Context (CLAUDE.md) như thế nào — và bước nhảy năng suất lớn nhất đến từ đâu?",
+              back: "Prompt = điều bạn gõ ra mỗi lần. Context = điều AI đã biết sẵn về dự án trước khi bạn gõ.\nBước nhảy năng suất lớn nhất đến từ việc AI đã biết sẵn dự án của bạn (context engineering, vd CLAUDE.md) — không phải từ một prompt hay hơn.",
+              known:false }
+          ]
+        }
+      ]
+    };
+  }
+
+  // If the saved state is still exactly the old placeholder sample deck
+  // (untouched by the user), swap it for the current sample content.
+  function isUntouchedOldSample(parsed){
+    if(!parsed || !Array.isArray(parsed.decks) || parsed.decks.length!==1) return false;
+    var d = parsed.decks[0];
+    return d.name==="Bộ mẫu — Từ vựng tiếng Anh" && Array.isArray(d.cards) && d.cards.length===5;
+  }
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        if(parsed && Array.isArray(parsed.decks)){
+          return isUntouchedOldSample(parsed) ? defaultState() : parsed;
+        }
+      }
+    }catch(e){}
+    return defaultState();
+  }
+
+  function saveState(){
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  var state = loadState();
+
+  // transient (not persisted) UI state
+  var ui = {
+    newDeckOpen:false,
+    editOpen:false,
+    session:{ deckId:null, order:[], index:0, flipped:false, filterUnknown:false }
+  };
+
+  function getDeck(id){ return state.decks.filter(function(d){return d.id===id;})[0]; }
+  function activeDeck(){ return getDeck(state.activeDeckId); }
+
+  function ensureSession(deck){
+    if(!deck){ return; }
+    if(ui.session.deckId !== deck.id){
+      ui.session = { deckId:deck.id, order:deck.cards.map(function(c){return c.id;}), index:0, flipped:false, filterUnknown:false };
+    }
+  }
+
+  function shuffleArr(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+
+  function esc(s){
+    return String(s==null?'':s).replace(/[&<>"]/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+    });
+  }
+
+  function visibleIds(deck){
+    var known = {};
+    deck.cards.forEach(function(c){ known[c.id]=c.known; });
+    var ids = ui.session.order.filter(function(id){ return known.hasOwnProperty(id); });
+    // append any new cards not yet in order
+    deck.cards.forEach(function(c){ if(ids.indexOf(c.id)===-1) ids.push(c.id); });
+    if(ui.session.filterUnknown){
+      ids = ids.filter(function(id){ return !known[id]; });
+    }
+    return ids;
+  }
+
+  function render(){
+    var decks = state.decks;
+    deckTotalEl.innerHTML = decks.length
+      ? '<b>'+decks.reduce(function(n,d){return n+d.cards.length;},0)+'</b>thẻ · '+decks.length+' bộ'
+      : '';
+
+    var html = '';
+
+    // deck rail
+    html += '<div class="deck-rail">';
+    decks.forEach(function(d){
+      html += '<button class="deck-tab'+(d.id===state.activeDeckId?' active':'')+'" data-action="select-deck" data-deck="'+d.id+'">'+
+        esc(d.name)+'<span class="count mono">'+d.cards.length+'</span></button>';
+    });
+    html += '<button class="deck-tab-new" data-action="toggle-new-deck">+ Bộ thẻ mới</button>';
+    html += '</div>';
+
+    html += '<div class="deck-panel">';
+
+    if(ui.newDeckOpen){
+      html += '<form class="new-deck-form" data-action="create-deck">'+
+        '<input type="text" name="deckName" placeholder="Tên bộ thẻ, ví dụ: Ngữ pháp N3" autofocus>'+
+        '<button class="primary-btn" type="submit">Tạo</button>'+
+        '<button class="icon-btn" type="button" data-action="toggle-new-deck">Hủy</button>'+
+        '</form>';
+    }
+
+    var deck = activeDeck();
+    if(!deck){
+      html += '<div class="empty-state"><p>Chưa có bộ thẻ nào. Tạo bộ thẻ đầu tiên để bắt đầu học.</p>'+
+        '<button class="primary-btn" data-action="toggle-new-deck">+ Tạo bộ thẻ</button></div>';
+      app.innerHTML = html + '</div>';
+      return;
+    }
+
+    ensureSession(deck);
+    var ids = visibleIds(deck);
+    if(ui.session.index >= ids.length) ui.session.index = 0;
+    var knownCount = deck.cards.filter(function(c){return c.known;}).length;
+    var pct = deck.cards.length ? Math.round(knownCount/deck.cards.length*100) : 0;
+
+    html += '<div class="deck-head">'+
+      '<input class="deck-name-input" data-action="rename-deck" data-deck="'+deck.id+'" value="'+esc(deck.name)+'">'+
+      '<button class="icon-btn" data-action="toggle-edit">'+(ui.editOpen?'Xong':'Sửa thẻ')+'</button>'+
+      '<button class="icon-btn danger" data-action="delete-deck" data-deck="'+deck.id+'">Xóa bộ</button>'+
+      '</div>';
+
+    html += '<div class="progress-row">'+
+      '<span class="mono">'+knownCount+'/'+deck.cards.length+' đã thuộc</span>'+
+      '<span class="progress-track"><span class="progress-fill" style="width:'+pct+'%"></span></span>'+
+      '<span class="mono">'+pct+'%</span>'+
+      '</div>';
+
+    if(!ui.editOpen){
+      if(deck.cards.length===0){
+        html += '<div class="stage"><div class="card-empty">Bộ này chưa có thẻ nào. Bấm "Sửa thẻ" để thêm thẻ đầu tiên.</div></div>';
+      } else if(ids.length===0){
+        html += '<div class="stage"><div class="card-empty">Bạn đã thuộc hết thẻ trong bộ lọc này. Bỏ lọc hoặc đặt lại tiến độ để ôn lại.</div></div>';
+      }else{
+        var cid = ids[ui.session.index];
+        var card = deck.cards.filter(function(c){return c.id===cid;})[0];
+        var isKnown = card ? !!card.known : false;
+        html += '<div class="stage">'+
+          '<div class="card-shell">'+
+            '<div class="card'+(ui.session.flipped?' flipped':'')+'" data-action="flip-card" id="studyCard">'+
+              '<div class="card-face front"><div class="hole"></div><div>'+esc(card.front || '(trống)')+'</div></div>'+
+              '<div class="card-face back"><div class="hole"></div><span class="tag">Đáp án</span><div>'+esc(card.back || '(trống)')+'</div></div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="controls">'+
+            '<button class="nav-btn" data-action="prev-card" aria-label="Thẻ trước">‹</button>'+
+            '<span class="counter mono">'+(ui.session.index+1)+' / '+ids.length+'</span>'+
+            '<button class="nav-btn" data-action="next-card" aria-label="Thẻ sau">›</button>'+
+          '</div>'+
+          '<div class="mark-row">'+
+            '<button class="mark-btn unknown'+(!isKnown?' active':'')+'" data-action="mark-unknown" data-card="'+card.id+'">Chưa thuộc</button>'+
+            '<button class="mark-btn known'+(isKnown?' active':'')+'" data-action="mark-known" data-card="'+card.id+'">Đã thuộc</button>'+
+          '</div>'+
+        '</div>';
+      }
+
+      html += '<div class="toolbar">'+
+        '<div class="left">'+
+          '<button class="icon-btn" data-action="shuffle-deck">Xáo bài</button>'+
+          '<button class="icon-btn" data-action="reset-progress">Đặt lại tiến độ</button>'+
+        '</div>'+
+        '<label class="switch"><input type="checkbox" data-action="toggle-filter" '+(ui.session.filterUnknown?'checked':'')+'> Chỉ ôn thẻ chưa thuộc</label>'+
+        '</div>';
+    } else {
+      html += '<div class="edit-panel">';
+      deck.cards.forEach(function(c){
+        html += '<div class="edit-card">'+
+          '<textarea class="autosize" placeholder="Mặt trước" data-action="edit-front" data-card="'+c.id+'">'+esc(c.front)+'</textarea>'+
+          '<textarea class="autosize" placeholder="Mặt sau" data-action="edit-back" data-card="'+c.id+'">'+esc(c.back)+'</textarea>'+
+          '<button class="del" data-action="delete-card" data-card="'+c.id+'" aria-label="Xóa thẻ">✕</button>'+
+        '</div>';
+      });
+      html += '<button class="add-card-btn" data-action="add-card">+ Thêm thẻ mới</button>';
+      html += '</div>';
+    }
+
+    html += '</div>';
+    app.innerHTML = html;
+    ui._autogrow();
+  }
+
+  ui._autogrow = function(){
+    app.querySelectorAll('textarea.autosize').forEach(function(t){
+      t.style.height = 'auto';
+      t.style.height = Math.min(t.scrollHeight, 220) + 'px';
+    });
+  };
+
+  function mutate(fn){ fn(); saveState(); render(); }
+
+  // ---- actions ----
+  function selectDeck(id){ state.activeDeckId=id; ui.editOpen=false; render(); }
+  function createDeck(name){
+    name = (name||'').trim() || 'Bộ thẻ mới';
+    var d = { id:uid(), name:name, cards:[] };
+    state.decks.push(d);
+    state.activeDeckId = d.id;
+    ui.newDeckOpen = false;
+    mutate(function(){});
+  }
+  function deleteDeck(id){
+    var d = getDeck(id);
+    if(!d) return;
+    if(!confirm('Xóa bộ "'+d.name+'" cùng '+d.cards.length+' thẻ bên trong? Không thể hoàn tác.')) return;
+    state.decks = state.decks.filter(function(x){return x.id!==id;});
+    if(state.activeDeckId===id){
+      state.activeDeckId = state.decks.length ? state.decks[0].id : null;
+    }
+    mutate(function(){});
+  }
+  function renameDeck(id, name){
+    var d = getDeck(id); if(!d) return;
+    d.name = name;
+    saveState();
+  }
+  function addCard(deckId){
+    var d = getDeck(deckId); if(!d) return;
+    var c = { id:uid(), front:'', back:'', known:false };
+    d.cards.push(c);
+    if(ui.session.deckId===deckId) ui.session.order.push(c.id);
+    mutate(function(){});
+  }
+  function deleteCard(deckId, cardId){
+    var d = getDeck(deckId); if(!d) return;
+    d.cards = d.cards.filter(function(c){return c.id!==cardId;});
+    ui.session.order = ui.session.order.filter(function(id){return id!==cardId;});
+    mutate(function(){});
+  }
+  function updateCard(deckId, cardId, field, value){
+    var d = getDeck(deckId); if(!d) return;
+    var c = d.cards.filter(function(x){return x.id===cardId;})[0];
+    if(!c) return;
+    c[field] = value;
+    saveState();
+  }
+  function markCard(cardId, known){
+    var d = activeDeck(); if(!d) return;
+    var c = d.cards.filter(function(x){return x.id===cardId;})[0];
+    if(!c) return;
+    c.known = known;
+    saveState();
+    goNext();
+    render();
+  }
+  function goNext(){
+    var d = activeDeck(); if(!d) return;
+    var ids = visibleIds(d);
+    if(ids.length===0) return;
+    ui.session.index = (ui.session.index+1) % ids.length;
+    ui.session.flipped = false;
+  }
+  function goPrev(){
+    var d = activeDeck(); if(!d) return;
+    var ids = visibleIds(d);
+    if(ids.length===0) return;
+    ui.session.index = (ui.session.index-1+ids.length) % ids.length;
+    ui.session.flipped = false;
+  }
+  function flip(){ ui.session.flipped = !ui.session.flipped; render(); }
+  function shuffleDeck(){
+    var d = activeDeck(); if(!d) return;
+    ui.session.order = shuffleArr(d.cards.map(function(c){return c.id;}));
+    ui.session.index = 0;
+    ui.session.flipped = false;
+    render();
+  }
+  function resetProgress(){
+    var d = activeDeck(); if(!d) return;
+    if(!confirm('Đặt lại trạng thái "đã thuộc" cho tất cả thẻ trong bộ này?')) return;
+    d.cards.forEach(function(c){ c.known=false; });
+    mutate(function(){});
+  }
+
+  // ---- event delegation ----
+  var root = document.querySelector('.page');
+
+  root.addEventListener('click', function(e){
+    var t = e.target.closest('[data-action]');
+    if(!t) return;
+    var action = t.getAttribute('data-action');
+    switch(action){
+      case 'select-deck': selectDeck(t.getAttribute('data-deck')); break;
+      case 'toggle-new-deck': ui.newDeckOpen = !ui.newDeckOpen; render(); break;
+      case 'toggle-edit': ui.editOpen = !ui.editOpen; render(); break;
+      case 'delete-deck': deleteDeck(t.getAttribute('data-deck')); break;
+      case 'add-card': addCard(activeDeck().id); break;
+      case 'delete-card': deleteCard(activeDeck().id, t.getAttribute('data-card')); break;
+      case 'flip-card': flip(); break;
+      case 'prev-card': goPrev(); render(); break;
+      case 'next-card': goNext(); render(); break;
+      case 'mark-known': markCard(t.getAttribute('data-card'), true); break;
+      case 'mark-unknown': markCard(t.getAttribute('data-card'), false); break;
+      case 'shuffle-deck': shuffleDeck(); break;
+      case 'reset-progress': resetProgress(); break;
+    }
+  });
+
+  root.addEventListener('submit', function(e){
+    var t = e.target.closest('[data-action="create-deck"]');
+    if(!t) return;
+    e.preventDefault();
+    var input = t.querySelector('input[name="deckName"]');
+    createDeck(input.value);
+  });
+
+  root.addEventListener('input', function(e){
+    var t = e.target;
+    var action = t.getAttribute && t.getAttribute('data-action');
+    if(action === 'rename-deck'){ renameDeck(t.getAttribute('data-deck'), t.value); }
+    else if(action === 'edit-front'){ updateCard(activeDeck().id, t.getAttribute('data-card'), 'front', t.value); }
+    else if(action === 'edit-back'){ updateCard(activeDeck().id, t.getAttribute('data-card'), 'back', t.value); }
+    else if(action === 'toggle-filter'){ ui.session.filterUnknown = t.checked; ui.session.index=0; render(); return; }
+    if(t.classList && t.classList.contains('autosize')){
+      t.style.height='auto'; t.style.height=Math.min(t.scrollHeight,220)+'px';
+    }
+  });
+
+  // keyboard shortcuts (desktop)
+  document.addEventListener('keydown', function(e){
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if(tag==='INPUT' || tag==='TEXTAREA') return;
+    if(ui.editOpen) return;
+    if(e.key==='ArrowRight'){ goNext(); render(); }
+    else if(e.key==='ArrowLeft'){ goPrev(); render(); }
+    else if(e.key===' ' || e.key==='Enter'){ e.preventDefault(); flip(); }
+  });
+
+  // swipe (mobile)
+  var touchStartX=0, touchStartY=0, touching=false;
+  root.addEventListener('touchstart', function(e){
+    var shell = e.target.closest('.card-shell');
+    if(!shell) return;
+    touching = true;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, {passive:true});
+  root.addEventListener('touchend', function(e){
+    if(!touching) return;
+    touching = false;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    var dy = e.changedTouches[0].clientY - touchStartY;
+    if(Math.abs(dx) > 46 && Math.abs(dx) > Math.abs(dy)*1.4){
+      if(dx < 0){ goNext(); } else { goPrev(); }
+      render();
+    }
+  }, {passive:true});
+
+  render();
+})();
+</script>
