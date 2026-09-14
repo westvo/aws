@@ -202,6 +202,20 @@
           "content": "📌 Tình huống: Một pharmaceuticals company đang tìm kiếm một giải pháp đơn giản để kết nối các VPCs và mạng on-premises networks thông qua một central hub . • Yêu cầu: Đề xuất giải pháp yêu cầu ít chi phí vận hành nhất (requires the LEAST operational overhead) . • Ràng buộc: Kiến trúc hub-and-spoke trung tâm kết nối nhiều VPCs và on-premises .\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: AWS Transit Gateway (TGW) hoạt động như một trung tâm định tuyến đám mây (cloud router) có khả năng mở rộng cao, cho phép bạn kết nối các VPC và mạng on-premises thông qua một kiến trúc hub-and-spoke đơn giản. Nó loại bỏ hoàn toàn sự phức tạp của việc quản lý hàng loạt kết nối VPC peering chéo nhau hoặc việc phải tự dựng các \"Transit VPC\" thủ công trên EC2, từ đó mang lại giải pháp có operational overhead thấp nhất , dễ quản lý, bảo trì và scale.",
           "createdAt": "2026-09-07T16:40:39.830683Z",
           "updatedAt": "2026-09-07T16:40:39.830684Z"
+        },
+        {
+          "id": "ad912a610825",
+          "title": "TRANSIT GATEWAY ROUTE TABLE & ATTACHMENT",
+          "content": "✅ Mỗi VPC/VPN/Direct Connect kết nối vào Transit Gateway qua 1 Attachment riêng, gắn với 1 Transit Gateway Route Table cụ thể — cho phép TÁCH BIỆT routing giữa các nhóm VPC (vd VPC production chỉ thấy nhau, VPC dev tách riêng) dù cùng dùng 1 Transit Gateway, bằng cách gắn attachment vào các route table khác nhau.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "83bd2f7efa63",
+          "title": "TRANSIT GATEWAY PEERING GIỮA CÁC REGION",
+          "content": "📌 Tình huống: Cần kết nối nhiều VPC ở Region A với nhiều VPC ở Region B, tránh phải tạo VPC Peering full-mesh giữa từng cặp VPC xuyên Region.\n✅ Đáp án đúng: Transit Gateway Peering — kết nối 2 Transit Gateway ở 2 Region khác nhau, các VPC đã gắn vào từng Transit Gateway tự động giao tiếp được xuyên Region qua đường peering này (traffic đi qua mạng backbone AWS, không qua Internet).",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
         }
       ]
     },
@@ -1342,6 +1356,20 @@
           "content": "📌 Tình huống: Container trong ECS Task cần gọi API S3/DynamoDB để xử lý nghiệp vụ, đồng thời ECS Agent cần quyền pull image từ ECR và ghi log ra CloudWatch — 2 nhu cầu quyền khác nhau dễ gây nhầm lẫn.\n✅ Đáp án đúng:\n   • Task Execution Role: quyền cho HẠ TẦNG ECS (pull image từ ECR, ghi log CloudWatch, lấy secret từ Secrets Manager để inject vào container) — KHÔNG liên quan code ứng dụng.\n   • Task Role: quyền cho CHÍNH ỨNG DỤNG bên trong container gọi API AWS khác (S3, DynamoDB...) — giống IAM Role gắn cho EC2 instance nhưng ở cấp Task.",
           "createdAt": "2026-09-14T03:23:39.666692Z",
           "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "7f34f7529858",
+          "title": "ECS SERVICE AUTO SCALING & CAPACITY PROVIDER",
+          "content": "✅ Service Auto Scaling: scale số lượng TASK trong 1 Service theo metric (CPU/Memory trung bình, hoặc ALB request count) — tương tự EC2 Auto Scaling nhưng ở cấp Task thay vì instance.\n✅ Capacity Provider: quyết định Task chạy trên hạ tầng NÀO (Fargate, Fargate Spot, hay EC2 cụ thể trong Auto Scaling Group riêng) và tỷ lệ phân bổ giữa các loại — cho phép kết hợp linh hoạt On-Demand + Spot ngay trong 1 Service.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "d85eddf30f36",
+          "title": "ECS EXEC: DEBUG TRỰC TIẾP VÀO CONTAINER",
+          "content": "📌 Tình huống: Container trong ECS bị lỗi runtime, cần \"SSH vào\" bên trong container đang chạy để debug trực tiếp mà không cần expose SSH port hay build lại image có thêm tool debug.\n✅ Đáp án đúng: ECS Exec — dùng Systems Manager Session Manager làm nền, cho phép exec 1 lệnh/mở shell TRỰC TIẾP vào container đang chạy (tương tự docker exec) mà không cần SSH, không cần mở port, có audit log qua CloudTrail.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
         }
       ]
     },
@@ -1380,6 +1408,20 @@
           "content": "📌 Tình huống: Một research organization đang chạy một high-performance computing (HPC) workload sử dụng Amazon EC2 instances được phân phối trên nhiều Availability Zones (AZs) trong một AWS Region. Workload yêu cầu truy cập shared file system với độ trễ thấp nhất có thể (lowest possible latency) cho frequent reads and writes. Team quyết định sử dụng Amazon EFS . • Yêu cầu: Thiết kế kiến trúc sao cho mỗi EC2 instance có thể truy cập file system với độ trễ thấp nhất giữa các AZs . • Ràng...\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: Để đạt được độ trễ thấp nhất (lowest possible latency) khi truy cập Amazon EFS từ các EC2 instances nằm ở nhiều AZs khác nhau, kiến trúc chuẩn là tạo một mount target trong subnet của từng AZ. Khi các instances mount EFS thông qua IP của mount target nằm ngay trong cùng AZ của chúng, lưu lượng truy cập mạng sẽ được định tuyến cục bộ trong AZ đó, giúp giảm thiểu độ trễ mạng và loại bỏ chi phí cũng như độ trễ cross-AZ data transfer .",
           "createdAt": "2026-09-07T16:40:39.830976Z",
           "updatedAt": "2026-09-07T16:40:39.830977Z"
+        },
+        {
+          "id": "36f7ada4bd70",
+          "title": "EFS PERFORMANCE MODE & THROUGHPUT MODE",
+          "content": "✅ Performance Mode: General Purpose (độ trễ THẤP, dùng cho hầu hết use case) vs Max I/O (throughput cao hơn nhưng độ trễ CAO HƠN, dùng cho workload xử lý song song cực lớn như big data/media processing với hàng trăm client cùng lúc).\n✅ Throughput Mode: Bursting (throughput tỷ lệ với dung lượng lưu trữ, có credit để burst) vs Provisioned (đặt throughput CỐ ĐỊNH độc lập với dung lượng, dùng khi cần throughput cao mà dung lượng nhỏ) vs Elastic (tự động scale throughput theo tải thực tế, không cần quản lý gì).",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "aba19bc1a372",
+          "title": "EFS LIFECYCLE MANAGEMENT & INFREQUENT ACCESS",
+          "content": "✅ EFS Lifecycle Management: tự động chuyển file KHÔNG được truy cập trong X ngày (7/14/30/60/90 ngày) sang EFS-IA (Infrequent Access, rẻ hơn ~92%) — tự động chuyển NGƯỢC lại Standard nếu file được truy cập lại, hoàn toàn TRONG SUỐT với ứng dụng (vẫn cùng file system, chỉ khác giá lưu trữ nội bộ).",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
         }
       ]
     },
@@ -1418,6 +1460,13 @@
           "content": "✅ File Gateway: expose file share (NFS/SMB) cho on-premises server, lưu file dưới dạng OBJECT trên S3, cache file hay dùng ở local để truy cập nhanh.\n✅ Volume Gateway:\n   • Cached mode: dữ liệu CHÍNH lưu trên AWS (S3, backup thành EBS snapshot), chỉ cache 1 phần hay dùng ở local — phù hợp khi muốn giảm tối đa storage on-premises.\n   • Stored mode: dữ liệu CHÍNH lưu ở local (toàn bộ), CHỈ backup (snapshot) lên AWS định kỳ — phù hợp khi cần độ trễ truy cập thấp nhất tại chỗ, AWS chỉ đóng vai trò DR backup.\n✅ Tape Gateway: thay thế tape backup vật lý bằng Virtual Tape Library (VTL) lưu trên S3/Glacier, tương thích với phần mềm backup hiện có (Veeam, NetBackup...) không cần đổi quy trình backup cũ.",
           "createdAt": "2026-09-14T03:23:39.666692Z",
           "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "b966189cb7cf",
+          "title": "STORAGE GATEWAY: HARDWARE APPLIANCE",
+          "content": "✅ Ngoài cài Storage Gateway dưới dạng VM (VMware/Hyper-V/KVM) hay EC2 AMI, AWS còn bán Storage Gateway Hardware Appliance (thiết bị vật lý) cho môi trường on-premises KHÔNG có sẵn hạ tầng ảo hóa — cắm điện, cấu hình mạng là dùng được ngay, không cần server riêng để chạy VM Gateway.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
         }
       ]
     },
@@ -1442,6 +1491,20 @@
           "content": "📌 Tình huống: Một công ty truyền thông muốn tìm cách phân phối kết quả thể thao trực tiếp (live sports results) với độ trễ thấp, được truyền tải thông qua một proprietary application sử dụng UDP protocol . • Yêu cầu: Cung cấp giải pháp phân phối mạng toàn cầu với độ trễ thấp nhất cho lưu lượng UDP . • Ràng buộc: Ứng dụng chạy trên giao thức UDP độc quyền, yêu cầu tối ưu hóa đường truyền mạng từ client đến backend .\n\n✅ Đáp án đúng: \n   ➜ ➜ [ ĐÚNG ]: AWS Global Accelerator là dịch vụ cải thiện tính sẵn sàng và hiệu năng của ứng dụng bằng cách sử dụng mạng lưới toàn cầu của AWS. Nó hỗ trợ nguyên bản cả giao thức TCP và UDP , tiếp nhận traffic tại các AWS edge locations gần người dùng nhất và định tuyến qua mạng xương sống (global network backbone) riêng tư của AWS để giảm thiểu tối đa hop count, mang lại hiệu năng độ trễ thấp tối ưu cho các ứng dụng UDP chuyên biệt.",
           "createdAt": "2026-09-07T16:40:39.829966Z",
           "updatedAt": "2026-09-07T16:40:39.829966Z"
+        },
+        {
+          "id": "57ddff87bafc",
+          "title": "GLOBAL ACCELERATOR: STATIC ANYCAST IP & HEALTH CHECK FAILOVER",
+          "content": "📌 Tình huống: Ứng dụng chạy multi-Region (ALB ở nhiều Region), cần 1 địa chỉ IP CỐ ĐỊNH DUY NHẤT cho khách hàng dùng (không đổi dù backend đổi), và tự động route traffic sang Region khỏe mạnh nhất/gần nhất.\n✅ Đáp án đúng: AWS Global Accelerator — cấp 2 địa chỉ IP tĩnh dạng Anycast (không đổi vĩnh viễn), traffic đi vào mạng backbone riêng của AWS (không qua Internet công cộng) ngay từ Edge Location gần user nhất, tự động route tới endpoint (ALB/NLB/EC2) KHỎE MẠNH & GẦN NHẤT, tự failover cross-Region khi 1 Region gặp sự cố.\n⚠️ So với Route 53 latency/failover routing (dựa vào DNS, có độ trễ do DNS caching/TTL khi client đổi resolve) — Global Accelerator failover NHANH HƠN vì không phụ thuộc DNS propagation.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "6c4645d4a4da",
+          "title": "GLOBAL ACCELERATOR: TRAFFIC DIAL & ENDPOINT WEIGHT",
+          "content": "✅ Traffic Dial: điều chỉnh % traffic được route tới 1 Endpoint Group (Region) — dùng để giảm dần traffic một Region khi cần bảo trì (kiểu canary release ở cấp Region).\n✅ Endpoint Weight: trong cùng 1 Endpoint Group, phân chia tỷ trọng traffic giữa nhiều endpoint cụ thể (vd nhiều ALB trong cùng Region).",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -1466,6 +1529,20 @@
           "content": "📌 Tình huống: Công ty cần chuyển database từ Oracle on-premises sang Amazon Aurora PostgreSQL trên AWS — khác database engine hoàn toàn, cần chuyển đổi cả schema/stored procedure lẫn dữ liệu, và ứng dụng không được downtime lâu.\n\n✅ Đáp án đúng: Dùng AWS SCT (Schema Conversion Tool) để convert schema/code (Oracle ➜ PostgreSQL), sau đó dùng AWS DMS để replicate dữ liệu, hỗ trợ Change Data Capture (CDC) để đồng bộ liên tục tới khi cutover.\n   ➜ Đây là heterogeneous migration (khác engine nguồn/đích) ➜ bắt buộc cần SCT vì cấu trúc/cú pháp SQL khác nhau giữa các engine.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ dùng DMS mà không dùng SCT ➜ DMS chỉ lo phần replicate dữ liệu (rows), không tự chuyển đổi schema/stored procedure khác engine.\n   • Homogeneous migration (cùng engine, vd MySQL on-premises ➜ Aurora MySQL, hoặc Oracle ➜ RDS Oracle) thì KHÔNG cần SCT, chỉ cần DMS vì schema tương thích sẵn.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "4a2dd5f0b6e6",
+          "title": "DMS: FULL LOAD, CDC & FULL LOAD + CDC",
+          "content": "✅ Full Load: copy TOÀN BỘ dữ liệu hiện có 1 lần từ nguồn sang đích (dùng cho migration lần đầu).\n✅ CDC (Change Data Capture): chỉ đồng bộ các THAY ĐỔI diễn ra SAU một mốc thời gian — dùng để giữ đích luôn cập nhật liên tục.\n✅ Full Load + CDC (phổ biến nhất cho migration production): copy toàn bộ dữ liệu hiện có TRƯỚC, sau đó tự động chuyển sang CDC để bắt kịp các thay đổi phát sinh trong lúc full load đang chạy — cho phép cutover với DOWNTIME GẦN NHƯ BẰNG 0.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "bb93bb692b1b",
+          "title": "DMS: REPLICATION INSTANCE SIZING",
+          "content": "✅ DMS Replication Instance là 1 EC2 instance quản lý do AWS host, chạy DMS engine để thực hiện việc đọc/ghi/transform dữ liệu — cần chọn đúng kích thước (CPU/RAM) dựa trên khối lượng & số lượng task chạy song song, vì đây thường là ĐIỂM NGHẼN hiệu năng migration nếu chọn quá nhỏ.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -1490,6 +1567,20 @@
           "content": "📌 Tình huống: Công ty đã có Active Directory (AD) chạy on-premises, muốn cho phép user hiện tại đăng nhập (SSO) vào ứng dụng trên AWS mà KHÔNG muốn tạo bản sao/đồng bộ dữ liệu directory lên cloud, chấp nhận độ trễ khi request phải đi qua kết nối VPN/Direct Connect về on-premises.\n\n✅ Đáp án đúng: AD Connector.\n   ➜ AD Connector chỉ là một proxy/gateway, chuyển tiếp (redirect) toàn bộ request authentication về thẳng AD on-premises hiện có — không lưu trữ bất kỳ dữ liệu user nào trên AWS.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • AWS Managed Microsoft AD ➜ tạo ra một AD MỚI hoàn toàn trên AWS (có thể thiết lập trust relationship 2 chiều với AD on-premises), phù hợp khi cần đầy đủ tính năng AD (Group Policy, schema extension...) chạy trên cloud, không phải chỉ proxy.\n   • Simple AD ➜ AD độc lập tương thích Samba, không hỗ trợ trust relationship với AD on-premises, không hỗ trợ MFA hay một số tính năng AD nâng cao, phù hợp nhu cầu cơ bản quy mô nhỏ (<5000 user), độc lập hoàn toàn với AD hiện có.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "01b565846943",
+          "title": "AWS MANAGED MICROSOFT AD: MULTI-REGION REPLICATION",
+          "content": "✅ AWS Managed Microsoft AD hỗ trợ Multi-Region Replication — tự động nhân bản directory sang Region khác để user/ứng dụng ở Region đó xác thực với độ trễ thấp, đồng thời phục vụ Disaster Recovery cho chính hạ tầng AD.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "653e8e654199",
+          "title": "TRUST RELATIONSHIP GIỮA AWS MANAGED AD VÀ ON-PREMISES AD",
+          "content": "📌 Tình huống: Công ty muốn user hiện có trong AD on-premises truy cập được tài nguyên AWS (vd RDS SQL Server dùng Windows Authentication) MÀ KHÔNG CẦN tạo lại toàn bộ user trong AWS.\n✅ Đáp án đúng: Thiết lập Trust Relationship (1 chiều hoặc 2 chiều) giữa AWS Managed Microsoft AD và AD on-premises — user on-premises xác thực được với resource phía AWS mà không cần đồng bộ/tạo lại account, cần kết nối VPN/Direct Connect giữa 2 bên.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -1514,6 +1605,27 @@
           "content": "📌 Tình huống: Ứng dụng cần cache session data cho user, yêu cầu high availability với automatic failover khi node chính gặp sự cố, và không được mất dữ liệu cache khi node restart.\n\n✅ Đáp án đúng: ElastiCache for Redis.\n   ➜ Redis hỗ trợ Multi-AZ với automatic failover, replication (primary + read replicas), persistence (snapshot / AOF) để backup & restore dữ liệu, hỗ trợ cấu trúc dữ liệu phức tạp (sorted set, pub/sub, transaction).\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • ElastiCache for Memcached ➜ đơn giản hơn, multi-threaded, dữ liệu được sharding (phân mảnh) giữa nhiều node để scale ngang nhanh, NHƯNG không có replication, không có Multi-AZ/failover, không có persistence/backup — mất node là mất luôn data trên node đó.\n   • Chọn Memcached khi: cache đơn giản (không cần persistence/HA), cần tận dụng multi-core threads, cần scale ngang dễ dàng bằng cách thêm/bớt node.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "32c83091c100",
+          "title": "CACHING STRATEGIES: LAZY LOADING vs WRITE-THROUGH",
+          "content": "✅ Lazy Loading (cache-aside): ứng dụng chỉ ghi vào cache khi CACHE MISS (đọc từ DB rồi ghi vào cache) — cache chỉ chứa dữ liệu THỰC SỰ được yêu cầu, nhưng lần đầu luôn bị cache miss (chậm), và dữ liệu có thể STALE nếu DB đổi mà cache không cập nhật.\n✅ Write-Through: MỖI LẦN ghi vào DB đều ghi luôn vào cache — dữ liệu trong cache LUÔN MỚI (không stale), nhưng tốn thêm write mỗi lần cập nhật DB, và cache có thể chứa data KHÔNG BAO GIỜ được đọc tới (lãng phí bộ nhớ).\n⚠️ Thường kết hợp CẢ 2 kèm TTL (Time-to-Live) để tự động hết hạn dữ liệu cũ, tránh cache phình to vô hạn.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "9119e4f4e80f",
+          "title": "ELASTICACHE REDIS: CLUSTER MODE ENABLED vs DISABLED",
+          "content": "✅ Cluster Mode Disabled: 1 primary node + tối đa 5 replica, TOÀN BỘ dữ liệu nằm trên 1 SHARD duy nhất (giới hạn bởi RAM của 1 node).\n✅ Cluster Mode Enabled: dữ liệu được SHARDING (phân mảnh) ra NHIỀU shard (mỗi shard có primary + replica riêng), cho phép SCALE HORIZONTAL vượt giới hạn RAM 1 node, mỗi shard vẫn hỗ trợ auto-failover riêng.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "848f6761a245",
+          "title": "ELASTICACHE SERVERLESS",
+          "content": "📌 Tình huống: Không muốn tự tính toán/quản lý số node, kích thước node cho Redis/Memcached vì traffic khó dự đoán.\n✅ Đáp án đúng: ElastiCache Serverless — tự động scale capacity theo nhu cầu thực tế (giống Aurora Serverless/DynamoDB On-Demand), tính phí theo lượng dữ liệu lưu + traffic xử lý, không cần chọn instance type/số node thủ công.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -1802,6 +1914,20 @@
           "content": "📌 Tình huống: Công ty cần di chuyển 200TB dữ liệu MỘT LẦN từ hệ thống NAS on-premises lên Amazon S3. Đường truyền Internet hiện tại chỉ 100Mbps, nếu transfer online sẽ mất nhiều tuần và ảnh hưởng băng thông làm việc hàng ngày.\n\n✅ Đáp án đúng: AWS Snowball (offline data transfer bằng thiết bị vật lý).\n   ➜ Khi dữ liệu cực lớn (hàng chục-hàng trăm TB/PB) và băng thông mạng không đủ để hoàn tất trong thời gian hợp lý ➜ Snowball là lựa chọn nhanh & rẻ hơn nhiều so với chờ transfer online.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • AWS DataSync ➜ vẫn phụ thuộc network hiện có, tối ưu tốc độ transfer nhưng KHÔNG giải quyết được vấn đề băng thông quá thấp cho khối lượng cực lớn; phù hợp cho transfer định kỳ/liên tục (scheduled/incremental) khi network đủ tốt.\n   • AWS Storage Gateway ➜ dùng cho nhu cầu truy cập HYBRID LIÊN TỤC (ongoing), không phải công cụ chuyên cho di chuyển một lần khối lượng lớn: File Gateway (NFS/SMB ⇄ S3), Volume Gateway (iSCSI block, cached/stored mode), Tape Gateway (thay thế tape backup vật lý).",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "de8747cdf324",
+          "title": "DATASYNC: AGENT & TASK",
+          "content": "✅ DataSync Agent: phần mềm (VM) cài tại on-premises, đóng vai trò cầu nối đọc dữ liệu từ NFS/SMB/HDFS on-premises rồi đẩy lên AWS — không cần agent nếu nguồn/đích đều là AWS service (S3-to-EFS chẳng hạn).\n✅ Task: định nghĩa cặp Source-Destination cụ thể + lịch chạy (schedule) + option (verify checksum, giữ metadata/permission, filter file theo pattern) — có thể chạy 1 lần hoặc định kỳ để đồng bộ tăng dần (incremental, chỉ copy phần thay đổi).",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "d6d1935ce2c7",
+          "title": "DATASYNC: BĂNG THÔNG & MÃ HÓA",
+          "content": "✅ DataSync tối ưu network bằng thuật toán nén + đa luồng song song, có thể giới hạn (throttle) băng thông sử dụng để không chiếm hết đường truyền công ty trong giờ làm việc.\n✅ Toàn bộ dữ liệu truyền qua TLS (mã hóa in-transit), hỗ trợ cả public endpoint và VPC endpoint (giữ traffic hoàn toàn trong mạng riêng khi kết hợp Direct Connect/VPN).",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -1854,6 +1980,13 @@
           "content": "📌 Tình huống: Một công ty dịch vụ tài chính muốn di dời các Windows file server clusters ra khỏi datacenter của họ. Họ đang tìm kiếm các giải pháp cloud file storage cung cấp tính năng tương thích hoàn toàn với Windows. Xác định hai dịch vụ lưu trữ AWS cung cấp file storage độ tin cậy cao, có thể truy cập thông qua giao thức tiêu chuẩn công nghiệp Server Message Block (SMB) protocol tương thích với các hệ thống Windows. • Yêu cầu: Chọn 2 giải pháp lưu trữ AWS hỗ trợ giao thức SMB và tương...\n\n✅ Đáp án đúng 1: \n   ➜ ➜ [ ĐÚNG ]: Amazon FSx for Windows File Server cung cấp dung lượng lưu trữ file được quản lý hoàn toàn dựa trên Windows Server, hỗ trợ nguyên bản Server Message Block (SMB) protocol , NTFS permissions, và Active Directory integration , là sự thay thế hoàn hảo cho các file server clusters truyền thống.\n✅ Đáp án đúng 2: \n   ➜ ➜ [ ĐÚNG ]: AWS Storage Gateway (File Gateway) cho phép các ứng dụng kết nối tới Amazon S3 thông qua các giao thức file tiêu chuẩn ngành bao gồm cả SMB protocol và NFS, giúp các hệ thống Windows truy cập dữ liệu trên cloud qua giaoπε thức SMB một cách mượt mà.",
           "createdAt": "2026-09-07T16:40:39.829895Z",
           "updatedAt": "2026-09-07T16:40:39.829896Z"
+        },
+        {
+          "id": "e471d8003bdf",
+          "title": "FSx: 4 LOẠI FILE SYSTEM & USE CASE",
+          "content": "✅ FSx for Windows File Server: file share SMB tương thích Windows/Active Directory, dùng cho ứng dụng .NET/Windows cần shared storage kiểu Windows.\n✅ FSx for Lustre: hiệu năng CỰC CAO, độ trễ dưới mili-giây, tích hợp trực tiếp S3 (link dữ liệu qua lại) — dùng cho HPC, machine learning training cần đọc dữ liệu tốc độ cao.\n✅ FSx for NetApp ONTAP: mang tính năng NetApp ONTAP quen thuộc lên AWS (snapshot, clone, dedup, đa giao thức NFS/SMB/iSCSI) — dùng khi migrate workload đang chạy NetApp on-premises.\n✅ FSx for OpenZFS: file system ZFS hiệu năng cao, hỗ trợ snapshot/clone nhanh, phù hợp workload Linux cần tính năng ZFS quen thuộc.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
         }
       ]
     },
@@ -1878,6 +2011,27 @@
           "content": "📌 Tình huống: Security team muốn hệ thống TỰ ĐỘNG cô lập (quarantine) một EC2 instance ngay khi GuardDuty phát hiện instance đó có hành vi độc hại (vd giao tiếp với địa chỉ IP C2/cryptomining), không chờ admin xử lý thủ công vì phản ứng chậm sẽ gây thiệt hại.\n\n✅ Đáp án đúng: GuardDuty finding ➜ Amazon EventBridge rule bắt sự kiện ➜ trigger AWS Lambda function tự động: đổi Security Group của instance sang nhóm \"quarantine\" (chặn toàn bộ traffic in/out) và tạo snapshot để phục vụ điều tra (forensics).\n   ➜ GuardDuty là dịch vụ threat detection dùng ML + threat intelligence, phân tích VPC Flow Logs, CloudTrail logs, DNS logs để phát hiện hành vi bất thường mà không cần cài agent.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ bật GuardDuty và theo dõi dashboard/console thủ công ➜ không đáp ứng yêu cầu tự động hóa (automated remediation), phụ thuộc con người phản ứng kịp thời.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "6872f3298219",
+          "title": "GUARDDUTY: NGUỒN DỮ LIỆU PHÂN TÍCH",
+          "content": "✅ GuardDuty phân tích 3 nguồn log CHÍNH mà KHÔNG cần cài agent: VPC Flow Logs (traffic bất thường), CloudTrail Logs (API call đáng ngờ, vd tắt logging, tạo user lạ), DNS Logs (truy vấn domain độc hại/C2).\n✅ Có thể bật thêm Protection Plan mở rộng: S3 Protection (phát hiện truy cập S3 bất thường), EKS Protection (audit log Kubernetes), RDS Protection (login bất thường vào DB), Lambda Protection, Malware Protection (quét EBS/S3 tìm malware).",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "6a20fb648197",
+          "title": "GUARDDUTY MULTI-ACCOUNT: DELEGATED ADMINISTRATOR",
+          "content": "📌 Tình huống: Tổ chức có 50 account, cần xem TẤT CẢ finding của GuardDuty ở 1 nơi duy nhất thay vì vào từng account riêng lẻ kiểm tra.\n✅ Đáp án đúng: Chỉ định 1 account làm GuardDuty Delegated Administrator (qua AWS Organizations) — account này tự động thấy & quản lý finding của TOÀN BỘ account thành viên, bật/tắt GuardDuty hàng loạt mà không cần đăng nhập từng account con.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "731c35c9e6d9",
+          "title": "GUARDDUTY SUPPRESSION RULES & TRUSTED IP LIST",
+          "content": "✅ Suppression Rule: tự động ẩn (không hiển thị) các finding khớp điều kiện định sẵn — dùng khi biết chắc 1 loại cảnh báo là FALSE POSITIVE lặp lại (vd scanner bảo mật nội bộ tự quét gây finding giả).\n✅ Trusted IP List: danh sách IP TIN CẬY (vd văn phòng công ty) — GuardDuty KHÔNG tạo finding cho traffic từ các IP này dù có pattern giống tấn công.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -1902,6 +2056,20 @@
           "content": "📌 Tình huống: Công ty lưu trữ hàng chục nghìn file khách hàng trong nhiều bucket S3, cần xác định bucket/file nào đang chứa dữ liệu cá nhân nhạy cảm (PII: số CMND/passport, thẻ tín dụng, email...) để áp dụng chính sách bảo vệ phù hợp và đáp ứng compliance (GDPR...), không muốn tự viết script quét thủ công.\n\n✅ Đáp án đúng: Amazon Macie.\n   ➜ Dùng Machine Learning + pattern matching để tự động quét S3, phát hiện & phân loại dữ liệu nhạy cảm, sinh ra finding kèm mức độ rủi ro trên dashboard.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Amazon Inspector ➜ chỉ dùng để quét LỖ HỔNG BẢO MẬT (vulnerability) trên EC2/container image/Lambda (CVE, network reachability...), không liên quan đến phát hiện nội dung dữ liệu nhạy cảm trong S3.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "975b93f3bc03",
+          "title": "MACIE: MANAGED DATA IDENTIFIERS & CUSTOM IDENTIFIERS",
+          "content": "✅ Managed Data Identifier: các pattern PII có sẵn do AWS cung cấp (số thẻ tín dụng, SSN, passport, địa chỉ email...).\n✅ Custom Data Identifier: tự định nghĩa REGEX riêng để phát hiện dữ liệu nhạy cảm ĐẶC THÙ của công ty (vd mã khách hàng nội bộ, mã hợp đồng theo format riêng) mà managed identifier không có sẵn.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "316bd6a05a42",
+          "title": "MACIE INTEGRATION VỚI EVENTBRIDGE & SECURITY HUB",
+          "content": "📌 Tình huống: Khi Macie phát hiện 1 bucket S3 chứa dữ liệu nhạy cảm bị cấu hình PUBLIC, cần TỰ ĐỘNG cảnh báo/xử lý ngay thay vì chờ người xem dashboard.\n✅ Đáp án đúng: Macie tự động gửi finding qua EventBridge — tạo rule trigger Lambda tự động (vd revoke public access của bucket đó ngay), đồng thời finding cũng tổng hợp vào AWS Security Hub để xem chung với các finding bảo mật khác (GuardDuty, Inspector).",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -1926,6 +2094,20 @@
           "content": "📌 Tình huống: Website đang bị một số địa chỉ IP cụ thể gửi liên tục hàng nghìn request/phút vào 1 endpoint gây quá tải ứng dụng, nhưng đây không phải là volumetric DDoS quy mô lớn ở tầng mạng.\n\n✅ Đáp án đúng: Tạo AWS WAF Rate-based rule, tự động chặn (block) IP nào vượt ngưỡng số request trong 5 phút, gắn WAF vào CloudFront/ALB/API Gateway phía trước ứng dụng.\n   ➜ AWS WAF hoạt động ở Layer 7 (HTTP/HTTPS), hỗ trợ nhiều loại rule: Rate-based (giới hạn theo IP), Geo-match (chặn/cho phép theo quốc gia), IP set (block/allow list theo IP/CIDR), String/Regex match (chặn theo pattern trong header/body/URI như SQL injection, XSS), và Managed Rule Groups (bộ rule dựng sẵn cho OWASP Top 10...).\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ dùng AWS Shield Advanced ➜ Shield chủ yếu bảo vệ tầng Network/Transport (Layer 3/4) khỏi DDoS thể tích lớn, KHÔNG có cơ chế rate-limit chi tiết theo IP ở tầng ứng dụng (Layer 7) như WAF; 2 dịch vụ thường dùng bổ trợ cho nhau.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "5d343cfd46d9",
+          "title": "WAF WEB ACL & MANAGED RULE GROUPS",
+          "content": "✅ Web ACL: tập hợp các RULE (điều kiện + hành động Allow/Block/Count), gắn vào CloudFront/ALB/API Gateway/AppSync/Cognito.\n✅ AWS Managed Rule Groups: bộ rule dựng sẵn do AWS/đối tác duy trì (Core Rule Set chống OWASP Top 10, Known Bad Inputs, SQL Database rule, IP Reputation List...) — cập nhật tự động khi có threat mới, không cần tự viết rule chi tiết từ đầu.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "3c079e4193ae",
+          "title": "WAF LOGGING & CAPTCHA/CHALLENGE ACTION",
+          "content": "✅ WAF Logging: xuất log chi tiết từng request (match rule nào, action gì) ra Kinesis Data Firehose → S3/OpenSearch để phân tích/audit.\n✅ CAPTCHA/Challenge Action: thay vì Block thẳng, WAF có thể yêu cầu client giải CAPTCHA hoặc silent challenge (JS challenge) trước khi cho qua — dùng chống bot tự động mà vẫn cho phép người dùng thật tiếp tục, ít gây phiền hơn Block cứng.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -2047,6 +2229,20 @@
           "content": "📌 Tình huống: Một company muốn áp dụng hybrid cloud infrastructure sử dụng các dịch vụ AWS như Amazon S3 song song với on-premises data center. Công ty muốn có một dedicated private connection chuyên dụng giữa on-premise và AWS. Tuy nhiên, trong trường hợp xảy ra sự cố, công ty cần đảm bảo uptime và sẵn sàng sử dụng public internet với một kết nối được mã hóa làm dự phòng. • Yêu cầu: Chọn 2 phương án cấu hình chính xác cho kết nối chính và kết nối dự phòng (backup) . • Ràng buộc: Kết nối...\n\n✅ Đáp án đúng 1: \n   ➜ ➜ [ ĐÚNG ]: AWS Direct Connect (DX) cung cấp một đường truyền mạng riêng tư, chuyên dụng (dedicated private connection) tốc độ cao, bỏ qua internet công cộng, hoàn toàn đáp ứng yêu cầu kết nối chính bảo mật và ổn định cho hạ tầng hybrid cloud.\n✅ Đáp án đúng 2: \n   ➜ ➜ [ ĐÚNG ]: AWS Site-to-Site VPN sử dụng internet công cộng để thiết lập đường hầm mã hóa an toàn (encrypted connection), là giải pháp chi phí hợp lý và hoàn hảo để làm kết nối failover/backup tự động khi kết nối chính Direct Connect gặp sự cố.",
           "createdAt": "2026-09-07T16:40:39.830406Z",
           "updatedAt": "2026-09-07T16:40:39.830406Z"
+        },
+        {
+          "id": "79cb144ca625",
+          "title": "SITE-TO-SITE VPN: CUSTOMER GATEWAY & VIRTUAL PRIVATE GATEWAY",
+          "content": "✅ Customer Gateway (CGW): đại diện cho thiết bị VPN VẬT LÝ/PHẦN MỀM phía on-premises (router/firewall công ty).\n✅ Virtual Private Gateway (VGW): đại diện cho phía AWS, gắn vào 1 VPC cụ thể — mỗi VPN connection gồm 2 tunnel (2 đường hầm) để tăng độ sẵn sàng, nếu 1 tunnel đứt thì traffic tự chuyển sang tunnel còn lại.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "56604c2355e3",
+          "title": "VPN CLOUDHUB: KẾT NỐI NHIỀU VĂN PHÒNG QUA AWS",
+          "content": "📌 Tình huống: Công ty có NHIỀU chi nhánh/văn phòng ở các địa điểm khác nhau, muốn các chi nhánh này giao tiếp được với nhau (site-to-site) mà không cần tự dựng thêm hạ tầng VPN riêng giữa từng cặp văn phòng.\n✅ Đáp án đúng: AWS VPN CloudHub — tạo nhiều Site-to-Site VPN connection (mỗi văn phòng 1 connection) cùng trỏ về 1 Virtual Private Gateway, cấu hình routing (BGP) phù hợp để các văn phòng có thể giao tiếp CHÉO NHAU thông qua VPC làm \"hub\" trung tâm, tận dụng lại hạ tầng VPN đã có sẵn thay vì xây kết nối riêng.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -2189,6 +2385,20 @@
           "content": "📌 Tình huống: Đội DevOps cần (1) lưu trữ password của database và TỰ ĐỘNG xoay vòng (rotate) mỗi 30 ngày mà không phải code thủ công cơ chế rotation, và (2) cần SSH vào các EC2 instance nằm trong private subnet mà KHÔNG được phép mở port 22 ra ngoài Internet và không muốn dựng bastion host.\n\n✅ Đáp án đúng:\n   • Dùng AWS Secrets Manager để lưu DB credentials — hỗ trợ automatic rotation có sẵn (built-in Lambda rotation function tích hợp cho RDS/Aurora/DocumentDB/Redshift).\n   • Dùng AWS Systems Manager Session Manager để truy cập shell vào EC2 qua SSM Agent, không cần mở port 22/3389, không cần SSH key hay bastion host, toàn bộ session được log qua CloudTrail/S3.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • SSM Parameter Store ➜ cũng lưu được config/secret (kiểu SecureString mã hóa bằng KMS) và MIỄN PHÍ ở tier Standard, nhưng KHÔNG có tính năng automatic rotation tích hợp sẵn như Secrets Manager ➜ chọn Parameter Store cho config/secret tĩnh, ít thay đổi; chọn Secrets Manager khi cần rotation tự động.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "48bd9d5ee8f3",
+          "title": "SSM: PATCH MANAGER & STATE MANAGER",
+          "content": "✅ Patch Manager: tự động hóa việc PATCH (vá lỗi bảo mật) hệ điều hành trên fleet EC2/on-premises server theo lịch định sẵn (Patch Baseline), báo cáo compliance patch của từng instance.\n✅ State Manager: đảm bảo instance LUÔN GIỮ ĐÚNG 1 trạng thái cấu hình mong muốn (vd luôn cài đặt 1 phần mềm cụ thể, luôn bật 1 config nào đó) — tự động áp dụng lại nếu phát hiện instance bị lệch khỏi trạng thái chuẩn.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "77899d52b298",
+          "title": "SSM RUN COMMAND & AUTOMATION DOCUMENTS",
+          "content": "✅ Run Command: chạy lệnh/script (Shell, PowerShell) TRÊN HÀNG LOẠT instance cùng lúc mà không cần SSH/RDP vào từng máy, có log kết quả tập trung.\n✅ Automation Documents (SSM Documents): định nghĩa quy trình vận hành TỰ ĐỘNG HÓA nhiều bước (vd tự tạo AMI, patch rồi restart, rollback khi lỗi) — có thể trigger thủ công, theo lịch, hoặc từ EventBridge.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -2362,6 +2572,20 @@
           "content": "📌 Tình huống: Ứng dụng mạng xã hội cần lưu trữ và truy vấn NHANH mối quan hệ nhiều tầng giữa hàng triệu user (vd \"bạn của bạn\", gợi ý kết bạn, phát hiện gian lận qua mạng lưới giao dịch liên kết).\n\n✅ Đáp án đúng: Amazon Neptune — managed graph database, tối ưu cho việc lưu trữ & truy vấn dữ liệu có QUAN HỆ PHỨC TẠP nhiều chiều, hỗ trợ các ngôn ngữ truy vấn đồ thị Gremlin, SPARQL, openCypher. Use case điển hình: mạng xã hội, recommendation engine, fraud detection, knowledge graph.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Amazon RDS/Aurora (relational database) ➜ để truy vấn quan hệ nhiều tầng (multi-hop relationship traversal) phải JOIN qua nhiều bảng, hiệu năng giảm mạnh khi dữ liệu lớn — không tối ưu bằng graph database chuyên dụng như Neptune.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "3a06921e14d2",
+          "title": "NEPTUNE: QUERY LANGUAGES & MODEL DỮ LIỆU",
+          "content": "✅ Property Graph model: dùng Apache TinkerPop Gremlin để truy vấn (traversal theo bước) — phổ biến cho use case dạng \"tìm đường đi\"/quan hệ (social network, recommendation).\n✅ RDF (Resource Description Framework) model: dùng SPARQL để truy vấn — phù hợp cho Knowledge Graph, dữ liệu có ý nghĩa ngữ nghĩa (semantic) phức tạp, chuẩn hóa theo ontology.\n✅ Neptune còn hỗ trợ openCypher (ngôn ngữ property graph phổ biến khác, tương tự cú pháp Cypher của Neo4j).",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "feab3c190f6e",
+          "title": "NEPTUNE: HIGH AVAILABILITY & GLOBAL DATABASE",
+          "content": "✅ Neptune Multi-AZ tương tự Aurora: 1 storage layer chia sẻ trên nhiều AZ, có thể thêm tới 15 Read Replica dùng chung storage, failover nhanh.\n✅ Neptune Global Database: replicate cross-Region với độ trễ thấp (giống Aurora Global Database), phục vụ đọc gần người dùng toàn cầu + DR.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -2386,6 +2610,13 @@
           "content": "✅ AWS Cost Explorer: xem & phân tích LỊCH SỬ chi tiêu, dự báo (forecast) chi phí tương lai dựa trên xu hướng cũ.\n✅ AWS Budgets: đặt NGƯỠNG cảnh báo chủ động (cost, usage, RI/Savings Plan utilization) — gửi thông báo khi vượt/gần vượt ngưỡng đã đặt.\n✅ AWS Compute Optimizer: dùng ML phân tích usage LỊCH SỬ để đưa ra khuyến nghị RIGHT-SIZING cho EC2/EBS/Lambda/ASG (đang over-provisioned hay under-provisioned).\n✅ AWS Cost Optimization Hub: TỔNG HỢP TẤT CẢ khuyến nghị tiết kiệm chi phí (từ Compute Optimizer, Trusted Advisor, RI/Savings Plan recommendation...) vào 1 nơi DUY NHẤT, ước tính số tiền tiết kiệm được, ưu tiên theo mức độ tác động — dùng khi cần cái nhìn tổng quan toàn Organization thay vì xem rời rạc từng công cụ.",
           "createdAt": "2026-09-14T03:23:39.666692Z",
           "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "144f81f529d3",
+          "title": "AWS TRUSTED ADVISOR",
+          "content": "✅ Trusted Advisor: quét TỰ ĐỘNG theo 5 nhóm (Cost Optimization, Performance, Security, Fault Tolerance, Service Limits), đưa ra khuyến nghị dựa trên AWS BEST PRACTICE tổng quát (không chỉ riêng chi phí như Compute Optimizer).\n⚠️ Số lượng check đầy đủ CHỈ có ở Business/Enterprise Support Plan — Basic/Developer Support chỉ thấy 1 số check Security & Service Limits cơ bản.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -2410,6 +2641,20 @@
           "content": "📌 Tình huống: Công ty cần kết nối riêng, băng thông ổn định từ on-premises đến AWS cho hệ thống production, nhưng ngân sách hạn chế, không đủ chi phí để đầu tư 2 Direct Connect connection song song để đạt độ dự phòng cao (high resiliency).\n\n✅ Đáp án đúng: Dùng 1 Direct Connect connection cho traffic chính, kết hợp Site-to-Site VPN làm backup — tự động failover sang VPN (qua Internet, mã hóa IPSec) khi Direct Connect gặp sự cố.\n   ➜ Đây là giải pháp cân bằng giữa chi phí và độ sẵn sàng, rẻ hơn nhiều so với việc dùng 2 Direct Connect connections độc lập.\n\n⚠️ Đáp án sai thường gặp / lưu ý:\n   • Chỉ dùng 1 Direct Connect connection, không có backup ➜ vi phạm yêu cầu resilience, tạo single point of failure cho production.\n   • Direct Connect Gateway: cho phép 1 Direct Connect connection (qua 1 Private VIF) kết nối tới NHIỀU VPC ở NHIỀU Region khác nhau mà không cần VPC Peering — hữu ích khi hạ tầng multi-Region cần dùng chung 1 kết nối vật lý.\n   • Mức độ resiliency theo khuyến nghị AWS: High Resiliency cần tối thiểu 2 connection từ 2 Direct Connect location khác nhau; Maximum Resiliency cần 4 connection qua 2 location, mỗi location 2 device riêng biệt để loại bỏ mọi single point of failure kể cả ở cấp thiết bị.",
           "createdAt": "2026-09-08T10:40:25.557690Z",
           "updatedAt": "2026-09-08T10:40:25.557690Z"
+        },
+        {
+          "id": "d98fde2ccaec",
+          "title": "DIRECT CONNECT: VIF TYPES (PRIVATE, PUBLIC, TRANSIT)",
+          "content": "✅ Private VIF: kết nối tới 1 VPC cụ thể (qua Virtual Private Gateway) — dùng cho traffic nội bộ giữa on-premises và VPC.\n✅ Public VIF: kết nối tới các AWS PUBLIC service (S3, DynamoDB...) qua địa chỉ IP public của AWS mà KHÔNG đi qua Internet — dùng khi cần truy cập service public với băng thông riêng ổn định.\n✅ Transit VIF: kết nối tới Direct Connect Gateway rồi từ đó tới NHIỀU VPC qua Transit Gateway — dùng khi cần scale kết nối tới nhiều VPC/account từ 1 đường Direct Connect duy nhất.",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
+        },
+        {
+          "id": "43923941100e",
+          "title": "DIRECT CONNECT: LINK AGGREGATION GROUP (LAG)",
+          "content": "📌 Tình huống: 1 đường Direct Connect 1Gbps không đủ băng thông, cần tăng dung lượng mà vẫn coi là 1 kết nối logic duy nhất để dễ quản lý route.\n✅ Đáp án đúng: Link Aggregation Group (LAG) — gộp NHIỀU physical connection Direct Connect (cùng tốc độ, cùng vị trí) thành 1 kết nối logic duy nhất, tăng tổng băng thông, đồng thời tăng khả năng chịu lỗi (1 physical connection đứt vẫn còn các connection khác trong LAG).",
+          "createdAt": "2026-09-14T03:41:03.034633Z",
+          "updatedAt": "2026-09-14T03:41:03.034633Z"
         }
       ]
     },
@@ -2448,6 +2693,461 @@
           "content": "⚠️ Các dịch vụ/tính năng sau nằm ngoài phạm vi thi SAA-C03 — nếu gặp trong đề luyện tập không chính thức có nhắc tới các dịch vụ này thì có thể bỏ qua, không cần ôn sâu:\n\n• Analytics: Amazon CloudSearch.\n• Application Integration: Amazon MWAA (Managed Workflows for Apache Airflow).\n• AR/VR: Amazon Sumerian.\n• Blockchain: Amazon Managed Blockchain.\n• Compute: Amazon Lightsail.\n• Database: Amazon RDS on VMware.\n• Developer Tools: Cloud9, AWS CDK, CloudShell, CodeArtifact, CodeBuild, CodeCommit, CodeDeploy, CodeGuru, CodeStar, Corretto, AWS FIS, AWS Tools & SDKs.\n• Front-End Web & Mobile: Amazon Location Service.\n• Game Tech: Amazon GameLift, Amazon Lumberyard.\n• Internet of Things (IoT): TOÀN BỘ dịch vụ IoT đều out-of-scope.\n• Machine Learning: Apache MXNet on AWS, Amazon A2I, DeepComposer, DLAMI, Deep Learning Containers, DeepLens, DeepRacer, DevOps Guru, Elastic Inference, HealthLake, Inferentia, Lookout for Equipment/Metrics/Vision, Monitron, Panorama, Personalize, PyTorch on AWS, SageMaker Data Wrangler/Ground Truth, TensorFlow on AWS.\n• Management & Governance: AWS Chatbot, Console Mobile App, Distro for OpenTelemetry, AWS OpsWorks.\n• Media Services: toàn bộ dòng AWS Elemental (Appliances, MediaConnect, MediaConvert, MediaLive, MediaPackage, MediaStore, MediaTailor), Amazon IVS.\n• Migration & Transfer: Migration Evaluator.\n• Networking: AWS App Mesh, AWS Cloud Map.\n• Quantum Technologies: Amazon Braket.\n• Robotics: AWS RoboMaker.\n• Satellite: AWS Ground Station.",
           "createdAt": "2026-09-08T10:25:48.328601Z",
           "updatedAt": "2026-09-08T10:25:48.328601Z"
+        }
+      ]
+    },
+    {
+      "id": "80db7039c4c0",
+      "name": "Amazon SNS",
+      "category": "Application Integration",
+      "region": "",
+      "description": "Pub/Sub messaging service, gửi thông báo tới nhiều subscriber (SQS, Lambda, email, SMS, HTTP, mobile push).",
+      "createdAt": "2026-09-14T03:39:06.369857Z",
+      "notes": [
+        {
+          "id": "fceaf96459a8",
+          "title": "SNS: PUB/SUB & CÁC LOẠI SUBSCRIBER",
+          "content": "✅ SNS Topic: kênh publish/subscribe, 1 message publish vào topic được gửi tới TẤT CẢ subscriber đang đăng ký.\n✅ Subscriber hỗ trợ: SQS, Lambda, HTTP/HTTPS endpoint, Email/Email-JSON, SMS, Mobile Push (APNs/FCM), Kinesis Data Firehose.\n⚠️ Khác SQS (point-to-point, 1 message chỉ 1 consumer xử lý): SNS là push model, gửi đồng thời tới NHIỀU consumer khác nhau ngay khi publish.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "b0b48dc31ebc",
+          "title": "SNS FANOUT PATTERN",
+          "content": "📌 Tình huống: 1 sự kiện cần được xử lý đồng thời bởi nhiều hệ thống độc lập, mỗi hệ thống xử lý theo tốc độ riêng và cần đảm bảo không mất message dù consumer tạm thời offline.\n✅ Đáp án đúng: SNS + nhiều SQS Queue subscribe vào cùng 1 Topic (Fanout) — SQS đóng vai trò buffer bền vững cho từng consumer, tránh mất message nếu SNS gửi trực tiếp HTTP endpoint mà endpoint đó đang down.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "0a24b785f742",
+          "title": "SNS MESSAGE FILTERING",
+          "content": "📌 Tình huống: Nhiều subscriber đăng ký cùng 1 topic nhưng mỗi subscriber chỉ quan tâm 1 LOẠI sự kiện cụ thể (vd chỉ đơn hàng > 1 triệu), không muốn nhận toàn bộ rồi tự lọc.\n✅ Đáp án đúng: Message Filtering — gắn Filter Policy (JSON) lên từng subscription, SNS chỉ gửi message TỚI subscriber đó nếu message attribute khớp điều kiện filter, giảm số lượng message không cần thiết & chi phí xử lý phía consumer.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "3092112571d9",
+          "title": "SNS FIFO TOPIC",
+          "content": "✅ SNS FIFO Topic (hậu tố .fifo): đảm bảo thứ tự message & exactly-once delivery giống SQS FIFO, CHỈ subscribe được bởi SQS FIFO Queue (không hỗ trợ Lambda/HTTP trực tiếp) — dùng khi cần cả fanout LẪN đảm bảo thứ tự nghiêm ngặt.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "e29b483bdeb5",
+          "title": "SNS ENCRYPTION & ACCESS POLICY",
+          "content": "✅ SNS hỗ trợ mã hóa at-rest bằng KMS (SSE-KMS) cho message trong topic.\n✅ Access Policy (resource-based policy trên Topic) kiểm soát ai được publish/subscribe — vd chỉ cho phép 1 S3 bucket cụ thể publish event notification vào topic, hoặc chỉ account khác trong Organization được subscribe.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "2ba5767b4f4f",
+          "title": "SNS MOBILE PUSH & SMS",
+          "content": "✅ Mobile Push: tích hợp trực tiếp APNs (Apple)/FCM (Android)/Baidu... để gửi push notification tới app di động mà không cần tự quản lý kết nối riêng từng nền tảng.\n✅ SMS: gửi tin nhắn trực tiếp tới số điện thoại, hỗ trợ Transactional (ưu tiên độ tin cậy, dùng cho OTP) hoặc Promotional (ưu tiên chi phí thấp).",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "ff5b46c9dba4",
+          "title": "SNS vs SQS vs EVENTBRIDGE: KHI NÀO DÙNG CÁI NÀO",
+          "content": "✅ SQS: hàng đợi ĐIỂM-ĐIỂM, 1 message → 1 consumer xử lý, dùng để decouple & buffer traffic.\n✅ SNS: PUB/SUB đơn giản, đẩy tới nhiều subscriber ngay lập tức, không lọc phức tạp theo nội dung sâu.\n✅ EventBridge: PUB/SUB NÂNG CAO, lọc theo nội dung JSON chi tiết (content-based routing), tích hợp trực tiếp hàng trăm AWS service làm source, hỗ trợ schema registry & nhiều bus.\n⚠️ Đáp án sai thường gặp: dùng SNS khi cần lọc phức tạp theo nhiều field lồng nhau trong event ➜ EventBridge phù hợp hơn cho content-based routing phức tạp.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        }
+      ]
+    },
+    {
+      "id": "71454ac0c227",
+      "name": "AWS Secrets Manager",
+      "category": "Security",
+      "region": "",
+      "description": "Lưu trữ & tự động xoay vòng (rotate) secret như DB credentials, API key.",
+      "createdAt": "2026-09-14T03:39:06.369857Z",
+      "notes": [
+        {
+          "id": "ce530fc2738f",
+          "title": "SECRETS MANAGER: AUTOMATIC ROTATION",
+          "content": "📌 Tình huống: Cần tự động đổi mật khẩu database định kỳ (vd mỗi 30 ngày) mà không làm gián đoạn ứng dụng đang chạy.\n✅ Đáp án đúng: Secrets Manager với Automatic Rotation — dùng Lambda rotation function (có sẵn template cho RDS/Aurora/DocumentDB/Redshift, hoặc tự viết cho hệ thống khác) tự động tạo password mới, cập nhật trên DB, rồi cập nhật lại secret — ứng dụng luôn lấy được credential MỚI NHẤT qua API GetSecretValue mà không cần deploy lại code.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "c2c58fe42b6e",
+          "title": "SECRETS MANAGER vs PARAMETER STORE (SO SÁNH CHI PHÍ & TÍNH NĂNG)",
+          "content": "✅ Secrets Manager: có phí (theo secret + API call), rotation TỰ ĐỘNG có sẵn, tích hợp sẵn nhiều DB engine, phù hợp cho SECRET thật sự nhạy cảm cần xoay vòng.\n✅ Parameter Store (SSM): MIỄN PHÍ ở Standard tier, KHÔNG có rotation tự động sẵn (phải tự viết), phù hợp config tĩnh hoặc secret ít thay đổi để tiết kiệm chi phí.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "8409a81f47d4",
+          "title": "CROSS-ACCOUNT SECRET SHARING",
+          "content": "✅ Secrets Manager cho phép chia sẻ 1 secret với account/Organization khác qua Resource Policy (giống S3 bucket policy) — dùng khi nhiều account/microservice trong Organization cần dùng chung 1 credential mà không phải copy secret sang từng account.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "1149d1dd663d",
+          "title": "VERSIONING CỦA SECRET",
+          "content": "✅ Mỗi lần rotate/update, Secrets Manager giữ lại NHIỀU VERSION (gắn stage label: AWSCURRENT, AWSPENDING, AWSPREVIOUS) — cho phép rollback về version trước nếu rotation lỗi, và ứng dụng luôn lấy đúng bản mới nhất qua AWSCURRENT.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        }
+      ]
+    },
+    {
+      "id": "20108fc9ec9c",
+      "name": "AWS Step Functions",
+      "category": "Application Integration",
+      "region": "",
+      "description": "Điều phối workflow (orchestration) giữa nhiều Lambda/service theo state machine.",
+      "createdAt": "2026-09-14T03:39:06.369857Z",
+      "notes": [
+        {
+          "id": "b3127d215c9c",
+          "title": "STEP FUNCTIONS: STANDARD vs EXPRESS WORKFLOW",
+          "content": "✅ Standard Workflow: chạy được TỐI ĐA 1 NĂM, exactly-once execution, tính phí theo SỐ LẦN CHUYỂN STATE (state transition) — dùng cho quy trình nghiệp vụ dài hạn cần audit đầy đủ lịch sử (order processing, approval flow).\n✅ Express Workflow: chạy TỐI ĐA 5 PHÚT, at-least-once execution (có thể chạy trùng), tính phí theo SỐ LẦN CHẠY + THỜI GIAN CHẠY + bộ nhớ dùng (giống Lambda) — RẺ HƠN nhiều cho workflow tần suất CAO, ngắn hạn (xử lý IoT data, streaming ETL).",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "5e867da42f39",
+          "title": "STEP FUNCTIONS: ORCHESTRATION PATTERN cho MICROSERVICES",
+          "content": "📌 Tình huống: 1 quy trình nghiệp vụ cần gọi tuần tự/song song nhiều Lambda/service khác nhau (validate → charge payment → update inventory → send email), cần xử lý lỗi/retry rõ ràng ở từng bước và dễ theo dõi trạng thái tổng thể.\n✅ Đáp án đúng: Step Functions — định nghĩa State Machine (JSON, Amazon States Language) mô tả rõ trình tự, nhánh rẽ (Choice state), chạy song song (Parallel state), retry/catch lỗi riêng từng bước, có giao diện visual xem trạng thái execution real-time.\n⚠️ Khác cách viết 1 Lambda lớn tự gọi các Lambda khác (orchestration ẩn trong code, khó debug/theo dõi) — Step Functions tách orchestration RA KHỎI code nghiệp vụ, dễ maintain và quan sát hơn.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "f03a23616557",
+          "title": "STEP FUNCTIONS: SERVICE INTEGRATION TRỰC TIẾP",
+          "content": "✅ Step Functions có thể gọi TRỰC TIẾP hơn 200 AWS service (SQS, SNS, DynamoDB, ECS, Batch, SageMaker...) mà KHÔNG CẦN viết Lambda trung gian — dùng \".sync\" integration để CHỜ tác vụ bất đồng bộ hoàn tất (vd chạy Batch job xong mới sang state kế tiếp) thay vì phải tự polling.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        }
+      ]
+    },
+    {
+      "id": "57671fb0a1ba",
+      "name": "Amazon Cognito",
+      "category": "Security",
+      "region": "",
+      "description": "Quản lý danh tính & xác thực người dùng cuối (end-user) cho ứng dụng web/mobile.",
+      "createdAt": "2026-09-14T03:39:06.369857Z",
+      "notes": [
+        {
+          "id": "a513ece0e4c1",
+          "title": "COGNITO USER POOLS vs IDENTITY POOLS",
+          "content": "✅ User Pool: nơi LƯU TRỮ user (đăng ký/đăng nhập), cấp JWT token (ID token, Access token, Refresh token) sau khi xác thực thành công — giống \"database người dùng + hệ thống login\" của ứng dụng.\n✅ Identity Pool: cấp TẠM THỜI AWS credentials (qua STS) để user (đã login qua User Pool, hoặc social login, hoặc guest) truy cập TRỰC TIẾP tài nguyên AWS khác (S3, DynamoDB) mà KHÔNG cần đi qua backend trung gian.\n⚠️ 2 khái niệm THƯỜNG DÙNG CHUNG: User Pool xác thực AI đó LÀ AI, Identity Pool cấp quyền HỌ ĐƯỢC LÀM GÌ trên AWS.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "99e5352f6465",
+          "title": "COGNITO + API GATEWAY: BẢO VỆ API",
+          "content": "📌 Tình huống: Cần bảo vệ API Gateway chỉ cho phép user đã đăng nhập gọi vào, không muốn tự viết logic xác thực JWT thủ công trong mỗi Lambda.\n✅ Đáp án đúng: Gắn Cognito User Pool Authorizer lên API Gateway — API Gateway tự động kiểm tra JWT token (từ header Authorization) hợp lệ hay không TRƯỚC khi request chạm tới Lambda, từ chối ngay nếu token sai/hết hạn.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "cde8cb1a4792",
+          "title": "SOCIAL & ENTERPRISE FEDERATION QUA COGNITO",
+          "content": "✅ User Pool hỗ trợ liên kết đăng nhập với nhà cung cấp bên ngoài: Social IdP (Google, Facebook, Apple, Amazon) hoặc Enterprise IdP (SAML 2.0, OIDC — vd Active Directory, Okta) — user login bằng tài khoản có sẵn, Cognito tự tạo/map tương ứng trong User Pool mà không cần tự xây hệ thống OAuth.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        },
+        {
+          "id": "df99480c92fd",
+          "title": "MFA & ADAPTIVE AUTHENTICATION TRONG COGNITO",
+          "content": "✅ Cognito hỗ trợ MFA (SMS, TOTP app) bắt buộc hoặc tùy chọn cho user.\n✅ Advanced Security Features: phát hiện đăng nhập BẤT THƯỜNG (địa điểm lạ, thiết bị lạ, risk score cao) và có thể tự động yêu cầu thêm MFA hoặc chặn đăng nhập — tăng bảo mật thích ứng (adaptive) mà không làm phiền user hợp lệ.",
+          "createdAt": "2026-09-14T03:39:06.369857Z",
+          "updatedAt": "2026-09-14T03:39:06.369857Z"
+        }
+      ]
+    },
+    {
+      "id": "f73b13d35e37",
+      "name": "AWS CloudTrail",
+      "category": "Management",
+      "region": "",
+      "description": "Ghi log mọi API call (ai làm gì, khi nào) trong account AWS để audit & troubleshoot.",
+      "createdAt": "2026-09-14T03:42:37.586729Z",
+      "notes": [
+        {
+          "id": "d3ba4e56ca7c",
+          "title": "CLOUDTRAIL: MANAGEMENT EVENTS vs DATA EVENTS",
+          "content": "✅ Management Events (bật mặc định, MIỄN PHÍ 90 ngày trong Event History): ghi lại hành động QUẢN TRỊ (tạo/xóa EC2, sửa IAM policy, tạo bucket S3...).\n✅ Data Events (KHÔNG bật mặc định, tính phí theo số lượng event): ghi lại hành động ở mức DỮ LIỆU tần suất cao (vd từng lần GetObject/PutObject trong S3, từng lần Invoke Lambda) — chỉ bật khi thực sự cần audit chi tiết cấp độ này vì khối lượng log rất lớn.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "ac17ede7b2ae",
+          "title": "CLOUDTRAIL: TRAIL & MULTI-REGION/MULTI-ACCOUNT",
+          "content": "✅ Mặc định CloudTrail chỉ lưu Event History 90 ngày, KHÔNG persistent lâu dài — muốn lưu VĨNH VIỄN & phân tích sau này phải tạo 1 TRAIL, xuất log liên tục vào S3 (và tùy chọn CloudWatch Logs để tạo alarm real-time).\n✅ Organization Trail: 1 trail tạo ở Management Account, tự động áp dụng ghi log cho TẤT CẢ account thành viên trong Organization, gộp chung vào 1 bucket S3 — không cần bật trail riêng lẻ từng account.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "d4156f666909",
+          "title": "CLOUDTRAIL LOG FILE INTEGRITY VALIDATION",
+          "content": "📌 Tình huống: Cần CHỨNG MINH log CloudTrail không bị ai chỉnh sửa/xóa sau khi ghi (yêu cầu forensic/compliance).\n✅ Đáp án đúng: Bật Log File Integrity Validation — CloudTrail tạo file \"digest\" (chữ ký băm) định kỳ cho các log file, dùng để xác minh TOÀN VẸN log bất kỳ lúc nào, phát hiện ngay nếu có file log bị sửa/xóa/thêm ngoài ý muốn.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "16740ba52112",
+          "title": "CLOUDTRAIL + EVENTBRIDGE: PHÁT HIỆN HÀNH ĐỘNG NGUY HIỂM REAL-TIME",
+          "content": "📌 Tình huống: Cần CẢNH BÁO NGAY khi có ai đó thực hiện hành động nhạy cảm (vd xóa CloudTrail trail, tắt GuardDuty, tạo root access key) thay vì chỉ xem log sau khi sự việc đã xảy ra.\n✅ Đáp án đúng: CloudTrail ghi Management Event gần như real-time → EventBridge rule bắt đúng API call đó (vd eventName = StopLogging) → trigger SNS/Lambda cảnh báo ngay lập tức.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        }
+      ]
+    },
+    {
+      "id": "89eef8211b25",
+      "name": "AWS Config",
+      "category": "Management",
+      "region": "",
+      "description": "Ghi lại & đánh giá tuân thủ cấu hình (configuration) của resource AWS theo thời gian.",
+      "createdAt": "2026-09-14T03:42:37.586729Z",
+      "notes": [
+        {
+          "id": "39ef8ed73c4e",
+          "title": "AWS CONFIG: CONFIGURATION ITEM & TIMELINE",
+          "content": "✅ Config liên tục ghi lại \"snapshot\" cấu hình của MỖI resource mỗi khi có thay đổi (Configuration Item), cho phép xem lại TOÀN BỘ LỊCH SỬ thay đổi cấu hình của 1 resource theo dòng thời gian (vd Security Group này đã bị sửa rule bao nhiêu lần, ai sửa, lúc nào) — khác CloudTrail (ghi API CALL), Config ghi TRẠNG THÁI CẤU HÌNH kết quả.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "8fa574c63eaf",
+          "title": "AWS CONFIG RULES: EVALUATE COMPLIANCE",
+          "content": "📌 Tình huống: Cần TỰ ĐỘNG kiểm tra liên tục xem có EBS volume nào KHÔNG được mã hóa, hay Security Group nào đang mở port 22 ra 0.0.0.0/0 hay không, để đảm bảo tuân thủ chính sách bảo mật công ty.\n✅ Đáp án đúng: Tạo AWS Config Rule (dùng Managed Rule có sẵn hoặc Custom Rule bằng Lambda) — Config tự động đánh giá MỌI resource liên quan mỗi khi có thay đổi, đánh dấu COMPLIANT/NON-COMPLIANT, có thể kết hợp Remediation Action (SSM Automation) để TỰ ĐỘNG SỬA khi phát hiện vi phạm.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "529e89cf2a67",
+          "title": "AWS CONFIG AGGREGATOR",
+          "content": "✅ Config Aggregator: tổng hợp dữ liệu compliance từ NHIỀU account + NHIỀU Region vào 1 nơi duy nhất — dùng để có cái nhìn tổng quan tuân thủ toàn Organization mà không cần vào từng account/Region riêng lẻ.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        }
+      ]
+    },
+    {
+      "id": "24d65c47b0cd",
+      "name": "Amazon Redshift",
+      "category": "Analytics",
+      "region": "",
+      "description": "Data warehouse quy mô petabyte, tối ưu cho truy vấn phân tích (OLAP) trên dữ liệu lớn.",
+      "createdAt": "2026-09-14T03:42:37.586729Z",
+      "notes": [
+        {
+          "id": "2ed934244d00",
+          "title": "REDSHIFT: KIẾN TRÚC CLUSTER & COLUMNAR STORAGE",
+          "content": "✅ Redshift lưu dữ liệu dạng COLUMNAR (theo cột) thay vì ROW (theo hàng) như OLTP database thông thường — tối ưu cực mạnh cho truy vấn ANALYTICAL đọc 1 vài cột trên hàng TRIỆU dòng (SUM, AVG, GROUP BY), không phù hợp cho transaction ghi/đọc từng row riêng lẻ (OLTP).\n✅ Cluster gồm 1 Leader Node (nhận query, lập kế hoạch, tổng hợp kết quả) + nhiều Compute Node (thực thi song song, mỗi node chia thành Slice xử lý 1 phần dữ liệu).",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "c95577f0d14f",
+          "title": "REDSHIFT SPECTRUM",
+          "content": "📌 Tình huống: Cần truy vấn dữ liệu nằm SẴN trên S3 (data lake, dạng Parquet/CSV) CÙNG LÚC với dữ liệu đã load vào Redshift, mà không muốn load toàn bộ S3 data vào cluster (tốn storage/thời gian).\n✅ Đáp án đúng: Redshift Spectrum — truy vấn TRỰC TIẾP dữ liệu trên S3 bằng SQL ngay trong Redshift (không cần ETL load vào trước), Redshift tự scale thêm compute ở tầng Spectrum riêng để xử lý song song trên S3.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "458e476bacad",
+          "title": "REDSHIFT: DISTRIBUTION STYLE & SORT KEY",
+          "content": "✅ Distribution Style quyết định cách dữ liệu 1 bảng được PHÂN CHIA giữa các node: KEY (phân theo giá trị 1 cột, tối ưu JOIN 2 bảng cùng distribution key), ALL (copy TOÀN BỘ bảng nhỏ ra MỌI node, tránh phải truyền dữ liệu qua mạng khi JOIN), EVEN (chia đều ngẫu nhiên).\n✅ Sort Key: quyết định thứ tự VẬT LÝ lưu trữ trong mỗi block — chọn đúng cột hay dùng trong WHERE/ORDER BY giúp Redshift bỏ qua (skip) nhiều block không liên quan, tăng tốc query đáng kể.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "c99e2ff39b24",
+          "title": "REDSHIFT SERVERLESS & CONCURRENCY SCALING",
+          "content": "✅ Redshift Serverless: tự động scale compute theo tải, không cần quản lý cluster/node — phù hợp workload không liên tục, muốn giảm chi phí vận hành.\n✅ Concurrency Scaling: khi có NHIỀU query đồng thời làm nghẽn cluster chính, Redshift tự động thêm cluster TẠM THỜI phía sau để xử lý query bổ sung, KHÔNG làm chậm query đang chạy trên cluster chính.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        }
+      ]
+    },
+    {
+      "id": "b71d50fed137",
+      "name": "Amazon Athena & AWS Glue",
+      "category": "Analytics",
+      "region": "",
+      "description": "Athena: truy vấn SQL serverless trực tiếp trên S3. Glue: ETL & Data Catalog serverless.",
+      "createdAt": "2026-09-14T03:42:37.586729Z",
+      "notes": [
+        {
+          "id": "e73e9b3e3b4d",
+          "title": "AMAZON ATHENA: SERVERLESS QUERY TRÊN S3",
+          "content": "📌 Tình huống: Cần chạy vài truy vấn SQL đơn giản trên file log lưu ở S3 (CSV/JSON/Parquet), không muốn dựng hẳn 1 data warehouse hay cluster chỉ để chạy vài query.\n✅ Đáp án đúng: Amazon Athena — query TRỰC TIẾP dữ liệu trên S3 bằng chuẩn SQL, HOÀN TOÀN SERVERLESS (không cần provision gì), tính phí theo SỐ DỮ LIỆU ĐƯỢC QUÉT (data scanned) mỗi query.\n⚠️ Tối ưu chi phí: chuyển dữ liệu sang định dạng COLUMNAR (Parquet/ORC) + nén + PARTITION theo cột hay filter (vd theo ngày) để Athena chỉ quét đúng phần cần thiết, giảm mạnh chi phí so với quét CSV thô toàn bộ.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "e5e3f27ad268",
+          "title": "AWS GLUE DATA CATALOG",
+          "content": "✅ Glue Data Catalog: kho metadata TRUNG TÂM (bảng, schema, vị trí file, partition) mô tả dữ liệu nằm ở S3/RDS/khác — Athena, Redshift Spectrum, EMR đều DÙNG CHUNG catalog này để biết cách đọc dữ liệu, tránh phải định nghĩa schema lặp lại ở từng công cụ.\n✅ Glue Crawler: tự động QUÉT dữ liệu thô (S3...) để suy luận ra schema và tự cập nhật vào Data Catalog, chạy định kỳ khi dữ liệu nguồn có cấu trúc thay đổi.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        },
+        {
+          "id": "d2dfd1e6a967",
+          "title": "AWS GLUE ETL JOBS",
+          "content": "✅ Glue ETL: chạy job Spark SERVERLESS (Python/Scala) để trích xuất - biến đổi - nạp (Extract-Transform-Load) dữ liệu giữa các nguồn (S3, RDS, Redshift, DynamoDB...), không cần tự quản lý cluster Spark.\n✅ Glue Studio: giao diện KÉO-THẢ (visual) để xây ETL job mà không cần viết code Spark thủ công — phù hợp use case ETL đơn giản/trung bình.",
+          "createdAt": "2026-09-14T03:42:37.586729Z",
+          "updatedAt": "2026-09-14T03:42:37.586729Z"
+        }
+      ]
+    },
+    {
+      "id": "baa350018987",
+      "name": "AWS Certificate Manager (ACM)",
+      "category": "Security",
+      "region": "",
+      "description": "Cấp phát & quản lý chứng chỉ SSL/TLS miễn phí, tự động gia hạn.",
+      "createdAt": "2026-09-14T03:44:31.899169Z",
+      "notes": [
+        {
+          "id": "cb7b36fde272",
+          "title": "ACM: CHỨNG CHỈ MIỄN PHÍ & TỰ ĐỘNG GIA HẠN",
+          "content": "✅ ACM cấp chứng chỉ SSL/TLS MIỄN PHÍ khi gắn với các service AWS hỗ trợ (CloudFront, ALB/NLB, API Gateway) — tự động GIA HẠN trước khi hết hạn, không cần thao tác thủ công như tự mua chứng chỉ ngoài.\n⚠️ Private key của chứng chỉ ACM KHÔNG THỂ export ra ngoài (trừ ACM Private CA) — chỉ dùng được TRỰC TIẾP trên service AWS tích hợp, không dùng để cài lên EC2/on-premises server thông thường.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "7cc9edf79ae6",
+          "title": "ACM: DNS VALIDATION vs EMAIL VALIDATION",
+          "content": "📌 Tình huống: Cần cấp chứng chỉ cho domain nhưng muốn quy trình xác thực chủ sở hữu domain diễn ra TỰ ĐỘNG, không cần chờ email và tự động gia hạn được mãi về sau.\n✅ Đáp án đúng: Chọn DNS Validation (khuyến nghị) — ACM cung cấp 1 CNAME record để thêm vào Hosted Zone (tự động nếu dùng Route 53), xác thực xong 1 lần thì các lần GIA HẠN SAU cũng tự động luôn (miễn record CNAME còn tồn tại).\n⚠️ Email Validation: gửi email xác nhận tới địa chỉ đăng ký domain (WHOIS) — phải LÀM LẠI THỦ CÔNG mỗi lần gia hạn, dễ bị gián đoạn nếu quên/email không nhận được.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "f9168d35447c",
+          "title": "ACM PRIVATE CA",
+          "content": "✅ ACM Private CA: tạo Certificate Authority RIÊNG của công ty để cấp chứng chỉ nội bộ (cho service mesh, mTLS giữa các microservice, thiết bị IoT) — khác ACM public certificate (chỉ dùng cho domain public), Private CA cho phép cấp chứng chỉ tùy ý không cần domain xác thực công khai.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        }
+      ]
+    },
+    {
+      "id": "c109fc30bb6c",
+      "name": "AWS Elastic Beanstalk",
+      "category": "Compute",
+      "region": "",
+      "description": "PaaS triển khai nhanh ứng dụng web (tự động quản lý EC2, ELB, ASG, RDS bên dưới).",
+      "createdAt": "2026-09-14T03:44:31.899169Z",
+      "notes": [
+        {
+          "id": "a024880ddf70",
+          "title": "ELASTIC BEANSTALK: TỰ ĐỘNG QUẢN LÝ HẠ TẦNG",
+          "content": "📌 Tình huống: Developer muốn deploy nhanh 1 ứng dụng web (chỉ upload code) mà không cần tự cấu hình EC2, Load Balancer, Auto Scaling, Security Group từ đầu.\n✅ Đáp án đúng: AWS Elastic Beanstalk — chỉ cần upload code (war/zip/container image), Beanstalk TỰ ĐỘNG provision & quản lý toàn bộ hạ tầng bên dưới (EC2, ALB/NLB, Auto Scaling Group, Security Group, RDS nếu cần) theo Platform đã chọn (Java, Node.js, Python, Docker...).\n⚠️ Vẫn CÓ THỂ truy cập & tùy chỉnh trực tiếp các resource bên dưới (không phải hộp đen hoàn toàn như Lambda) — phù hợp khi cần triển khai nhanh nhưng vẫn muốn kiểm soát được hạ tầng khi cần.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "787de6de743e",
+          "title": "ELASTIC BEANSTALK: DEPLOYMENT POLICIES",
+          "content": "✅ All at once: deploy đồng loạt mọi instance CÙNG LÚC, nhanh nhất nhưng có DOWNTIME ngắn.\n✅ Rolling: deploy TỪNG BATCH instance một, còn lại vẫn phục vụ traffic — không downtime nhưng có lúc chạy CẢ 2 VERSION song song.\n✅ Rolling with additional batch: thêm batch instance MỚI trước khi rolling, giữ nguyên capacity phục vụ suốt quá trình — không giảm capacity như Rolling thường.\n✅ Immutable: tạo TOÀN BỘ Auto Scaling Group MỚI song song với group cũ, chỉ chuyển traffic sang khi group mới healthy hoàn toàn — an toàn nhất (rollback dễ) nhưng tốn chi phí & thời gian nhất.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        }
+      ]
+    },
+    {
+      "id": "289705d28eb8",
+      "name": "Amazon Inspector",
+      "category": "Security",
+      "region": "",
+      "description": "Tự động quét lỗ hổng bảo mật (vulnerability) trên EC2, container image, Lambda.",
+      "createdAt": "2026-09-14T03:44:31.899169Z",
+      "notes": [
+        {
+          "id": "8cb142b48c6f",
+          "title": "AMAZON INSPECTOR vs GUARDDUTY vs MACIE",
+          "content": "✅ Inspector: quét LỖ HỔNG (CVE) trong OS package & ứng dụng của EC2/container image ECR/Lambda function — trả lời câu hỏi \"hệ thống có ĐANG BỊ LỖ HỔNG gì không\".\n✅ GuardDuty: phát hiện HÀNH VI TẤN CÔNG đang diễn ra qua log — trả lời \"có đang bị tấn công/xâm nhập không\".\n✅ Macie: phát hiện DỮ LIỆU NHẠY CẢM trong S3 — trả lời \"dữ liệu nhạy cảm nằm ở đâu\".\n⚠️ 3 dịch vụ bổ trợ nhau, KHÔNG thay thế nhau — thường bật cả 3 và gộp finding vào Security Hub.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "382caa808c97",
+          "title": "INSPECTOR: LIÊN TỤC QUÉT TỰ ĐỘNG (CONTINUAL SCANNING)",
+          "content": "✅ Inspector v2 quét TỰ ĐỘNG & LIÊN TỤC (không cần lên lịch thủ công) — ngay khi EC2 instance/image ECR có thay đổi (cài thêm package, build image mới), hoặc khi có CVE MỚI công bố ảnh hưởng tới package đã cài sẵn, Inspector tự động phát hiện & tạo finding ngay mà không cần đợi lần quét định kỳ tiếp theo.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        }
+      ]
+    },
+    {
+      "id": "e806cfd4a74f",
+      "name": "AWS Shield",
+      "category": "Security",
+      "region": "",
+      "description": "Bảo vệ chống tấn công DDoS ở tầng network/transport (và application với Shield Advanced).",
+      "createdAt": "2026-09-14T03:44:31.899169Z",
+      "notes": [
+        {
+          "id": "04cf42a13952",
+          "title": "SHIELD STANDARD vs SHIELD ADVANCED",
+          "content": "✅ Shield Standard: MIỄN PHÍ, TỰ ĐỘNG bật cho MỌI account, bảo vệ cơ bản chống DDoS phổ biến ở Layer 3/4 (SYN flood, UDP reflection) cho CloudFront, Route 53, ELB.\n✅ Shield Advanced: tính phí (subscription), bảo vệ NÂNG CAO hơn (cả Layer 7 kết hợp WAF miễn phí đi kèm), có đội DDoS Response Team (DRT) hỗ trợ 24/7 khi bị tấn công lớn, có Cost Protection (hoàn tiền phần chi phí scale-out phát sinh DO bị DDoS), báo cáo chi tiết về cuộc tấn công.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "2f1a9f57ee40",
+          "title": "SHIELD ADVANCED + WAF: TỰ ĐỘNG GIẢM THIỂU (AUTOMATIC APPLICATION LAYER DDOS MITIGATION)",
+          "content": "📌 Tình huống: Ứng dụng đứng sau CloudFront/ALB bị tấn công DDoS ở TẦNG ỨNG DỤNG (Layer 7, vd HTTP flood giả lập request hợp lệ), khó phân biệt với traffic thật.\n✅ Đáp án đúng: Shield Advanced tích hợp với WAF — tự động PHÂN TÍCH pattern traffic bất thường và tự động TẠO/CẬP NHẬT WAF rule để chặn traffic tấn công theo thời gian thực, giảm thời gian phản ứng thủ công.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        }
+      ]
+    },
+    {
+      "id": "17ca9c5abfd6",
+      "name": "AWS Backup",
+      "category": "Storage",
+      "region": "",
+      "description": "Dịch vụ backup tập trung, quản lý policy backup cho nhiều loại resource AWS.",
+      "createdAt": "2026-09-14T03:44:31.899169Z",
+      "notes": [
+        {
+          "id": "07a6f6c19227",
+          "title": "AWS BACKUP: QUẢN LÝ TẬP TRUNG QUA BACKUP PLAN",
+          "content": "📌 Tình huống: Công ty dùng nhiều loại resource (EBS, RDS, DynamoDB, EFS, FSx...) rải rác nhiều account, mỗi loại lại có cơ chế backup/snapshot RIÊNG khác nhau, khó quản lý policy backup đồng nhất.\n✅ Đáp án đúng: AWS Backup — tạo 1 Backup Plan DUY NHẤT (tần suất, retention, lifecycle chuyển sang cold storage) áp dụng CHO NHIỀU LOẠI resource cùng lúc, qua Tag hoặc chọn resource cụ thể, quản lý tập trung xuyên account/Region qua AWS Organizations.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "1969626fa55f",
+          "title": "AWS BACKUP VAULT LOCK",
+          "content": "✅ Backup Vault Lock: khóa chính sách retention của Backup Vault theo kiểu WORM (Write Once Read Many, giống S3 Object Lock Compliance mode) — KHÔNG AI (kể cả root) có thể xóa backup sớm hơn hạn hay tắt lock khi đã ở Compliance mode, đáp ứng yêu cầu compliance chống ransomware/xóa ác ý.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        }
+      ]
+    },
+    {
+      "id": "4bf1daaca6e8",
+      "name": "AWS X-Ray",
+      "category": "Developer Tools",
+      "region": "",
+      "description": "Distributed tracing — theo dõi request đi qua nhiều service trong kiến trúc microservices.",
+      "createdAt": "2026-09-14T03:44:31.899169Z",
+      "notes": [
+        {
+          "id": "74ea2485ee44",
+          "title": "X-RAY: SERVICE MAP & TRACING",
+          "content": "📌 Tình huống: Ứng dụng microservices gồm API Gateway → Lambda → DynamoDB → gọi thêm 1 service khác, request bị chậm nhưng không biết CHẬM Ở ĐÂU trong chuỗi.\n✅ Đáp án đúng: AWS X-Ray — gắn SDK/agent vào từng service để ghi lại TRACE (dấu vết) của 1 request đi qua toàn bộ chuỗi, hiển thị Service Map trực quan (node nào chậm, node nào lỗi), đo latency TỪNG ĐOẠN (segment/subsegment) trong toàn bộ hành trình request.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "3e970fe6a6a3",
+          "title": "X-RAY: SAMPLING RULE",
+          "content": "✅ Vì trace TOÀN BỘ request sẽ tốn kém & không cần thiết ở hệ thống traffic lớn, X-Ray dùng Sampling Rule để chỉ trace 1 TỶ LỆ request nhất định (vd 5% + luôn trace ít nhất 1 request/giây) — vẫn đủ đại diện để phát hiện vấn đề mà không tốn chi phí trace 100%.",
+          "createdAt": "2026-09-14T03:44:31.899169Z",
+          "updatedAt": "2026-09-14T03:44:31.899169Z"
         }
       ]
     }
