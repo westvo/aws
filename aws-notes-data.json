@@ -321,6 +321,13 @@
           "content": "📌 Tình huống: Hạ tầng mạng phức tạp gồm nhiều Transit Gateway, VPC, Direct Connect, SD-WAN xuyên nhiều Region, cần 1 CÁI NHÌN TRỰC QUAN TOÀN CẢNH về topology mạng.\n✅ Đáp án đúng: AWS Network Manager — hiển thị BẢN ĐỒ TRỰC QUAN toàn bộ mạng global (Transit Gateway, on-premises site, kết nối) trên 1 dashboard, theo dõi metric hiệu năng (latency, packet loss) giữa các site, giúp quản lý mạng phức tạp đa Region/đa kết nối dễ dàng hơn nhiều so với xem rời rạc từng Region.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "46dc15e2d9d9",
+          "title": "TRANSIT GATEWAY: QUOTA - SỐ LƯỢNG ATTACHMENT & ROUTE",
+          "content": "⚠️ Giới hạn quan trọng cần nhớ: tối đa 5,000 VPC Attachment/Transit Gateway (soft limit, tăng được), tối đa 10,000 route/Route Table — khi thiết kế hạ tầng cực lớn (hàng nghìn VPC), cần tính toán trước để tránh chạm giới hạn giữa chừng triển khai.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
@@ -3120,6 +3127,13 @@
           "content": "✅ Có thể giới hạn phạm vi quét CHỈ bucket có TAG cụ thể (vd chỉ bucket gắn tag \"contains-pii=true\") thay vì quét MỌI bucket trong account — tối ưu chi phí khi chỉ 1 phần nhỏ bucket thực sự có khả năng chứa dữ liệu nhạy cảm cần theo dõi kỹ.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "79b6a8474baf",
+          "title": "MACIE: FALSE POSITIVE HANDLING QUA REVISED FINDINGS",
+          "content": "✅ Khi Macie quét lại 1 object đã có finding trước đó và phát hiện thay đổi (vd dữ liệu nhạy cảm đã bị xóa/sửa), nó tạo ra REVISED finding cập nhật trạng thái — giúp theo dõi được liệu vấn đề đã được XỬ LÝ hay vẫn còn tồn tại qua các lần quét, không chỉ dừng ở phát hiện 1 lần duy nhất.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
@@ -3214,6 +3228,13 @@
           "content": "📌 Tình huống: Sợ 1 rule WAF mới viết có thể BLOCK NHẦM traffic hợp lệ (false positive) nếu áp dụng ngay vào production.\n✅ Đáp án đúng: Đặt Action = Count cho rule mới (chỉ ĐẾM & ghi log, KHÔNG chặn thật) trong 1 khoảng thời gian để quan sát traffic thực tế bị match, xác nhận không có false positive rồi mới đổi sang Block — đây là quy trình TRIỂN KHAI AN TOÀN chuẩn khi thêm rule mới vào production.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "f585ceecda72",
+          "title": "WAF: LOGGING DESTINATION - S3 vs CLOUDWATCH LOGS vs FIREHOSE",
+          "content": "✅ Từ 2022, WAF hỗ trợ xuất log TRỰC TIẾP ra S3 (không bắt buộc qua Firehose như trước) hoặc CloudWatch Logs — chọn S3 khi cần lưu trữ dài hạn/phân tích bằng Athena, chọn CloudWatch Logs khi cần xem/tạo alarm gần real-time trực tiếp trên metric filter.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
@@ -3409,6 +3430,13 @@
           "content": "✅ Khi CLOSE 1 account thành viên: account chuyển sang trạng thái SUSPENDED trong 90 NGÀY (vẫn có thể khôi phục lại trong thời gian này), sau đó bị XÓA VĨNH VIỄN — cần backup dữ liệu quan trọng trước khi close, và lưu ý account Suspended vẫn có thể phát sinh 1 số chi phí tồn đọng (vd Reserved Instance chưa hết hạn) trong giai đoạn chờ xóa.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "2ca36d3d6848",
+          "title": "ORGANIZATIONS: HANDSHAKE PROCESS",
+          "content": "✅ Khi mời (Invite) 1 account tham gia Organization, quá trình diễn ra qua HANDSHAKE — account được mời nhận thông báo và phải CHỦ ĐỘNG Accept/Decline trong 15 ngày (hết hạn tự động), đảm bảo không ai bị ép buộc/vô tình gia nhập Organization khác mà không biết.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
@@ -3907,6 +3935,13 @@
           "content": "📌 Tình huống: Cần ingest & lưu trữ luồng VIDEO/AUDIO real-time từ camera/thiết bị IoT (không phải dữ liệu dạng record text/JSON thông thường) để xử lý bằng ML (Rekognition Video) hoặc phát lại sau.\n✅ Đáp án đúng: Kinesis Video Streams — dịch vụ RIÊNG BIỆT (khác Data Streams) chuyên cho dữ liệu media streaming, tự động lưu trữ, mã hóa, đóng gói theo chuẩn, tích hợp sẵn với Rekognition để phân tích hình ảnh/video real-time.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "e1ab91110a61",
+          "title": "KINESIS FIREHOSE: DYNAMIC PARTITIONING",
+          "content": "📌 Tình huống: Dữ liệu streaming chứa nhiều loại sự kiện khác nhau (vd theo customer_id), cần TỰ ĐỘNG tổ chức file trên S3 theo PARTITION dựa trên GIÁ TRỊ THỰC TẾ trong dữ liệu (không chỉ theo thời gian ingest mặc định).\n✅ Đáp án đúng: Firehose Dynamic Partitioning — trích xuất giá trị từ JSON record (dùng JQ expression) để TỰ ĐỘNG tạo cấu trúc thư mục S3 tương ứng (vd s3://bucket/customer_id=123/...), tối ưu sẵn cho query sau này (Athena partition pruning) mà không cần ETL job riêng để tổ chức lại dữ liệu.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
@@ -4203,6 +4238,13 @@
           "content": "📌 Tình huống: Môi trường DEV/TEST cần XÓA SẠCH TOÀN BỘ dữ liệu trong Neptune cluster để bắt đầu lại từ đầu, việc tự xóa từng node/edge bằng query quá chậm với dataset lớn.\n✅ Đáp án đúng: Neptune Fast Reset — xóa TOÀN BỘ dữ liệu trong cluster gần NHƯ TỨC THÌ (không phải xóa từng record), nhanh hơn rất nhiều so với chạy query DELETE thủ công trên dataset lớn.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "b7a8b6adb5cf",
+          "title": "NEPTUNE: WORKLOAD MANAGEMENT (QUERY TIMEOUT & CONCURRENCY)",
+          "content": "✅ Neptune hỗ trợ đặt Query Timeout (chặn 1 query chạy quá lâu chiếm tài nguyên) và giới hạn số lượng query CONCURRENT tối đa — tương tự khái niệm WLM của Redshift nhưng đơn giản hơn, ngăn 1 truy vấn đồ thị phức tạp (vd traversal quá sâu) làm nghẽn toàn bộ cluster cho các truy vấn khác.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
@@ -4732,6 +4774,13 @@
           "content": "⚠️ Standard Workflow tính phí theo SỐ LẦN CHUYỂN STATE (state transition) — 1 workflow có 10 bước = 10 transition, dù chạy nhanh hay chậm giá vẫn vậy.\n⚠️ Express Workflow tính phí theo SỐ LẦN CHẠY + THỜI GIAN CHẠY + BỘ NHỚ (giống Lambda GB-giây) — nên với workflow tần suất RẤT CAO nhưng ít bước, Express thường rẻ hơn nhiều; với workflow ÍT CHẠY nhưng NHIỀU BƯỚC phức tạp cần audit, Standard hợp lý hơn.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "39d1b2247430",
+          "title": "STEP FUNCTIONS: SDK INTEGRATION (200+ SERVICE) - OPTIMIZED vs SDK INTEGRATION",
+          "content": "✅ Optimized Integration: 1 số service PHỔ BIẾN (Lambda, SQS, SNS, DynamoDB, ECS, SageMaker...) có cú pháp NGẮN GỌN & tính năng đặc biệt (như .sync/.waitForTaskToken).\n✅ SDK Integration (AWS SDK Service Integration): gọi được BẤT KỲ API action nào của HẦU HẾT AWS service (200+) theo cú pháp SDK chuẩn, dùng khi service cần gọi KHÔNG nằm trong danh sách Optimized Integration.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
@@ -5101,6 +5150,13 @@
           "content": "✅ Query Editor V2: giao diện web-based ngay trong Console để viết/chạy SQL, lưu query, chia sẻ với team mà không cần cài client SQL riêng.\n✅ Scheduled Queries: lên lịch chạy TỰ ĐỘNG 1 câu SQL (vd refresh Materialized View, chạy ETL đơn giản) theo cron, không cần công cụ orchestration ngoài cho tác vụ SQL định kỳ đơn giản.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "9db18e8558bc",
+          "title": "REDSHIFT: CONCURRENCY SCALING - BILLING MODEL (FREE CREDIT)",
+          "content": "✅ Concurrency Scaling tích lũy 1 giờ MIỄN PHÍ credit cho mỗi 24 giờ cluster hoạt động — với hầu hết workload dùng Concurrency Scaling KHÔNG THƯỜNG XUYÊN, credit tích lũy đủ để KHÔNG PHÁT SINH thêm chi phí, chỉ tính phí khi vượt quá lượng credit đã tích lũy.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
@@ -5940,6 +5996,13 @@
           "content": "✅ MongoDB Change Streams API tiêu chuẩn cũng hoạt động được trên DocumentDB (do tương thích API) — ứng dụng có thể dùng TRỰC TIẾP driver MongoDB để lắng nghe thay đổi real-time theo cách quen thuộc, thay vì chỉ dựa vào tính năng \"Streams\" ở cấp dịch vụ AWS.",
           "createdAt": "2026-09-14T06:40:25.623539Z",
           "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "d8ddecf22412",
+          "title": "DOCUMENTDB: CLUSTER SNAPSHOT SHARING",
+          "content": "✅ Có thể chia sẻ Manual Snapshot của DocumentDB Cluster với account AWS KHÁC (tương tự RDS snapshot sharing) — dùng để chuyển dữ liệu giữa các môi trường/account (dev copy từ prod snapshot) mà không cần export/import thủ công qua mongodump/mongorestore.",
+          "createdAt": "2026-09-14T06:51:46.690504Z",
+          "updatedAt": "2026-09-14T06:51:46.690504Z"
         }
       ]
     },
