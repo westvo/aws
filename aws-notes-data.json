@@ -1932,6 +1932,20 @@
           "content": "✅ Global Accelerator hỗ trợ Flow Logs (giống VPC Flow Logs) ghi lại thông tin traffic đi qua Accelerator (IP nguồn, Edge Location tiếp nhận, endpoint đích) — xuất ra S3 để phân tích pattern truy cập toàn cầu hoặc debug vấn đề routing.",
           "createdAt": "2026-09-14T06:30:05.057954Z",
           "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "4400106941c8",
+          "title": "GLOBAL ACCELERATOR: BRING YOUR OWN IP (BYOIP)",
+          "content": "✅ Global Accelerator cho phép mang theo dải IP CÔNG KHAI CỦA CHÍNH CÔNG TY (đã đăng ký sở hữu hợp lệ - RIR) để dùng làm địa chỉ Anycast tĩnh, thay vì dùng IP do AWS cấp mặc định — hữu ích khi công ty cần GIỮ NGUYÊN IP hiện có (đã whitelist ở nhiều nơi/firewall đối tác) trong khi vẫn tận dụng hạ tầng tăng tốc toàn cầu của Global Accelerator.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "34a2086351f2",
+          "title": "GLOBAL ACCELERATOR: PORT OVERRIDE",
+          "content": "✅ Port Override: cho phép Client kết nối vào Accelerator ở 1 PORT (vd 443) nhưng Global Accelerator FORWARD tới endpoint ở PORT KHÁC (vd 8443) — hữu ích khi backend đang chạy ở port không chuẩn nhưng vẫn muốn client dùng port chuẩn quen thuộc.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -2078,6 +2092,20 @@
           "content": "✅ FSx for Windows File Server và FSx for NetApp ONTAP đều CẦN join vào 1 Active Directory (AWS Managed Microsoft AD, Simple AD, hoặc AD on-premises qua trust) để quản lý quyền truy cập file/folder theo NTFS permission — đây là điểm tích hợp phổ biến hay được hỏi trong đề thi khi kết hợp FSx + Directory Service.",
           "createdAt": "2026-09-14T06:30:05.057954Z",
           "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "c6c311baa1fe",
+          "title": "DIRECTORY SERVICE: AD CONNECTOR - GIỚI HẠN & REQUIREMENT",
+          "content": "✅ AD Connector yêu cầu kết nối MẠNG ỔN ĐỊNH liên tục (VPN/Direct Connect) tới AD on-premises — nếu mất kết nối, MỌI xác thực (kể cả EC2 domain join mới) đều THẤT BẠI vì không có bản sao dữ liệu directory nào lưu trên AWS, khác AWS Managed Microsoft AD (vẫn hoạt động độc lập nếu mất kết nối tới AD on-premises do có bản dữ liệu riêng trên AWS).",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "0184e4e9d0bb",
+          "title": "DIRECTORY SERVICE: RADIUS MFA TÍCH HỢP",
+          "content": "✅ AWS Managed Microsoft AD hỗ trợ tích hợp MFA qua giao thức RADIUS với hạ tầng MFA ĐÃ CÓ SẴN on-premises (vd RSA SecurID) — cho phép giữ nguyên quy trình MFA doanh nghiệp hiện có khi user xác thực vào tài nguyên AWS thay vì phải xây MFA riêng.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -3244,6 +3272,20 @@
           "content": "✅ Static Routing: khai báo CỨNG các CIDR route 2 phía — đơn giản nhưng phải tự cập nhật thủ công mỗi khi mạng thay đổi, dùng khi Customer Gateway không hỗ trợ BGP.\n✅ Dynamic Routing (BGP, khuyến nghị): route TỰ ĐỘNG trao đổi và cập nhật giữa 2 phía, hỗ trợ failover tự động qua nhiều tunnel/connection, linh hoạt hơn nhiều khi mạng có thay đổi.",
           "createdAt": "2026-09-14T06:30:05.057954Z",
           "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "5cb59644d5b6",
+          "title": "VPN: NAT-TRAVERSAL (NAT-T)",
+          "content": "✅ NAT-Traversal: cho phép VPN tunnel hoạt động ĐÚNG dù thiết bị Customer Gateway phía on-premises nằm SAU 1 NAT device khác (vd router gia đình/văn phòng nhỏ dùng private IP ra Internet) — đóng gói thêm UDP header để traffic IPSec vượt qua được NAT mà không bị chặn.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "d582a7bf2520",
+          "title": "VPN: PRE-SHARED KEY (PSK) MANAGEMENT",
+          "content": "✅ Mỗi VPN Tunnel dùng 1 Pre-Shared Key (PSK) riêng để xác thực 2 đầu — AWS TỰ ĐỘNG SINH PSK khi tạo VPN Connection, nhưng có thể TỰ CUNG CẤP PSK riêng nếu cần khớp với chính sách bảo mật/thiết bị cụ thể phía on-premises, nên định kỳ XOAY VÒNG PSK theo best practice bảo mật.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -4225,6 +4267,20 @@
           "content": "✅ Mỗi version secret gắn Staging Label: AWSCURRENT (version hiện tại ứng dụng đang dùng), AWSPENDING (version mới đang trong quá trình rotate, chưa hoàn tất), AWSPREVIOUS (version trước đó, giữ lại để rollback khẩn cấp nếu version mới có vấn đề).",
           "createdAt": "2026-09-14T06:30:05.057954Z",
           "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "b5646fc3d3b7",
+          "title": "SECRETS MANAGER: KHÔNG HỖ TRỢ FREE TIER NHƯ PARAMETER STORE - CHIẾN LƯỢC TỐI ƯU CHI PHÍ",
+          "content": "📌 Tình huống: Công ty có HÀNG NGHÌN secret/config nhỏ (không cần rotation), chi phí Secrets Manager theo secret ($0.40/tháng/secret) trở nên đáng kể.\n✅ Đáp án đúng: Với secret KHÔNG cần auto-rotation, cân nhắc chuyển sang SSM Parameter Store (SecureString, miễn phí Standard tier) để tiết kiệm chi phí, CHỈ giữ lại Secrets Manager cho secret THỰC SỰ CẦN rotation tự động (DB credentials) — kết hợp cả 2 dịch vụ theo đúng use case tối ưu chi phí.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "f97cfaee8b25",
+          "title": "SECRETS MANAGER: RESOURCE POLICY NGĂN XÓA NHẦM (RESOURCE-BASED DELETE PROTECTION)",
+          "content": "✅ Có thể gắn Resource Policy trên secret để NGĂN 1 số principal cụ thể (kể cả chính chủ sở hữu) XÓA secret đó — lớp bảo vệ bổ sung chống xóa nhầm secret quan trọng (production database credentials) ngoài Recovery Window mặc định (7-30 ngày, secret vẫn khôi phục được trong thời gian này trước khi xóa vĩnh viễn).",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -4865,6 +4921,20 @@
           "content": "📌 Tình huống: Platform có sẵn của Beanstalk (Java, Node.js...) không đáp ứng đủ yêu cầu OS/runtime đặc thù của công ty.\n✅ Đáp án đúng: Custom Platform — dùng Packer để tự build 1 AMI RIÊNG làm nền tảng cho Beanstalk environment, kiểm soát sâu hơn Platform Hook (.platform/.ebextensions) thông thường, nhưng phức tạp hơn và cần tự bảo trì AMI đó.",
           "createdAt": "2026-09-14T06:30:05.057954Z",
           "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "a8b968435905",
+          "title": "BEANSTALK: CLONE ENVIRONMENT",
+          "content": "📌 Tình huống: Cần tạo NHANH 1 environment staging GIỐNG HỆT production hiện tại để test trước khi deploy thật.\n✅ Đáp án đúng: Clone Environment — sao chép TOÀN BỘ cấu hình (platform, instance type, scaling, environment variable) của environment hiện có sang environment MỚI chỉ trong vài phút, không cần cấu hình lại thủ công từ đầu.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "fdb04c230f1c",
+          "title": "BEANSTALK: HEALTH DASHBOARD & ENHANCED HEALTH REPORTING",
+          "content": "✅ Enhanced Health Reporting: cung cấp thông tin sức khỏe CHI TIẾT HƠN health check cơ bản của ELB — bao gồm cả nguyên nhân CỤ THỂ (vd CPU cao, deployment đang chạy, request 5xx tăng) hiển thị trực quan trên Health Dashboard theo màu (Green/Yellow/Red), giúp chẩn đoán nhanh vấn đề mà không cần tự đào sâu CloudWatch.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -4931,6 +5001,20 @@
           "content": "✅ Inspector quét CẢ Lambda Layer (không chỉ code chính của function) để tìm lỗ hổng trong dependency được đóng gói qua Layer — quan trọng vì nhiều team dùng chung 1 Layer cho nhiều function, 1 lỗ hổng trong Layer có thể ảnh hưởng HÀNG LOẠT function cùng lúc.",
           "createdAt": "2026-09-14T06:30:53.189120Z",
           "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "c5e07cdc5971",
+          "title": "INSPECTOR: DEEP INSPECTION CHO CONTAINER (PACKAGE VÔ HÌNH)",
+          "content": "✅ Deep Inspection: quét cả các package KHÔNG được cài qua package manager chuẩn của OS (vd binary được compile thủ công, dependency ngôn ngữ lập trình như npm/pip cài trực tiếp trong image) — mở rộng phạm vi phát hiện lỗ hổng ra ngoài package OS thông thường mà Inspector cơ bản có thể bỏ sót.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "94759cf2432d",
+          "title": "INSPECTOR: TÍCH HỢP AWS ORGANIZATIONS DELEGATED ADMIN CHO MULTI-ACCOUNT COMPLIANCE",
+          "content": "✅ Khi bật Delegated Admin cho Inspector, có thể theo dõi COVERAGE (% resource đang được Inspector quét) và tình trạng lỗ hổng TOÀN BỘ Organization trên 1 dashboard, xuất báo cáo CSV định kỳ phục vụ audit bảo mật tổng thể của công ty theo yêu cầu compliance.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -4997,6 +5081,20 @@
           "content": "✅ Shield Advanced có thể bảo vệ RIÊNG Elastic IP gắn cho NLB hoặc EC2 (dùng cho ứng dụng TCP/UDP không qua ALB/CloudFront) — không chỉ giới hạn ở CloudFront/Route 53/ALB, đảm bảo bảo vệ được cả kiến trúc dùng NLB với IP tĩnh.",
           "createdAt": "2026-09-14T06:30:05.057954Z",
           "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "34d78cbab8b9",
+          "title": "SHIELD: VISIBILITY - GLOBAL THREAT ENVIRONMENT DASHBOARD",
+          "content": "✅ Global Threat Environment Dashboard: cung cấp thông tin TỔNG QUAN xu hướng tấn công DDoS TOÀN CẦU mà AWS đang quan sát được (loại tấn công phổ biến, quy mô lớn nhất từng ghi nhận) — giúp đội bảo mật hiểu bối cảnh threat landscape hiện tại, dù không trực tiếp liên quan tới tài nguyên của riêng mình.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "f860cc2e8b11",
+          "title": "SHIELD ADVANCED: MEMBERSHIP PRICING & ORGANIZATION-WIDE",
+          "content": "✅ Shield Advanced tính phí THEO ORGANIZATION (1 subscription phí cố định hàng tháng áp dụng cho TOÀN BỘ account trong Organization) chứ không phải theo từng account riêng lẻ — khuyến khích bật bảo vệ rộng khắp thay vì chỉ 1 vài account, vì chi phí không tăng thêm theo số account tham gia.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -5063,6 +5161,20 @@
           "content": "📌 Tình huống: Có hàng trăm resource rải rác, muốn TỰ ĐỘNG áp dụng đúng Backup Plan cho resource mới tạo ra sau này mà không phải thêm thủ công từng cái vào plan.\n✅ Đáp án đúng: Gán resource vào Backup Plan bằng TAG (vd Backup=Daily) thay vì chọn thủ công từng Resource ID — mọi resource MỚI tạo có đúng tag đó sẽ TỰ ĐỘNG được backup theo plan tương ứng.",
           "createdAt": "2026-09-14T06:30:05.057954Z",
           "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "f5b0b63bc40a",
+          "title": "AWS BACKUP: SUPPORT CHO VMWARE & HYBRID BACKUP",
+          "content": "✅ AWS Backup không chỉ backup resource AWS — còn hỗ trợ backup TRỰC TIẾP VMware VM (cả on-premises lẫn VMware Cloud on AWS) vào cùng 1 hệ thống quản lý backup tập trung, giúp doanh nghiệp hybrid có 1 chính sách backup DUY NHẤT cho cả cloud lẫn on-premises.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "d3a6eb899811",
+          "title": "AWS BACKUP: GATEWAY (BACKUP CHO ON-PREMISES QUA STORAGE GATEWAY)",
+          "content": "✅ AWS Backup Gateway: mở rộng AWS Backup để sao lưu trực tiếp file server/VM on-premises (VMware, Hyper-V) thông qua 1 Gateway appliance đặt tại chỗ, quản lý & lên lịch tập trung ngay trong AWS Backup Console như mọi resource AWS khác.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -5129,6 +5241,20 @@
           "content": "✅ Groups: tạo nhóm trace theo điều kiện lọc riêng (vd chỉ trace có lỗi, hoặc chỉ trace của 1 API endpoint cụ thể) — mỗi Group có thể gắn CloudWatch Alarm/Insight riêng, giúp theo dõi tách biệt theo từng phần quan trọng của hệ thống thay vì trộn chung tất cả trace.",
           "createdAt": "2026-09-14T06:30:53.189120Z",
           "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "3aa9a70e8dc3",
+          "title": "X-RAY: ERROR, FAULT & THROTTLE (PHÂN LOẠI LỖI TRONG TRACE)",
+          "content": "✅ X-Ray phân loại rõ 3 loại vấn đề trong trace: Error (lỗi 4xx, thường do LỖI PHÍA CLIENT/request sai), Fault (lỗi 5xx, LỖI PHÍA SERVER/hệ thống), Throttle (429, bị GIỚI HẠN RATE) — giúp nhanh chóng phân biệt nguyên nhân gốc rễ (client sai vs server lỗi vs quá tải) chỉ qua Service Map mà không cần đọc từng trace chi tiết.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "9fbc8d2f2a7c",
+          "title": "X-RAY: RESOURCE-BASED POLICY & CROSS-ACCOUNT TRACING",
+          "content": "✅ X-Ray hỗ trợ CrossAccount observability — 1 account TRUNG TÂM có thể xem trace từ NHIỀU account khác trong Organization (qua Resource-based Policy cấp quyền), phục vụ kiến trúc microservices trải rộng nhiều account cần theo dõi tập trung 1 nơi.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
@@ -5362,6 +5488,20 @@
           "content": "📌 Tình huống: 2 thiết bị mobile cùng sửa 1 bản ghi khi đang offline, khi cả 2 đồng bộ lại thì xảy ra xung đột (conflict).\n✅ Đáp án đúng: AppSync Conflict Detection (dùng version number tự động) + Conflict Resolution Strategy — Optimistic Concurrency (từ chối ghi đè nếu version không khớp), Auto Merge (tự gộp thay đổi không trùng field), hoặc Lambda tùy chỉnh logic resolve xung đột riêng theo nghiệp vụ.",
           "createdAt": "2026-09-14T06:30:05.057954Z",
           "updatedAt": "2026-09-14T06:30:05.057954Z"
+        },
+        {
+          "id": "feafb4d458dd",
+          "title": "APPSYNC: PRIVATE API (VPC-ONLY ACCESS)",
+          "content": "✅ AppSync Private API: giới hạn TRUY CẬP CHỈ TỪ TRONG VPC (qua Interface VPC Endpoint), không expose ra Internet — dùng khi API GraphQL nội bộ phục vụ hệ thống backend khác trong công ty, không dành cho client bên ngoài.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
+        },
+        {
+          "id": "3bfd1fc634ee",
+          "title": "APPSYNC: DYNAMODB RESOLVER - BATCH OPERATIONS",
+          "content": "✅ Resolver DynamoDB tích hợp SẴN các thao tác BATCH (BatchGetItem, BatchPutItem, TransactWriteItems) mà KHÔNG CẦN viết Lambda riêng — cho phép 1 GraphQL mutation thực hiện NHIỀU thay đổi DynamoDB có tính ATOMIC ngay trong VTL/JS resolver, giảm số lượng Lambda function cần duy trì.",
+          "createdAt": "2026-09-14T06:39:10.017554Z",
+          "updatedAt": "2026-09-14T06:39:10.017554Z"
         }
       ]
     },
