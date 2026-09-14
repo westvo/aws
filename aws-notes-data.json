@@ -2971,6 +2971,13 @@
           "content": "✅ DataSync Agent cần mở 1 số port cụ thể (443 cho control plane, 1024-1064 cho data plane với NFS) giữa on-premises và AWS — cần cấu hình đúng Security Group/Firewall trước khi Agent hoạt động được, đây là bước cấu hình mạng dễ bị bỏ sót khi setup lần đầu.",
           "createdAt": "2026-09-14T06:52:30.816405Z",
           "updatedAt": "2026-09-14T06:52:30.816405Z"
+        },
+        {
+          "id": "167acaa5ae26",
+          "title": "DATASYNC: TASK QUEUEING",
+          "content": "✅ Nhiều Task có thể XẾP HÀNG (queue) để chạy TUẦN TỰ trên CÙNG 1 Agent — tránh 2 Task chạy song song cùng lúc làm cạn kiệt băng thông/tài nguyên Agent, đảm bảo mỗi lần đồng bộ diễn ra ổn định thay vì tranh chấp tài nguyên lẫn nhau.",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
         }
       ]
     },
@@ -5256,6 +5263,20 @@
           "content": "✅ CloudTrail Lake lưu trữ dữ liệu trong Event Data Store với retention tùy chỉnh (tối đa 7 năm), tính phí theo LƯỢNG DỮ LIỆU NẠP (ingestion) thay vì theo API call như Insights — phù hợp nhu cầu audit dài hạn theo yêu cầu compliance ngành tài chính/y tế.",
           "createdAt": "2026-09-14T06:52:30.816405Z",
           "updatedAt": "2026-09-14T06:52:30.816405Z"
+        },
+        {
+          "id": "673192b100d4",
+          "title": "CLOUDTRAIL: EVENT SELECTORS - ADVANCED EVENT SELECTORS",
+          "content": "✅ Advanced Event Selectors (linh hoạt hơn Basic Event Selectors) cho phép lọc Data Event theo ĐIỀU KIỆN CHI TIẾT (vd chỉ log S3 object có prefix cụ thể, chỉ log 1 vài Lambda function cụ thể thay vì TẤT CẢ) — giảm đáng kể chi phí Data Event khi chỉ cần audit 1 phần nhỏ tài nguyên quan trọng thay vì toàn bộ.",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "3bb337cdd3ce",
+          "title": "CLOUDTRAIL: SOURCE IDENTITY (KHI DÙNG ASSUMEROLE)",
+          "content": "✅ Khi 1 user assume role rồi thực hiện action, CloudTrail có thể ghi lại Source Identity (danh tính GỐC trước khi assume role) nếu được cấu hình yêu cầu — giúp TRUY VẾT chính xác AI ĐÃ THỰC SỰ làm hành động đó ngay cả khi họ dùng chung 1 Role được assume bởi nhiều người khác nhau.",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
         }
       ]
     },
@@ -5350,6 +5371,13 @@
           "content": "✅ Có thể loại trừ (exclude) 1 số RESOURCE TYPE cụ thể khỏi việc ghi nhận của Config (thay vì chỉ chọn recording TỪNG loại muốn theo dõi) — linh hoạt hơn khi danh sách loại trừ NGẮN hơn danh sách cần theo dõi, giảm công cấu hình.",
           "createdAt": "2026-09-14T06:52:30.816405Z",
           "updatedAt": "2026-09-14T06:52:30.816405Z"
+        },
+        {
+          "id": "27f30fba7c3d",
+          "title": "AWS CONFIG: SERVICE-LINKED ROLE & PERMISSION CẦN THIẾT",
+          "content": "✅ AWS Config cần 1 IAM Role (thường là Service-Linked Role) có quyền ĐỌC cấu hình của MỌI resource type được recording, cộng thêm quyền GHI vào S3 bucket đích — thiết lập ĐÚNG quyền này là bước tiên quyết trước khi Config bắt đầu ghi nhận dữ liệu, lỗi thiếu quyền là nguyên nhân phổ biến khiến Config không hoạt động đúng.",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
         }
       ]
     },
@@ -5660,6 +5688,20 @@
           "content": "⚠️ ACM có giới hạn số lượng chứng chỉ MỚI được cấp trong 1 khoảng thời gian (theo domain/account) để chống lạm dụng — nếu cần cấp SỐ LƯỢNG LỚN chứng chỉ tự động (vd multi-tenant SaaS mỗi khách hàng 1 domain riêng), cần xin tăng quota trước hoặc thiết kế cấp chứng chỉ theo batch hợp lý.",
           "createdAt": "2026-09-14T06:52:30.816405Z",
           "updatedAt": "2026-09-14T06:52:30.816405Z"
+        },
+        {
+          "id": "5cf634513616",
+          "title": "ACM: TRANSPARENT DATA ENCRYPTION - PHÂN BIỆT VỚI TLS",
+          "content": "⚠️ ACM chỉ quản lý chứng chỉ TLS (bảo vệ dữ liệu IN-TRANSIT khi truyền qua mạng) — HOÀN TOÀN KHÔNG liên quan tới mã hóa dữ liệu AT-REST (đó là việc của KMS) — 1 lỗi hay gặp trong đề thi là nhầm lẫn 2 khái niệm này khi chọn dịch vụ phù hợp cho yêu cầu mã hóa cụ thể.",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "95674a3c96da",
+          "title": "ACM: MANAGED RENEWAL STATUS TRACKING",
+          "content": "✅ Mỗi chứng chỉ có trường Renewal Eligibility (đủ điều kiện gia hạn tự động hay không) — nếu domain có DNS validation record bị xóa/thay đổi, chứng chỉ chuyển trạng thái \"Renewal status: Failed\", cần chủ động theo dõi CloudWatch Event cho trạng thái này để không bị bất ngờ khi chứng chỉ hết hạn.",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
         }
       ]
     },
@@ -5956,6 +5998,13 @@
           "content": "⚠️ Cách nhớ rõ ràng khi làm đề thi: câu hỏi nhắc tới \"DDoS\" (khối lượng traffic lớn làm sập dịch vụ) → nghĩ tới Shield trước; câu hỏi nhắc tới \"SQL injection\", \"XSS\", \"bot\", \"rule cụ thể theo nội dung request\" → nghĩ tới WAF trước — 2 dịch vụ THƯỜNG dùng CHUNG (Shield Advanced tự động tạo WAF rule) nhưng mục đích chính khác nhau rõ rệt.",
           "createdAt": "2026-09-14T06:52:30.816405Z",
           "updatedAt": "2026-09-14T06:52:30.816405Z"
+        },
+        {
+          "id": "1f0e9f89bb50",
+          "title": "SHIELD: DRT ACCESS TO ACCOUNT (LIMITED IAM ROLE)",
+          "content": "✅ Khi cấp quyền cho SRT hỗ trợ, chỉ nên cấp IAM Role với quyền GIỚI HẠN CHẶT CHẼ (chỉ đủ để họ viết/áp dụng WAF rule khẩn cấp, KHÔNG cấp quyền quản trị rộng) — tuân thủ nguyên tắc least privilege ngay cả khi cấp quyền cho đội hỗ trợ bên ngoài trong tình huống khẩn cấp.",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
         }
       ]
     },
@@ -6050,6 +6099,20 @@
           "content": "✅ Ngoài EBS/RDS/DynamoDB/EFS/FSx đã đề cập, AWS Backup còn hỗ trợ: Aurora, DocumentDB, Neptune, Redshift, S3, EC2 (toàn bộ instance, không chỉ volume), Storage Gateway Volume, CloudFormation stack (backup nguyên cụm resource theo stack) — gần như bao phủ toàn bộ dịch vụ stateful chính của AWS trong 1 giải pháp backup duy nhất.",
           "createdAt": "2026-09-14T06:52:30.816405Z",
           "updatedAt": "2026-09-14T06:52:30.816405Z"
+        },
+        {
+          "id": "63b2fccb5967",
+          "title": "AWS BACKUP: TRANSITION TO COLD STORAGE",
+          "content": "✅ Backup Plan Lifecycle cho phép chuyển backup sang COLD STORAGE (rẻ hơn) sau X ngày, tương tự S3 Lifecycle — nhưng thời gian TỐI THIỂU trước khi chuyển cold khác nhau tùy resource type (vd EBS tối thiểu 90 ngày), và backup ở cold storage cần RESTORE trước khi dùng lại được (không truy cập trực tiếp như warm backup).",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "ccb936102aa5",
+          "title": "AWS BACKUP: CROSS-PARTITION BACKUP",
+          "content": "✅ Có thể backup xuyên PARTITION AWS khác nhau (vd từ AWS Standard partition sang AWS GovCloud) trong 1 số trường hợp — phục vụ yêu cầu đặc biệt về data residency/compliance của khu vực chính phủ, dù đây là use case khá hiếm gặp trong kiến trúc thông thường.",
+          "createdAt": "2026-09-14T06:56:57.225371Z",
+          "updatedAt": "2026-09-14T06:56:57.225371Z"
         }
       ]
     },
