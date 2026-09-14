@@ -307,6 +307,20 @@
           "content": "📌 Tình huống: Nhiều account trong Organization cần dùng CHUNG 1 Transit Gateway (do 1 account trung tâm quản lý) để kết nối VPC của mình vào, mà không cần tạo Transit Gateway riêng cho từng account (tốn kém & khó quản lý routing tập trung).\n✅ Đáp án đúng: Chia sẻ Transit Gateway qua AWS Resource Access Manager (RAM) — account owner share Transit Gateway cho các account khác trong Organization, các account đó tự gắn (attach) VPC của mình vào Transit Gateway dùng chung, quản lý routing tập trung tại 1 nơi.",
           "createdAt": "2026-09-14T06:31:58.066350Z",
           "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "7e93af864dc0",
+          "title": "TRANSIT GATEWAY: BLACKHOLE ROUTE",
+          "content": "📌 Tình huống: Cần CHỦ ĐỘNG CHẶN traffic tới 1 dải CIDR cụ thể đi qua Transit Gateway (vd cách ly 1 VPC bị nghi ngờ compromise khỏi phần còn lại của hệ thống) một cách NHANH CHÓNG.\n✅ Đáp án đúng: Thêm Blackhole Route trong Transit Gateway Route Table trỏ CIDR đó tới \"blackhole\" (drop toàn bộ traffic) — cách ly tức thì mà không cần sửa route ở từng VPC riêng lẻ.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "fad03f167cda",
+          "title": "TRANSIT GATEWAY: NETWORK MANAGER",
+          "content": "📌 Tình huống: Hạ tầng mạng phức tạp gồm nhiều Transit Gateway, VPC, Direct Connect, SD-WAN xuyên nhiều Region, cần 1 CÁI NHÌN TRỰC QUAN TOÀN CẢNH về topology mạng.\n✅ Đáp án đúng: AWS Network Manager — hiển thị BẢN ĐỒ TRỰC QUAN toàn bộ mạng global (Transit Gateway, on-premises site, kết nối) trên 1 dashboard, theo dõi metric hiệu năng (latency, packet loss) giữa các site, giúp quản lý mạng phức tạp đa Region/đa kết nối dễ dàng hơn nhiều so với xem rời rạc từng Region.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -2959,6 +2973,20 @@
           "content": "✅ Macie Dashboard hiển thị TỔNG QUAN toàn bộ bucket trong account: bucket nào PUBLIC, bucket nào KHÔNG mã hóa, bucket nào được chia sẻ ra ngoài account — hữu ích để rà soát nhanh RỦI RO CẤU HÌNH ở mức bucket, không chỉ dừng ở việc tìm dữ liệu nhạy cảm bên trong file.",
           "createdAt": "2026-09-14T06:32:39.487411Z",
           "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "d91d7bc34990",
+          "title": "MACIE: THEO DÕI CHI PHÍ QUA COVERAGE STATISTICS",
+          "content": "✅ Macie hiển thị Coverage Statistics cho biết % TỔNG DUNG LƯỢNG S3 trong account đã được Macie PHÂN TÍCH/QUÉT — giúp ước tính & kiểm soát chi phí (Macie tính phí theo GB dữ liệu quét) trước khi chạy Classification Job trên toàn bộ dữ liệu lớn ngoài ý muốn.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "4799326bfd44",
+          "title": "MACIE: TÍCH HỢP TAG-BASED SCOPING",
+          "content": "✅ Có thể giới hạn phạm vi quét CHỈ bucket có TAG cụ thể (vd chỉ bucket gắn tag \"contains-pii=true\") thay vì quét MỌI bucket trong account — tối ưu chi phí khi chỉ 1 phần nhỏ bucket thực sự có khả năng chứa dữ liệu nhạy cảm cần theo dõi kỹ.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -3039,6 +3067,20 @@
           "content": "📌 Tình huống: Bot tự động cố tình GIẢ MẠO User-Agent giống trình duyệt thật để né các rule filter theo header thông thường.\n✅ Đáp án đúng: WAF hỗ trợ JA3 Fingerprint — nhận diện CLIENT dựa trên cách nó bắt tay TLS (TLS handshake signature), khó giả mạo hơn nhiều so với User-Agent header (vì phụ thuộc vào thư viện TLS thực tế client dùng), giúp phát hiện bot tinh vi hơn.",
           "createdAt": "2026-09-14T06:32:39.487411Z",
           "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "88965c91729e",
+          "title": "WAF: ASSOCIATION VỚI NHIỀU RESOURCE & SHARING QUA RAM",
+          "content": "✅ 1 Web ACL có thể gắn (associate) đồng thời vào NHIỀU resource (nhiều ALB/API Gateway cùng lúc) — không cần tạo Web ACL riêng cho từng resource nếu chính sách bảo vệ giống nhau, giảm công sức quản lý & đồng bộ rule.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "41d1e0ac1f61",
+          "title": "WAF: TESTING RULE VỚI COUNT MODE TRƯỚC KHI BLOCK",
+          "content": "📌 Tình huống: Sợ 1 rule WAF mới viết có thể BLOCK NHẦM traffic hợp lệ (false positive) nếu áp dụng ngay vào production.\n✅ Đáp án đúng: Đặt Action = Count cho rule mới (chỉ ĐẾM & ghi log, KHÔNG chặn thật) trong 1 khoảng thời gian để quan sát traffic thực tế bị match, xác nhận không có false positive rồi mới đổi sang Block — đây là quy trình TRIỂN KHAI AN TOÀN chuẩn khi thêm rule mới vào production.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -3206,6 +3248,20 @@
           "content": "✅ Create Account: tạo account MỚI TRỰC TIẾP từ Organization — account con này mặc định KHÔNG có root password riêng biết trước (phải reset), và LUÔN ở chế độ All Features.\n✅ Invite Account: mời 1 account AWS ĐÃ TỒN TẠI SẴN (standalone) tham gia Organization — account đó phải CHẤP NHẬN lời mời, có thể chọn ở chế độ Consolidated Billing only hoặc All Features.",
           "createdAt": "2026-09-14T06:31:58.066350Z",
           "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "83910c177c39",
+          "title": "ORGANIZATIONS: AI SERVICES OPT-OUT POLICY",
+          "content": "✅ AI Services Opt-Out Policy: kiểm soát TẬP TRUNG việc có cho phép các dịch vụ AI/ML của AWS (Rekognition, Comprehend...) SỬ DỤNG dữ liệu của khách hàng để cải thiện model AWS hay không — áp dụng xuyên toàn Organization, đảm bảo tuân thủ chính sách bảo mật dữ liệu công ty nhất quán.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "a7f554ee921d",
+          "title": "ORGANIZATIONS: CLOSE ACCOUNT & SUSPENDED STATE",
+          "content": "✅ Khi CLOSE 1 account thành viên: account chuyển sang trạng thái SUSPENDED trong 90 NGÀY (vẫn có thể khôi phục lại trong thời gian này), sau đó bị XÓA VĨNH VIỄN — cần backup dữ liệu quan trọng trước khi close, và lưu ý account Suspended vẫn có thể phát sinh 1 số chi phí tồn đọng (vd Reserved Instance chưa hết hạn) trong giai đoạn chờ xóa.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -3662,6 +3718,20 @@
           "content": "✅ Kinesis Data Streams hỗ trợ mã hóa at-rest bằng KMS (bật 1-click, không cần Envelope Encryption thủ công như S3).\n✅ Có thể dùng VPC Endpoint (Interface Endpoint) để Producer/Consumer trong private subnet gọi Kinesis API mà không cần NAT Gateway, giữ traffic hoàn toàn trong mạng AWS riêng.",
           "createdAt": "2026-09-14T06:32:39.487411Z",
           "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "33bd70127c14",
+          "title": "KINESIS DATA STREAMS: RESHARDING STRATEGIES",
+          "content": "✅ Split Shard: chia 1 shard thành 2 khi cần TĂNG throughput cho 1 phần dữ liệu cụ thể (vd 1 partition key đang hot).\n✅ Merge Shard: gộp 2 shard liền kề thành 1 khi throughput dư thừa, tiết kiệm chi phí (mỗi shard tính phí riêng dù không dùng hết).\n⚠️ Resharding KHÔNG THỂ thực hiện đồng thời NHIỀU thao tác 1 lúc trên cùng stream, và có thể gây gián đoạn thứ tự record tạm thời trong lúc chuyển đổi.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "cb57b31a4b62",
+          "title": "KINESIS VIDEO STREAMS",
+          "content": "📌 Tình huống: Cần ingest & lưu trữ luồng VIDEO/AUDIO real-time từ camera/thiết bị IoT (không phải dữ liệu dạng record text/JSON thông thường) để xử lý bằng ML (Rekognition Video) hoặc phát lại sau.\n✅ Đáp án đúng: Kinesis Video Streams — dịch vụ RIÊNG BIỆT (khác Data Streams) chuyên cho dữ liệu media streaming, tự động lưu trữ, mã hóa, đóng gói theo chuẩn, tích hợp sẵn với Rekognition để phân tích hình ảnh/video real-time.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -3916,6 +3986,20 @@
           "content": "✅ Neptune Notebooks: môi trường Jupyter Notebook được AWS chuẩn bị SẴN (managed), tích hợp sẵn magic command để chạy Gremlin/SPARQL/openCypher trực tiếp và VẼ ĐỒ THỊ trực quan kết quả — giúp data scientist/developer thử nghiệm truy vấn graph nhanh mà không cần tự cài đặt môi trường.",
           "createdAt": "2026-09-14T06:32:39.487411Z",
           "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "d88069ef3cf5",
+          "title": "NEPTUNE: AUDIT LOGGING",
+          "content": "✅ Neptune Audit Log: ghi lại chi tiết CÂU TRUY VẤN đã chạy trên cluster (ai chạy gì, khi nào) — xuất qua CloudWatch Logs, phục vụ audit bảo mật/compliance cho dữ liệu đồ thị thường mang tính nhạy cảm (quan hệ tài chính, social network).",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "451540000172",
+          "title": "NEPTUNE: FAST RESET",
+          "content": "📌 Tình huống: Môi trường DEV/TEST cần XÓA SẠCH TOÀN BỘ dữ liệu trong Neptune cluster để bắt đầu lại từ đầu, việc tự xóa từng node/edge bằng query quá chậm với dataset lớn.\n✅ Đáp án đúng: Neptune Fast Reset — xóa TOÀN BỘ dữ liệu trong cluster gần NHƯ TỨC THÌ (không phải xóa từng record), nhanh hơn rất nhiều so với chạy query DELETE thủ công trên dataset lớn.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -3996,6 +4080,20 @@
           "content": "✅ Amortized Cost View trong Cost Explorer: phân bổ ĐỀU chi phí RI/Savings Plan trả TRƯỚC (upfront) ra TỪNG NGÀY sử dụng trong suốt kỳ hạn, thay vì hiển thị dồn hết vào ngày mua — giúp so sánh chi phí THỰC TẾ theo ngày công bằng hơn giữa các tháng.",
           "createdAt": "2026-09-14T06:31:58.066350Z",
           "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "b10f2bf90459",
+          "title": "AWS BILLING CONDUCTOR",
+          "content": "📌 Tình huống: Công ty làm dịch vụ MSP (quản lý nhiều account con của khách hàng khác nhau), cần TÁI CẤU TRÚC hóa đơn để tính giá RIÊNG cho từng khách hàng (có thể khác giá gốc AWS) mà không ảnh hưởng tới hóa đơn gốc thực tế.\n✅ Đáp án đúng: AWS Billing Conductor — tạo ra các \"billing group\" tùy chỉnh, áp dụng pricing rule/margin riêng cho từng nhóm account, sinh ra hóa đơn PROFORMA riêng để gửi khách hàng, tách biệt hoàn toàn với hóa đơn AWS thật.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "93d20f08547d",
+          "title": "COMPUTE OPTIMIZER: ENHANCED INFRASTRUCTURE METRICS & INFERRED WORKLOAD TYPES",
+          "content": "✅ Enhanced Infrastructure Metrics: mở rộng thời gian phân tích lịch sử LÊN TỚI 3 THÁNG (mặc định 14 ngày) để đưa ra khuyến nghị CHÍNH XÁC HƠN cho workload có tính chu kỳ dài (theo tháng/quý).\n✅ Inferred Workload Types: Compute Optimizer tự ĐOÁN loại workload đang chạy (database, web server, big data...) dựa trên process/pattern sử dụng, giúp khuyến nghị instance phù hợp hơn với ĐẶC THÙ workload thay vì chỉ dựa thuần túy vào chỉ số CPU/RAM.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -4361,6 +4459,20 @@
           "content": "✅ Có thể bật CloudWatch Logs cho từng execution (ghi lại TOÀN BỘ input/output của mỗi state chuyển đổi) để debug chi tiết, và tích hợp X-Ray để xem trace xuyên suốt cả Step Functions LẪN các service nó gọi (Lambda, DynamoDB...) trong CÙNG 1 Service Map, giúp debug end-to-end dễ hơn nhiều.",
           "createdAt": "2026-09-14T06:31:58.066350Z",
           "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "c10d18576ef3",
+          "title": "STEP FUNCTIONS: TASK TIMEOUT & HEARTBEAT",
+          "content": "✅ TimeoutSeconds: giới hạn thời gian tối đa cho 1 Task, nếu vượt quá → tự động coi là lỗi (States.Timeout) để Retry/Catch xử lý.\n✅ HeartbeatSeconds (dùng với Callback Pattern): Task PHẢI gửi tín hiệu \"còn sống\" định kỳ trong khoảng thời gian này, nếu KHÔNG nhận được heartbeat đúng hạn → coi như Task đã chết dù chưa hết Timeout tổng — hữu ích cho Task chạy RẤT LÂU (vài giờ) cần xác nhận vẫn đang tiến triển bình thường.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "6959dfa80c27",
+          "title": "STEP FUNCTIONS: PRICING MODEL KHÁC BIỆT STANDARD vs EXPRESS",
+          "content": "⚠️ Standard Workflow tính phí theo SỐ LẦN CHUYỂN STATE (state transition) — 1 workflow có 10 bước = 10 transition, dù chạy nhanh hay chậm giá vẫn vậy.\n⚠️ Express Workflow tính phí theo SỐ LẦN CHẠY + THỜI GIAN CHẠY + BỘ NHỚ (giống Lambda GB-giây) — nên với workflow tần suất RẤT CAO nhưng ít bước, Express thường rẻ hơn nhiều; với workflow ÍT CHẠY nhưng NHIỀU BƯỚC phức tạp cần audit, Standard hợp lý hơn.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -4688,6 +4800,20 @@
           "content": "✅ Automatic Table Optimization: Redshift TỰ ĐỘNG chọn Distribution Style & Sort Key TỐI ƯU cho từng bảng dựa trên PATTERN TRUY VẤN THỰC TẾ theo thời gian (dùng ML), tự áp dụng thay đổi khi có lợi rõ rệt — giảm nhu cầu phải tự tay tối ưu thủ công như note trước đã đề cập.",
           "createdAt": "2026-09-14T06:32:39.487411Z",
           "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "22814b044645",
+          "title": "REDSHIFT: RA3 NODE TYPE - TÁCH RỜI COMPUTE/STORAGE",
+          "content": "✅ RA3 Node Type: TÁCH RỜI compute và storage (giống kiến trúc Aurora) — storage tự động scale theo dữ liệu thực tế trên S3-backed managed storage, cho phép SCALE COMPUTE ĐỘC LẬP với dung lượng dữ liệu, khác node type cũ (DC2/DS2) có storage GẮN CỨNG với compute (phải thêm node để tăng cả 2 cùng lúc dù chỉ cần thêm 1 trong 2).",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "7086088c0b20",
+          "title": "REDSHIFT: QUERY EDITOR V2 & SCHEDULING QUERIES",
+          "content": "✅ Query Editor V2: giao diện web-based ngay trong Console để viết/chạy SQL, lưu query, chia sẻ với team mà không cần cài client SQL riêng.\n✅ Scheduled Queries: lên lịch chạy TỰ ĐỘNG 1 câu SQL (vd refresh Materialized View, chạy ETL đơn giản) theo cron, không cần công cụ orchestration ngoài cho tác vụ SQL định kỳ đơn giản.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
@@ -5422,6 +5548,20 @@
           "content": "✅ Cluster Parameter Group: cấu hình tham số CHUNG cho cả cluster (audit logging, TTL monitor...); Instance Parameter Group: cấu hình riêng từng instance — tương tự khái niệm Parameter Group của RDS/Aurora nhưng áp dụng cho tham số đặc thù MongoDB-compatible engine.",
           "createdAt": "2026-09-14T06:32:39.487411Z",
           "updatedAt": "2026-09-14T06:32:39.487411Z"
+        },
+        {
+          "id": "7cb073fc9957",
+          "title": "DOCUMENTDB: TLS BẮT BUỘC & ROTATE CHỨNG CHỈ",
+          "content": "✅ DocumentDB YÊU CẦU kết nối qua TLS mặc định (khác 1 số DB khác optional) — cần tải đúng CA certificate bundle của AWS để client verify kết nối, và cần theo dõi lịch AWS thay đổi/rotate CA certificate gốc định kỳ (thường thông báo trước nhiều tháng) để cập nhật kịp trên client, tránh mất kết nối đột ngột.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
+        },
+        {
+          "id": "20edd7fa929c",
+          "title": "DOCUMENTDB: CHANGE STREAMS (KHÁC DOCUMENTDB STREAMS SERVICE-LEVEL)",
+          "content": "✅ MongoDB Change Streams API tiêu chuẩn cũng hoạt động được trên DocumentDB (do tương thích API) — ứng dụng có thể dùng TRỰC TIẾP driver MongoDB để lắng nghe thay đổi real-time theo cách quen thuộc, thay vì chỉ dựa vào tính năng \"Streams\" ở cấp dịch vụ AWS.",
+          "createdAt": "2026-09-14T06:40:25.623539Z",
+          "updatedAt": "2026-09-14T06:40:25.623539Z"
         }
       ]
     },
