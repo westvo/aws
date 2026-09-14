@@ -213,6 +213,20 @@
           "content": "📌 Tình huống: Cần gửi message lớn hơn giới hạn 256KB của SQS (vd đính kèm file/payload lớn).\n✅ Đáp án đúng: Amazon SQS Extended Client Library — tự động lưu PHẦN PAYLOAD LỚN vào S3, chỉ gửi REFERENCE (con trỏ) tới object đó qua SQS message, consumer dùng cùng thư viện để tự động lấy lại payload đầy đủ từ S3 — trong suốt với code nghiệp vụ.",
           "createdAt": "2026-09-14T06:27:04.373715Z",
           "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "f2cc777f6a10",
+          "title": "SQS: PURGE QUEUE & QUEUE METRICS QUAN TRỌNG",
+          "content": "✅ Purge Queue: xóa SẠCH toàn bộ message trong queue ngay lập tức (không xóa từng cái) — dùng khi cần reset queue sau lỗi hệ thống, chỉ gọi được tối đa 1 lần/60 giây.\n✅ CloudWatch Metrics quan trọng: ApproximateNumberOfMessagesVisible (số message đang chờ xử lý — dùng làm target cho Auto Scaling consumer), ApproximateAgeOfOldestMessage (tuổi message cũ nhất — cảnh báo nếu quá cao nghĩa là consumer xử lý không kịp).",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "82fd8172d27b",
+          "title": "SQS: COST ALLOCATION TAGS & CROSS-ACCOUNT ACCESS",
+          "content": "✅ Có thể gắn Tag lên Queue để phân bổ chi phí theo team/dự án trong Cost Explorer.\n✅ Cross-Account Access: dùng Queue Policy (resource-based policy) để cho phép account KHÁC gửi/nhận message vào queue của mình mà không cần chia sẻ credential, tương tự cơ chế resource policy của S3/SNS.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -387,6 +401,20 @@
           "content": "✅ Real-time Logs: xuất log CloudFront gần như NGAY LẬP TỨC (khác Standard Log có độ trễ vài giờ) qua Kinesis Data Streams — dùng khi cần giám sát/phản ứng traffic bất thường theo thời gian thực.\n✅ Continuous Deployment: tạo 1 STAGING distribution để test thay đổi cấu hình (vd đổi origin, đổi cache policy) với 1 % nhỏ traffic thật TRƯỚC khi áp dụng cho 100% traffic của Primary distribution — giảm rủi ro khi thay đổi cấu hình CDN production.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "9c3a1cb797db",
+          "title": "CLOUDFRONT: RESPONSE HEADERS POLICY",
+          "content": "✅ Response Headers Policy: tự động THÊM/GHI ĐÈ header bảo mật chuẩn (CSP, X-Frame-Options, Strict-Transport-Security...) vào MỌI response CloudFront trả về, mà không cần sửa code backend/origin — dùng để đồng nhất chính sách bảo mật header trên toàn bộ nội dung phân phối qua CDN.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "0b9ae2b653bb",
+          "title": "CLOUDFRONT: KEYVALUESTORE CHO CLOUDFRONT FUNCTIONS",
+          "content": "📌 Tình huống: CloudFront Function cần TRA CỨU dữ liệu (vd ánh xạ URL redirect, feature flag) ngay tại Edge mà không thể gọi API bên ngoài (do giới hạn CloudFront Functions).\n✅ Đáp án đúng: CloudFront KeyValueStore — kho key-value GLOBAL, đọc được với độ trễ CỰC THẤP ngay trong CloudFront Function, cập nhật dữ liệu tập trung 1 nơi rồi tự động lan truyền ra mọi Edge Location.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -753,6 +781,20 @@
           "content": "📌 Tình huống: Cần chiến lược DR cho RDS ở Region khác, với RTO/RPO thấp hơn so với chỉ dựa vào cross-region snapshot copy định kỳ.\n✅ Đáp án đúng: Tạo Read Replica ở Region khác (Cross-Region Read Replica) — dữ liệu đồng bộ gần như liên tục (async), khi Region chính gặp sự cố có thể PROMOTE Read Replica này thành DB độc lập ghi được — RPO/RTO tốt hơn nhiều so với restore từ snapshot.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "ff3786ab5986",
+          "title": "RDS: RESERVED INSTANCE cho DATABASE",
+          "content": "✅ RDS Reserved Instance hoạt động tương tự EC2 RI: cam kết 1-3 năm giảm giá tới ~60-70%, áp dụng theo Engine + Instance Class + Deployment Type (Single-AZ/Multi-AZ) — Multi-AZ RI TỰ ĐỘNG bao gồm cả giá cho standby, không cần mua riêng.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "664bf9a52dc4",
+          "title": "RDS: MAINTENANCE WINDOW & AUTO MINOR VERSION UPGRADE",
+          "content": "✅ Maintenance Window: khung giờ AWS được phép áp dụng patch (có thể gây restart ngắn) — nên đặt vào giờ traffic thấp.\n✅ Auto Minor Version Upgrade: tự động cập nhật lên MINOR VERSION mới của engine (bản vá bug/bảo mật) trong maintenance window — KHÔNG áp dụng cho MAJOR VERSION (phải chủ động nâng cấp thủ công/qua Blue/Green vì có thể breaking change).",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -847,6 +889,20 @@
           "content": "📌 Tình huống: Domain đã mua ở nhà cung cấp khác (GoDaddy), muốn quản lý DNS record bằng Route 53 mà KHÔNG cần transfer quyền sở hữu domain sang AWS.\n✅ Đáp án đúng: Tạo Hosted Zone mới trong Route 53, lấy 4 Name Server (NS) do Route 53 cấp, cập nhật NS đó vào phần \"Nameservers\" tại nhà đăng ký domain gốc (GoDaddy) — đây gọi là DNS Delegation, không cần transfer domain, chỉ cần trỏ NS về Route 53.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "904161619676",
+          "title": "ROUTE 53: RESOLVER RULES (HYBRID DNS CHI TIẾT)",
+          "content": "✅ Forwarding Rule: định nghĩa 1 domain cụ thể (vd corp.internal) sẽ được CHUYỂN TIẾP truy vấn DNS tới DNS server on-premises qua Outbound Endpoint, thay vì tự Route 53 phân giải — dùng khi VPC cần phân giải domain nội bộ công ty mà không thuộc Route 53 Hosted Zone.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "8950d916d012",
+          "title": "ROUTE 53: QUERY LOGGING",
+          "content": "✅ Route 53 Query Logging: ghi lại MỌI truy vấn DNS gửi tới Hosted Zone (ai hỏi domain gì, từ đâu) ra CloudWatch Logs — dùng để phân tích traffic pattern, phát hiện truy vấn bất thường (dấu hiệu domain bị lợi dụng cho DNS tunneling/C2 malware).",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -1294,6 +1350,20 @@
           "content": "✅ SSL Termination tại Load Balancer: giải mã HTTPS NGAY TẠI ALB/NLB (gắn chứng chỉ ACM), traffic từ LB tới target có thể là HTTP thường (giảm tải mã hóa/giải mã cho backend) hoặc tiếp tục HTTPS (re-encrypt) nếu cần mã hóa end-to-end.\n✅ Security Policy: chọn bộ cipher suite + phiên bản TLS tối thiểu được chấp nhận (vd chặn TLS 1.0/1.1 cũ không an toàn) — cần cập nhật định kỳ theo khuyến nghị bảo mật mới.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "f33fa70c78db",
+          "title": "ELB: HEALTH CHECK - CẤU HÌNH CHI TIẾT",
+          "content": "✅ Health Check gồm: Protocol (HTTP/HTTPS/TCP), Path (endpoint kiểm tra, vd /health), Interval (tần suất kiểm tra), Timeout, Healthy/Unhealthy Threshold (số lần liên tiếp pass/fail để đổi trạng thái) — target chỉ nhận traffic khi ĐẠT Healthy Threshold, bị gỡ khỏi rotation khi ĐẠT Unhealthy Threshold liên tiếp.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "ae20599a8ad8",
+          "title": "ELB: REQUEST TRACING & X-FORWARDED HEADERS",
+          "content": "✅ ALB tự động thêm header X-Forwarded-For (IP client gốc, vì backend chỉ thấy IP của ALB), X-Forwarded-Proto (giao thức gốc HTTP/HTTPS trước khi tới ALB) — quan trọng khi backend cần biết IP THẬT của client (vd để logging/rate-limit) hoặc biết request gốc là HTTPS dù ALB đã terminate SSL rồi forward HTTP nội bộ.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -1761,6 +1831,13 @@
           "content": "✅ Mọi hoạt động quản trị Storage Gateway (tạo/xóa gateway, thay đổi cấu hình) được ghi qua CloudTrail; hiệu năng gateway (cache hit rate, upload buffer usage, latency) được theo dõi qua CloudWatch Metrics — dùng để phát hiện sớm khi cache/buffer sắp đầy gây nghẽn hiệu năng truy cập on-premises.",
           "createdAt": "2026-09-14T06:31:58.066350Z",
           "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "c118734e9245",
+          "title": "STORAGE GATEWAY: HIGH AVAILABILITY VỚI CLUSTER (VMWARE)",
+          "content": "✅ Với môi trường VMware, có thể triển khai Storage Gateway ở chế độ HA (High Availability) dùng VMware vSphere HA/FT — tự động failover sang instance gateway dự phòng nếu instance chính gặp sự cố, giảm downtime cho truy cập storage hybrid quan trọng.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -1900,6 +1977,13 @@
           "content": "✅ Replication Instance có thể bật Multi-AZ (giống RDS) để có standby dự phòng ở AZ khác — tăng độ sẵn sàng cho tiến trình migration/CDC quan trọng chạy liên tục dài hạn, tránh gián đoạn đồng bộ nếu AZ chính gặp sự cố giữa chừng.",
           "createdAt": "2026-09-14T06:30:53.189120Z",
           "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "d765a90740a5",
+          "title": "DMS: HOMOGENEOUS DATA MIGRATIONS (DỊCH VỤ MỚI, KHÔNG DÙNG DMS TASK)",
+          "content": "📌 Tình huống: Migrate database CÙNG ENGINE (vd RDS PostgreSQL → Aurora PostgreSQL) với hiệu năng CAO HƠN, dùng công cụ NATIVE của chính engine đó thay vì cơ chế DMS Task truyền thống.\n✅ Đáp án đúng: DMS Homogeneous Data Migrations — dùng NGAY công cụ migration gốc của engine (pg_dump/pg_restore cho PostgreSQL, mysqldump cho MySQL) được AWS quản lý & điều phối tự động, nhanh hơn và giữ được TRỌN VẸN tính năng engine (index, trigger, stored procedure) mà không cần convert schema như dùng DMS Task + SCT.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -2133,6 +2217,20 @@
           "content": "✅ Khi Scale In (giảm số instance), ASG cần quyết định TERMINATE INSTANCE NÀO TRƯỚC — Termination Policy định nghĩa thứ tự ưu tiên: OldestLaunchTemplate (ưu tiên xóa instance dùng template CŨ trước, hữu ích khi đang rolling update), ClosestToNextInstanceHour (tối ưu chi phí, xóa instance gần hết chu kỳ tính giờ trước), AllocationStrategy (với Spot, xóa instance ở pool có giá cao/rủi ro nhất trước), OldestInstance/NewestInstance.",
           "createdAt": "2026-09-14T03:48:21.612587Z",
           "updatedAt": "2026-09-14T03:48:21.612587Z"
+        },
+        {
+          "id": "6e4aa747fd65",
+          "title": "AUTO SCALING: MIXED INSTANCES POLICY",
+          "content": "📌 Tình huống: Cần 1 Auto Scaling Group linh hoạt dùng ĐA DẠNG instance type (để tăng khả năng có Spot capacity) VÀ kết hợp cả On-Demand lẫn Spot theo tỷ lệ mong muốn.\n✅ Đáp án đúng: Mixed Instances Policy (chỉ dùng được với Launch Template) — định nghĩa DANH SÁCH instance type ưu tiên + tỷ lệ % On-Demand vs Spot + Allocation Strategy cho Spot (giống EC2 Fleet), tất cả trong 1 ASG duy nhất.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "b3b0a839cd94",
+          "title": "AUTO SCALING: SCHEDULED ACTIONS",
+          "content": "📌 Tình huống: Traffic ứng dụng có pattern DỰ ĐOÁN CHẮC CHẮN theo lịch cố định (vd hệ thống nội bộ chỉ dùng giờ hành chính 8h-18h, cuối tuần không ai dùng).\n✅ Đáp án đúng: Scheduled Action — đặt LỊCH CỐ ĐỊNH để thay đổi Min/Max/Desired Capacity tại thời điểm biết trước (vd tăng capacity lúc 7h sáng, giảm về 0 lúc 19h) — đơn giản & chắc chắn hơn Predictive Scaling khi pattern đã biết rõ 100% thay vì cần dự đoán.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -2328,6 +2426,20 @@
           "content": "⚠️ KHÔNG THỂ xóa CMK NGAY LẬP TỨC — bắt buộc có Waiting Period (7-30 ngày, tự chọn) trước khi xóa vĩnh viễn, trong thời gian này key ở trạng thái \"Pending Deletion\" (không dùng được để encrypt/decrypt) nhưng VẪN CÓ THỂ HỦY YÊU CẦU XÓA (cancel deletion) nếu phát hiện vẫn cần dùng — tránh mất vĩnh viễn dữ liệu đã mã hóa bằng key đó do xóa nhầm.",
           "createdAt": "2026-09-14T06:26:11.067628Z",
           "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "bfdcbec2aa13",
+          "title": "KMS: HMAC KEYS",
+          "content": "✅ Ngoài Symmetric (encrypt/decrypt) và Asymmetric (sign/verify hoặc encrypt/decrypt), KMS còn hỗ trợ HMAC Key — dùng để tạo/verify HMAC tag (đảm bảo TOÀN VẸN dữ liệu + xác thực nguồn gốc, vd verify webhook signature) mà không cần tự quản lý secret key ở phía ứng dụng.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "ddf8660dc15a",
+          "title": "KMS: ALIASES",
+          "content": "✅ Alias: tên THÂN THIỆN (vd alias/my-app-key) trỏ tới 1 CMK — cho phép ĐỔI key vật lý bên dưới (vd sau khi tạo key mới) mà KHÔNG cần sửa code ứng dụng (code chỉ tham chiếu alias, không hardcode Key ID), tương tự khái niệm DNS Alias record cho địa chỉ IP.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -2429,6 +2541,20 @@
           "content": "✅ API Gateway có thể tự VALIDATE request (body theo JSON Schema, query string/header bắt buộc) NGAY TẠI GATEWAY, từ chối request sai định dạng TRƯỚC KHI chạm tới Lambda/backend — giảm tải xử lý validate ở backend, tiết kiệm invocation Lambda cho request không hợp lệ.",
           "createdAt": "2026-09-14T06:27:04.373715Z",
           "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "3e9cfac0f54e",
+          "title": "API GATEWAY: MUTUAL TLS (mTLS)",
+          "content": "📌 Tình huống: Cần xác thực CẢ 2 CHIỀU giữa client và API Gateway (không chỉ server chứng minh danh tính qua TLS thông thường, mà CLIENT cũng phải chứng minh danh tính bằng chứng chỉ riêng) — thường yêu cầu bởi đối tác B2B/tài chính.\n✅ Đáp án đúng: Bật Mutual TLS (mTLS) trên Custom Domain của API Gateway — client PHẢI trình chứng chỉ hợp lệ (đã được tin cậy qua Truststore lưu trên S3) mới kết nối được, tăng bảo mật hơn nhiều so với chỉ dùng API Key.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "a8f55ced6a66",
+          "title": "API GATEWAY: WEBSOCKET API - ROUTE SELECTION & CONNECTION MANAGEMENT",
+          "content": "✅ WebSocket API dùng Route Selection Expression để quyết định route nào xử lý message dựa trên nội dung message gửi lên (không chỉ dựa vào \\$connect/\\$disconnect/\\$default cố định).\n✅ API Gateway lưu Connection ID cho mỗi client đang kết nối — backend (Lambda) dùng Connection ID này gọi API @connections để CHỦ ĐỘNG GỬI dữ liệu XUỐNG client bất kỳ lúc nào (server-push), không chỉ phản hồi request.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -2502,6 +2628,13 @@
           "content": "✅ Mỗi lần Task chạy tạo ra 1 Task Execution với báo cáo chi tiết: số file đã transfer, bị skip, bị lỗi, tổng dung lượng, thời gian chạy — xuất được report chi tiết ra CloudWatch Logs để audit từng lần đồng bộ, phục vụ chứng minh tuân thủ SLA di trú dữ liệu.",
           "createdAt": "2026-09-14T06:30:53.189120Z",
           "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "ff8173f20f81",
+          "title": "DATASYNC: OBJECT STORAGE LOCATION (S3-COMPATIBLE THỨ 3)",
+          "content": "✅ DataSync hỗ trợ transfer từ/tới storage tương thích S3 API của bên thứ 3 (on-premises object storage như MinIO, hoặc cloud khác) — không giới hạn chỉ AWS-to-AWS, hữu ích khi migrate từ hạ tầng object storage khác lên AWS.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -2881,6 +3014,20 @@
           "content": "✅ Transform: xử lý TIỀN BIÊN DỊCH (preprocessing) template TRƯỚC KHI CloudFormation thực thi — AWS::Serverless-2016-10-31 (SAM) là ví dụ phổ biến nhất, cho phép viết cú pháp NGẮN GỌN hơn cho ứng dụng serverless (Lambda + API Gateway + DynamoDB), tự động expand thành CloudFormation resource đầy đủ khi deploy.",
           "createdAt": "2026-09-14T06:29:02.614843Z",
           "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "183f731c80fb",
+          "title": "CLOUDFORMATION: STACK POLICY",
+          "content": "📌 Tình huống: Trong 1 stack có resource QUAN TRỌNG (vd RDS production), sợ lần UPDATE stack sau này VÔ TÌNH làm resource đó bị THAY THẾ (replace, dẫn tới mất dữ liệu) do thay đổi property không tương thích update tại chỗ.\n✅ Đáp án đúng: Stack Policy — khai báo rule CHẶN update/replace lên CÁC RESOURCE CỤ THỂ trong stack (mặc định deny tất cả trừ khi liệt kê rõ Allow), buộc phải chủ động \"mở khóa\" tạm thời mới update được resource nhạy cảm đó — lớp bảo vệ bổ sung ngoài Change Set review.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
+        },
+        {
+          "id": "42ac9c0c7b5b",
+          "title": "CLOUDFORMATION: cfn-init & cfn-signal (EC2 BOOTSTRAP)",
+          "content": "✅ cfn-init: agent chạy trên EC2 lúc khởi động để đọc metadata (AWS::CloudFormation::Init) trong template và tự cài đặt package/config/chạy lệnh theo đúng thứ tự khai báo.\n✅ cfn-signal + CreationPolicy: EC2 gửi tín hiệu NGƯỢC LẠI CloudFormation báo \"tôi đã bootstrap xong\" — CloudFormation CHỜ tín hiệu này rồi mới coi resource là CREATE_COMPLETE, đảm bảo stack không báo thành công trước khi ứng dụng thực sự sẵn sàng.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -3128,6 +3275,20 @@
           "content": "📌 Tình huống: Nhiều Lambda function cùng truy cập Aurora, mỗi lần cold start tạo connection mới gây quá tải số lượng kết nối DB.\n✅ Đáp án đúng: Kết hợp RDS Proxy đứng trước Aurora — pool connection sẵn, Lambda kết nối qua Proxy thay vì trực tiếp DB, giảm connection overhead & tăng tốc failover.",
           "createdAt": "2026-09-14T06:27:04.373715Z",
           "updatedAt": "2026-09-14T06:27:04.373715Z"
+        },
+        {
+          "id": "8b7dcd79d720",
+          "title": "AURORA: RESERVED CAPACITY vs SERVERLESS v2 SCALING CONFIGURATION",
+          "content": "✅ Serverless v2 cho phép đặt MIN/MAX ACU (Aurora Capacity Unit) — cluster tự động scale trong khoảng đó theo tải, MIN ACU > 0 giúp tránh cold-start hoàn toàn khi có traffic đột ngột, trong khi MAX ACU giới hạn chi phí tối đa có thể phát sinh.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "78fdba2ae695",
+          "title": "AURORA: BACKTRACK WINDOW & GIỚI HẠN",
+          "content": "✅ Backtrack (chỉ Aurora MySQL) có giới hạn THỜI GIAN TỐI ĐA có thể tua ngược (target backtrack window, tối đa 72h) — càng đặt window dài, chi phí lưu trữ log thay đổi càng cao; Backtrack KHÔNG thay thế hoàn toàn cho backup/snapshot (không phục hồi được nếu vượt quá window hoặc gặp sự cố hạ tầng nghiêm trọng).",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -3215,6 +3376,20 @@
           "content": "📌 Tình huống: Tổ chức có nhiều account riêng biệt, cần xem metric/log/trace của TẤT CẢ account đó ở 1 dashboard duy nhất mà không cần đăng nhập từng account.\n✅ Đáp án đúng: CloudWatch Cross-Account Observability — chỉ định 1 account làm MONITORING ACCOUNT (trung tâm), các account khác làm SOURCE ACCOUNT chia sẻ dữ liệu quan sát (metric, log, trace) sang account trung tâm để xem tổng hợp.",
           "createdAt": "2026-09-14T06:26:11.067628Z",
           "updatedAt": "2026-09-14T06:26:11.067628Z"
+        },
+        {
+          "id": "c3cee5c7d883",
+          "title": "CLOUDWATCH: ANOMALY DETECTION",
+          "content": "📌 Tình huống: Metric có pattern dao động BÌNH THƯỜNG theo thời gian (vd traffic cao giờ hành chính, thấp ban đêm), đặt ngưỡng alarm CỐ ĐỊNH sẽ gây false alarm liên tục.\n✅ Đáp án đúng: CloudWatch Anomaly Detection — dùng ML học pattern BÌNH THƯỜNG của metric theo thời gian (band dao động dự kiến), tạo alarm khi giá trị THỰC TẾ vượt RA NGOÀI band dự đoán đó, thay vì so với 1 ngưỡng cố định không phù hợp với pattern tự nhiên của metric.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
+        },
+        {
+          "id": "62f64be19493",
+          "title": "CLOUDWATCH: METRIC MATH",
+          "content": "✅ Metric Math: kết hợp NHIỀU metric có sẵn thành 1 metric MỚI bằng công thức toán học (vd tính tỷ lệ lỗi = SUM(Errors)/SUM(Invocations)*100 cho Lambda) — tạo alarm/dashboard trên chỉ số TÍNH TOÁN thay vì chỉ dựa vào metric thô có sẵn.",
+          "createdAt": "2026-09-14T06:35:38.019984Z",
+          "updatedAt": "2026-09-14T06:35:38.019984Z"
         }
       ]
     },
@@ -3288,6 +3463,13 @@
           "content": "✅ SSM Distributor: quản lý & phân phối TỰ ĐỘNG các package phần mềm (agent, antivirus, driver) tới fleet EC2/on-premises theo lịch hoặc khi cần, đảm bảo mọi instance luôn có đúng version package chuẩn mà không cần cài thủ công từng máy.",
           "createdAt": "2026-09-14T06:30:53.189120Z",
           "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "e6fdcc138e00",
+          "title": "SSM: APPLICATION MANAGER & OPSCENTER",
+          "content": "✅ Application Manager: gom nhóm resource AWS theo ỨNG DỤNG/DỰ ÁN (dựa trên tag hoặc CloudFormation stack) để xem tình trạng vận hành TỔNG QUAN (compliance, alarm, OpsItem) của cả 1 ứng dụng ở 1 nơi.\n✅ OpsCenter: nơi TẬP TRUNG các OpsItem (sự cố vận hành) được tạo tự động từ CloudWatch Alarm/Config/Trusted Advisor, giúp team vận hành xử lý sự cố theo quy trình ticket thống nhất ngay trong AWS Console.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -3747,6 +3929,13 @@
           "content": "📌 Tình huống: Yêu cầu compliance bắt buộc dữ liệu phải được MÃ HÓA ngay ở TẦNG VẬT LÝ (Layer 2) khi truyền qua Direct Connect, không chỉ dựa vào mã hóa ở tầng ứng dụng (TLS).\n✅ Đáp án đúng: MACsec (Media Access Control Security) — mã hóa Layer 2 tốc độ dây (line-rate), hỗ trợ trên kết nối Dedicated 10Gbps/100Gbps tại 1 số Direct Connect location, đảm bảo dữ liệu mã hóa xuyên suốt đường truyền vật lý mà không cần dựng thêm VPN chồng lên Direct Connect.",
           "createdAt": "2026-09-14T06:31:58.066350Z",
           "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "9a74c2a2fff3",
+          "title": "DIRECT CONNECT: VLAN & 802.1Q",
+          "content": "✅ Mỗi Virtual Interface (VIF) trên Direct Connect gắn với 1 VLAN ID riêng (chuẩn 802.1Q) — cho phép 1 kết nối vật lý DUY NHẤT (hoặc LAG) chia sẻ được thành NHIỀU VIF logic độc lập (Private/Public/Transit) cùng lúc, mỗi VIF có route/cấu hình riêng.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -4150,6 +4339,13 @@
           "content": "✅ Có thể tạo VPC Endpoint cho CloudTrail để các dịch vụ trong private subnet ghi log CloudTrail mà KHÔNG cần đi qua Internet/NAT Gateway — giữ toàn bộ traffic logging trong mạng AWS riêng, tăng bảo mật cho môi trường yêu cầu air-gapped/isolated cao.",
           "createdAt": "2026-09-14T06:30:53.189120Z",
           "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "21ca74664d86",
+          "title": "CLOUDTRAIL: TRAIL RETENTION vs EVENT HISTORY 90 NGÀY",
+          "content": "⚠️ Phân biệt rõ: Event History (mặc định, không cần tạo trail) chỉ giữ 90 NGÀY và KHÔNG cấu hình được thời gian dài hơn; muốn lưu LÂU HƠN 90 ngày bắt buộc phải tạo Trail xuất log ra S3 (khi đó thời gian lưu do LIFECYCLE POLICY của chính bucket S3 quyết định, không phải cấu hình trong CloudTrail).",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -4223,6 +4419,13 @@
           "content": "✅ Ngoài Aggregator thông thường, Config còn hỗ trợ gộp dữ liệu từ Organization TỰ ĐỘNG (không cần tự thêm từng account) khi dùng Service-Managed Aggregator qua AWS Organizations — account MỚI thêm vào Org tự động được gộp vào view tổng hợp mà không cần cấu hình thủ công lại.",
           "createdAt": "2026-09-14T06:30:53.189120Z",
           "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "1226c6231de7",
+          "title": "AWS CONFIG: RECORDING GROUP - GIỚI HẠN RESOURCE TYPE",
+          "content": "✅ Recording Group cho phép chọn CHỈ GHI LẠI 1 SỐ LOẠI resource cụ thể (thay vì ghi TẤT CẢ resource type hỗ trợ, mặc định) — giảm chi phí Config (tính theo số Configuration Item ghi nhận) khi chỉ cần theo dõi compliance cho 1 vài loại resource quan trọng (vd chỉ Security Group, S3, IAM) thay vì toàn bộ account.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -4449,6 +4652,13 @@
           "content": "✅ Mọi chứng chỉ public do ACM cấp đều được ghi vào Certificate Transparency (CT) Log công khai (theo chuẩn ngành, bắt buộc từ trình duyệt hiện đại) — có thể TẮT logging cho 1 chứng chỉ cụ thể nếu domain đó nhạy cảm/chưa công bố, tránh lộ tên miền nội bộ ra log công khai trước khi ra mắt.",
           "createdAt": "2026-09-14T06:30:53.189120Z",
           "updatedAt": "2026-09-14T06:30:53.189120Z"
+        },
+        {
+          "id": "db07b13cebbd",
+          "title": "ACM PRIVATE CA: HIERARCHY (ROOT & SUBORDINATE CA)",
+          "content": "✅ Có thể xây dựng CA HIERARCHY nhiều tầng: Root CA (offline, ít dùng, chỉ ký cho Subordinate CA) + Subordinate CA (online, dùng hàng ngày để cấp chứng chỉ thực tế) — giảm rủi ro nếu Subordinate CA bị lộ (chỉ cần thu hồi CA đó, không ảnh hưởng Root CA gốc), theo đúng chuẩn PKI doanh nghiệp.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     },
@@ -5071,6 +5281,13 @@
           "content": "✅ Firewall Manager cũng quản lý tập trung Route 53 Resolver DNS Firewall Policy xuyên Organization (không chỉ WAF/Network Firewall/Shield như đã nêu), và hỗ trợ tích hợp firewall của ĐỐI TÁC (Palo Alto, Fortinet...) qua AWS Marketplace, quản lý CHUNG với Network Firewall gốc của AWS trong 1 policy.",
           "createdAt": "2026-09-14T06:31:58.066350Z",
           "updatedAt": "2026-09-14T06:31:58.066350Z"
+        },
+        {
+          "id": "a404a6528daf",
+          "title": "SECURITY HUB: INSIGHTS (SAVED SEARCHES)",
+          "content": "✅ Insight: 1 \"saved search\" theo tiêu chí nhóm nhất định (vd nhóm finding theo resource type, theo severity trend) — AWS cung cấp sẵn 1 số Managed Insight (vd \"S3 bucket có nhiều finding nhất\"), và cho phép TỰ TẠO Insight riêng theo nhu cầu theo dõi của team bảo mật.",
+          "createdAt": "2026-09-14T06:36:33.204792Z",
+          "updatedAt": "2026-09-14T06:36:33.204792Z"
         }
       ]
     }
