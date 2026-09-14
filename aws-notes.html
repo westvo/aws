@@ -309,8 +309,10 @@
 
   // ---------- OpenRouter TTS (đọc ghi chú bằng AI) ----------
   const OPENROUTER_KEY_STORAGE = 'aws-notes-openrouter-key';
-  const TTS_MODEL = 'openai/gpt-4o-audio-preview';
-  const TTS_VOICE = 'alloy';
+  // Dùng endpoint TTS chuyên dụng của OpenRouter (/api/v1/audio/speech), không phải chat completions.
+  // Gemini TTS đọc đa ngôn ngữ tốt (kể cả tiếng Việt). Đổi voice tại https://openrouter.ai/google/gemini-3.1-flash-tts-preview
+  const TTS_MODEL = 'google/gemini-3.1-flash-tts-preview';
+  const TTS_VOICE = 'Kore';
   const TTS_FORMAT = 'mp3';
   function getApiKey(){ try{ return localStorage.getItem(OPENROUTER_KEY_STORAGE) || ''; }catch(e){ return ''; } }
   function setApiKey(k){ try{ localStorage.setItem(OPENROUTER_KEY_STORAGE, k); }catch(e){} }
@@ -319,6 +321,15 @@
     let h = 0;
     for(let i = 0; i < str.length; i++){ h = (Math.imul(31, h) + str.charCodeAt(i)) | 0; }
     return 'h' + (h >>> 0).toString(36);
+  }
+  function arrayBufferToBase64(buffer){
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    const chunkSize = 0x8000;
+    for(let i = 0; i < bytes.length; i += chunkSize){
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    return btoa(binary);
   }
 
   // Dữ liệu mẫu đầy đủ (39 service AWS, 130 note) được nhúng sẵn để mở file là dùng được ngay,
@@ -707,7 +718,7 @@
 
     setAudioBtnState('loading', 'Đang tạo audio...');
     try{
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const res = await fetch('https://openrouter.ai/api/v1/audio/speech', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + key,
@@ -717,12 +728,9 @@
         },
         body: JSON.stringify({
           model: TTS_MODEL,
-          modalities: ['text', 'audio'],
-          audio: { voice: TTS_VOICE, format: TTS_FORMAT },
-          messages: [
-            { role: 'system', content: 'You are a text-to-speech narrator. Read the user message aloud verbatim, in the same language it is written (Vietnamese text stays in Vietnamese), calmly and clearly. Do not add any extra words, greetings, commentary, or explanations — only speak the given text exactly as written.' },
-            { role: 'user', content: text }
-          ]
+          input: text,
+          voice: TTS_VOICE,
+          response_format: TTS_FORMAT
         })
       });
       if(!res.ok){
@@ -730,18 +738,17 @@
         try{ const errJson = await res.json(); detail = errJson && errJson.error && errJson.error.message ? errJson.error.message : ''; }catch(e){}
         throw Object.assign(new Error(detail || ('HTTP ' + res.status)), { status: res.status });
       }
-      const data = await res.json();
-      const msg = data && data.choices && data.choices[0] && data.choices[0].message;
-      const audioOut = msg && msg.audio;
-      if(!audioOut || !audioOut.data){
-        throw new Error('Model không trả về audio. Model dùng: ' + TTS_MODEL + ' (có thể tài khoản OpenRouter chưa hỗ trợ audio output).');
+      const buf = await res.arrayBuffer();
+      if(!buf || buf.byteLength === 0){
+        throw new Error('Model không trả về audio (phản hồi rỗng). Model dùng: ' + TTS_MODEL);
       }
-      n.audio = { data: audioOut.data, format: audioOut.format || TTS_FORMAT, hash };
+      const base64 = arrayBufferToBase64(buf);
+      n.audio = { data: base64, format: TTS_FORMAT, hash };
       const saved = save();
       if(!saved) toast('Đã tạo audio nhưng không cache được (bộ nhớ trình duyệt đầy) — lần sau sẽ phải tạo lại.');
       if(currentViewNoteId === noteId) playAudioData(n.audio.data, n.audio.format);
     }catch(err){
-      setAudioBtnState('idle');
+      if(currentViewNoteId === noteId) updateAudioBtnIdleTitle(n); else setAudioBtnState('idle');
       if(err && err.status === 401){
         toast('API key không hợp lệ hoặc hết hạn — vui lòng nhập lại.');
         clearApiKey();
