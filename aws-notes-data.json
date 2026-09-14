@@ -3006,6 +3006,13 @@
           "content": "✅ Nhiều Task có thể XẾP HÀNG (queue) để chạy TUẦN TỰ trên CÙNG 1 Agent — tránh 2 Task chạy song song cùng lúc làm cạn kiệt băng thông/tài nguyên Agent, đảm bảo mỗi lần đồng bộ diễn ra ổn định thay vì tranh chấp tài nguyên lẫn nhau.",
           "createdAt": "2026-09-14T06:56:57.225371Z",
           "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "f158e2940325",
+          "title": "DATASYNC: TASK QUEUEING & CONCURRENT EXECUTIONS PER AGENT",
+          "content": "✅ 1 Agent chỉ chạy được 1 Task tại 1 thời điểm (các Task khác tự động XẾP HÀNG) — nếu cần chạy NHIỀU Task song song thực sự (vd đồng bộ nhiều NAS khác nhau cùng lúc), cần triển khai NHIỀU Agent riêng biệt thay vì dùng chung 1 Agent.",
+          "createdAt": "2026-09-14T06:58:48.828864Z",
+          "updatedAt": "2026-09-14T06:58:48.828864Z"
         }
       ]
     },
@@ -3546,6 +3553,13 @@
           "content": "✅ Rollback Triggers: gắn CloudWatch Alarm vào 1 stack update — nếu Alarm chuyển ALARM state trong khoảng Monitoring Time SAU KHI update hoàn tất, CloudFormation TỰ ĐỘNG ROLLBACK toàn bộ stack về trạng thái trước đó, ngay cả khi resource được tạo/update THÀNH CÔNG về mặt kỹ thuật nhưng gây lỗi vận hành thực tế (vd tăng tỷ lệ lỗi ứng dụng).",
           "createdAt": "2026-09-14T06:54:50.429991Z",
           "updatedAt": "2026-09-14T06:54:50.429991Z"
+        },
+        {
+          "id": "f6dd1f4afbbd",
+          "title": "CLOUDFORMATION: CAPABILITIES FLAG (IAM/AUTO_EXPAND)",
+          "content": "⚠️ Khi deploy stack có TẠO IAM Resource (Role/Policy), CloudFormation YÊU CẦU xác nhận rõ ràng qua Capabilities flag (CAPABILITY_IAM hoặc CAPABILITY_NAMED_IAM nếu đặt tên tùy chỉnh) — cơ chế BẢO VỆ chống việc 1 template độc hại/nhầm lẫn tự động tạo ra IAM permission nguy hiểm mà người deploy không hay biết.",
+          "createdAt": "2026-09-14T06:58:48.828864Z",
+          "updatedAt": "2026-09-14T06:58:48.828864Z"
         }
       ]
     },
@@ -5434,6 +5448,13 @@
           "content": "✅ AWS Config cần 1 IAM Role (thường là Service-Linked Role) có quyền ĐỌC cấu hình của MỌI resource type được recording, cộng thêm quyền GHI vào S3 bucket đích — thiết lập ĐÚNG quyền này là bước tiên quyết trước khi Config bắt đầu ghi nhận dữ liệu, lỗi thiếu quyền là nguyên nhân phổ biến khiến Config không hoạt động đúng.",
           "createdAt": "2026-09-14T06:56:57.225371Z",
           "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "81421bcdb81f",
+          "title": "AWS CONFIG: DELIVERY CHANNEL & SNS NOTIFICATION",
+          "content": "✅ Delivery Channel: nơi Config gửi Configuration Snapshot & History (S3 bucket) VÀ tùy chọn thông báo qua SNS Topic mỗi khi có Configuration Item mới hoặc compliance state thay đổi — cho phép trigger xử lý real-time (Lambda) khi phát hiện thay đổi cấu hình quan trọng thay vì chỉ xem báo cáo định kỳ.",
+          "createdAt": "2026-09-14T06:58:48.828864Z",
+          "updatedAt": "2026-09-14T06:58:48.828864Z"
         }
       ]
     },
@@ -5758,6 +5779,13 @@
           "content": "✅ Mỗi chứng chỉ có trường Renewal Eligibility (đủ điều kiện gia hạn tự động hay không) — nếu domain có DNS validation record bị xóa/thay đổi, chứng chỉ chuyển trạng thái \"Renewal status: Failed\", cần chủ động theo dõi CloudWatch Event cho trạng thái này để không bị bất ngờ khi chứng chỉ hết hạn.",
           "createdAt": "2026-09-14T06:56:57.225371Z",
           "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "bb83b4bc3426",
+          "title": "ACM: TÍCH HỢP NLB (KHÔNG TRỰC TIẾP, CẦN TARGET GROUP-LEVEL)",
+          "content": "⚠️ NLB (Network Load Balancer) hoạt động Layer 4, KHÔNG tự làm SSL Termination như ALB — muốn dùng chứng chỉ ACM với NLB, phải cấu hình TLS Listener (NLB hỗ trợ TLS termination từ 2018) hoặc để traffic pass-through TCP nguyên vẹn tới backend tự xử lý TLS bằng chứng chỉ riêng của nó.",
+          "createdAt": "2026-09-14T06:58:48.828864Z",
+          "updatedAt": "2026-09-14T06:58:48.828864Z"
         }
       ]
     },
@@ -6075,6 +6103,13 @@
           "content": "✅ Khi cấp quyền cho SRT hỗ trợ, chỉ nên cấp IAM Role với quyền GIỚI HẠN CHẶT CHẼ (chỉ đủ để họ viết/áp dụng WAF rule khẩn cấp, KHÔNG cấp quyền quản trị rộng) — tuân thủ nguyên tắc least privilege ngay cả khi cấp quyền cho đội hỗ trợ bên ngoài trong tình huống khẩn cấp.",
           "createdAt": "2026-09-14T06:56:57.225371Z",
           "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "99eee9cf2dd8",
+          "title": "SHIELD: SUBSCRIPTION TERM & AUTO-RENEWAL",
+          "content": "✅ Shield Advanced Subscription cam kết tối thiểu 1 NĂM, tự động gia hạn (auto-renew) trừ khi hủy trước — cần lên kế hoạch ngân sách dài hạn khi quyết định bật Shield Advanced, khác các dịch vụ pay-as-you-go thông thường có thể tắt bất kỳ lúc nào không cam kết.",
+          "createdAt": "2026-09-14T06:58:48.828864Z",
+          "updatedAt": "2026-09-14T06:58:48.828864Z"
         }
       ]
     },
@@ -6183,6 +6218,13 @@
           "content": "✅ Có thể backup xuyên PARTITION AWS khác nhau (vd từ AWS Standard partition sang AWS GovCloud) trong 1 số trường hợp — phục vụ yêu cầu đặc biệt về data residency/compliance của khu vực chính phủ, dù đây là use case khá hiếm gặp trong kiến trúc thông thường.",
           "createdAt": "2026-09-14T06:56:57.225371Z",
           "updatedAt": "2026-09-14T06:56:57.225371Z"
+        },
+        {
+          "id": "a0e80cefd79e",
+          "title": "AWS BACKUP: COMPLIANCE FRAMEWORK & CONTROL TOWER INTEGRATION",
+          "content": "✅ AWS Backup tích hợp với AWS Control Tower — khi thiết lập landing zone đa account, có thể áp dụng Backup Policy CHUẨN ngay từ đầu cho account MỚI tạo qua Control Tower, đảm bảo MỌI account mới trong tổ chức đều có backup baseline ngay từ lúc khởi tạo.",
+          "createdAt": "2026-09-14T06:58:48.828864Z",
+          "updatedAt": "2026-09-14T06:58:48.828864Z"
         }
       ]
     },
@@ -6615,6 +6657,13 @@
           "content": "✅ Direct Lambda Resolver: Lambda function nhận NGUYÊN VĂN GraphQL context (không qua mapping template VTL/JS) và tự trả về kết quả đúng format — đơn giản hóa khi logic phức tạp hơn khả năng của VTL, cho phép viết TOÀN BỘ logic bằng ngôn ngữ lập trình quen thuộc thay vì học thêm VTL.",
           "createdAt": "2026-09-14T06:57:32.533591Z",
           "updatedAt": "2026-09-14T06:57:32.533591Z"
+        },
+        {
+          "id": "43b7b303d53f",
+          "title": "APPSYNC: SUBSCRIPTION FILTER (ENHANCED FILTERING)",
+          "content": "📌 Tình huống: Client chỉ muốn nhận Subscription cho MỘT PHẦN dữ liệu cụ thể (vd chỉ nhận thông báo đơn hàng của ĐÚNG customer đó), không muốn nhận TẤT CẢ event của Mutation.\n✅ Đáp án đúng: Enhanced Subscription Filtering — định nghĩa điều kiện lọc NGAY TRONG Subscription request (vd theo customerId), AppSync chỉ đẩy event khớp điều kiện đó tới ĐÚNG client đang subscribe, giảm traffic không cần thiết xuống client.",
+          "createdAt": "2026-09-14T06:58:48.828864Z",
+          "updatedAt": "2026-09-14T06:58:48.828864Z"
         }
       ]
     },
