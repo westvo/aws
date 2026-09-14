@@ -265,6 +265,20 @@
           "content": "📌 Tình huống: Cần kết nối nhiều VPC ở Region A với nhiều VPC ở Region B, tránh phải tạo VPC Peering full-mesh giữa từng cặp VPC xuyên Region.\n✅ Đáp án đúng: Transit Gateway Peering — kết nối 2 Transit Gateway ở 2 Region khác nhau, các VPC đã gắn vào từng Transit Gateway tự động giao tiếp được xuyên Region qua đường peering này (traffic đi qua mạng backbone AWS, không qua Internet).",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "9dec41329845",
+          "title": "TRANSIT GATEWAY: MULTICAST SUPPORT",
+          "content": "📌 Tình huống: Ứng dụng cần gửi dữ liệu MULTICAST (1 nguồn phát tới nhiều đích cùng lúc, vd streaming media, thị trường tài chính real-time feed) xuyên nhiều VPC.\n✅ Đáp án đúng: Transit Gateway Multicast — hỗ trợ multicast domain xuyên nhiều VPC/subnet đã attach vào Transit Gateway, điều mà VPC thông thường KHÔNG hỗ trợ multicast native.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "83ba90ae544e",
+          "title": "TRANSIT GATEWAY: APPLIANCE MODE",
+          "content": "📌 Tình huống: Traffic đi qua 1 thiết bị bảo mật (firewall ảo) đặt trong VPC trung tâm cần đảm bảo gói tin ĐI và VỀ đều qua CÙNG 1 instance của thiết bị đó (để inspection đúng cả 2 chiều 1 session).\n✅ Đáp án đúng: Bật Appliance Mode trên Transit Gateway VPC Attachment — đảm bảo traffic 2 chiều của CÙNG 1 flow luôn đi qua CÙNG 1 AZ/appliance instance, tránh tình trạng traffic đi 1 đường về 1 đường khác gây lỗi cho thiết bị stateful inspection.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
         }
       ]
     },
@@ -1566,6 +1580,27 @@
           "content": "📌 Tình huống: Container trong ECS bị lỗi runtime, cần \"SSH vào\" bên trong container đang chạy để debug trực tiếp mà không cần expose SSH port hay build lại image có thêm tool debug.\n✅ Đáp án đúng: ECS Exec — dùng Systems Manager Session Manager làm nền, cho phép exec 1 lệnh/mở shell TRỰC TIẾP vào container đang chạy (tương tự docker exec) mà không cần SSH, không cần mở port, có audit log qua CloudTrail.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "4f9b82579fbe",
+          "title": "ECS: DEPLOYMENT CIRCUIT BREAKER",
+          "content": "📌 Tình huống: Deploy version mới của Service bị lỗi (task liên tục crash/unhealthy), cần TỰ ĐỘNG rollback về version cũ ổn định thay vì để deployment kẹt mãi hoặc phải tự phát hiện & rollback thủ công.\n✅ Đáp án đúng: Bật Deployment Circuit Breaker — ECS tự động PHÁT HIỆN deployment đang thất bại (task không healthy sau nhiều lần thử) và TỰ ĐỘNG ROLLBACK về Task Definition version trước đó mà không cần can thiệp thủ công.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "47ab4187b65e",
+          "title": "ECS: SERVICE CONNECT",
+          "content": "📌 Tình huống: Nhiều ECS Service cần GIAO TIẾP VỚI NHAU (service-to-service) theo tên dễ nhớ, có load balancing & retry/observability giữa các service mà không muốn tự dựng Service Mesh phức tạp.\n✅ Đáp án đúng: ECS Service Connect — cung cấp SERVICE DISCOVERY + LOAD BALANCING đơn giản built-in giữa các ECS Service (gọi nhau qua tên ngắn gọn), kèm metric traffic giữa các service, nhẹ hơn nhiều so với triển khai App Mesh đầy đủ.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "56ba61b6f98a",
+          "title": "ECS: TASK PLACEMENT STRATEGIES & CONSTRAINTS",
+          "content": "✅ Placement Strategy (chỉ áp dụng EC2 launch type, Fargate không cần vì AWS tự quản lý): binpack (dồn task vào ÍT instance nhất để tối ưu tận dụng tài nguyên/chi phí), spread (trải đều task qua nhiều instance/AZ để tăng chịu lỗi), random.\n✅ Placement Constraint: ép buộc task CHỈ chạy trên instance thỏa điều kiện cụ thể (vd chỉ instance có GPU, hoặc phải distinctInstance — mỗi task 1 instance riêng không share).",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
         }
       ]
     },
@@ -1618,6 +1653,27 @@
           "content": "✅ EFS Lifecycle Management: tự động chuyển file KHÔNG được truy cập trong X ngày (7/14/30/60/90 ngày) sang EFS-IA (Infrequent Access, rẻ hơn ~92%) — tự động chuyển NGƯỢC lại Standard nếu file được truy cập lại, hoàn toàn TRONG SUỐT với ứng dụng (vẫn cùng file system, chỉ khác giá lưu trữ nội bộ).",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "47d1844392a2",
+          "title": "EFS: ACCESS POINTS",
+          "content": "📌 Tình huống: Nhiều ứng dụng/container khác nhau cùng dùng chung 1 EFS file system, mỗi ứng dụng chỉ nên thấy đúng 1 thư mục con riêng với quyền POSIX cụ thể (không thấy toàn bộ file system).\n✅ Đáp án đúng: EFS Access Point — tạo nhiều \"cổng vào\" khác nhau cho CÙNG 1 file system, mỗi Access Point gắn với 1 thư mục gốc (root directory) + user/group POSIX cố định riêng, đơn giản hóa việc quản lý quyền truy cập cho container/microservices dùng chung storage.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "30ef14a47e6d",
+          "title": "EFS: REPLICATION (CROSS-REGION)",
+          "content": "📌 Tình huống: Cần bản sao EFS ở Region khác phục vụ Disaster Recovery, độ trễ đồng bộ thấp.\n✅ Đáp án đúng: EFS Replication — tự động đồng bộ dữ liệu LIÊN TỤC sang file system đích ở Region khác (thường vài phút độ trễ), khi cần failover chỉ cần \"promote\" replica đích thành read-write, đơn giản hơn nhiều so với tự dùng DataSync đồng bộ định kỳ.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "79f2c5fc5fbf",
+          "title": "EFS: NFS CLIENT MOUNT OPTIONS & ONE ZONE",
+          "content": "✅ EFS mount qua NFSv4.1, hỗ trợ mount SONG SONG từ HÀNG NGHÌN EC2/container/Lambda cùng lúc (đọc/ghi đồng thời) — điểm khác biệt lớn so với EBS (chỉ 1 instance, trừ Multi-Attach io1/io2 giới hạn 16).\n✅ EFS One Zone: chỉ lưu trong 1 AZ (rẻ hơn ~47% so với Standard đa AZ) — dùng cho dữ liệu KHÔNG cần độ bền đa AZ (dev/test, hoặc dữ liệu có thể tái tạo lại dễ dàng).",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
         }
       ]
     },
@@ -2421,6 +2477,20 @@
           "content": "✅ FSx for Windows File Server: file share SMB tương thích Windows/Active Directory, dùng cho ứng dụng .NET/Windows cần shared storage kiểu Windows.\n✅ FSx for Lustre: hiệu năng CỰC CAO, độ trễ dưới mili-giây, tích hợp trực tiếp S3 (link dữ liệu qua lại) — dùng cho HPC, machine learning training cần đọc dữ liệu tốc độ cao.\n✅ FSx for NetApp ONTAP: mang tính năng NetApp ONTAP quen thuộc lên AWS (snapshot, clone, dedup, đa giao thức NFS/SMB/iSCSI) — dùng khi migrate workload đang chạy NetApp on-premises.\n✅ FSx for OpenZFS: file system ZFS hiệu năng cao, hỗ trợ snapshot/clone nhanh, phù hợp workload Linux cần tính năng ZFS quen thuộc.",
           "createdAt": "2026-09-14T03:44:31.899169Z",
           "updatedAt": "2026-09-14T03:44:31.899169Z"
+        },
+        {
+          "id": "dec01ad051cf",
+          "title": "FSx FOR LUSTRE: LINK VỚI S3 (DATA REPOSITORY ASSOCIATION)",
+          "content": "📌 Tình huống: Dữ liệu training ML gốc nằm trên S3, cần truy cập với hiệu năng CỰC CAO (sub-millisecond) cho quá trình training mà không cần copy thủ công toàn bộ dataset trước.\n✅ Đáp án đúng: FSx for Lustre + Data Repository Association — tự động LAZY-LOAD dữ liệu từ S3 vào FSx khi được truy cập lần đầu (không cần copy trước toàn bộ), và có thể tự động EXPORT kết quả xử lý NGƯỢC LẠI S3 khi hoàn tất.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "84b8b3cb2089",
+          "title": "FSx for NetApp ONTAP: SNAPSHOT & THIN PROVISIONING",
+          "content": "✅ Thừa hưởng tính năng ONTAP: Snapshot gần như tức thì không tốn thêm dung lượng ban đầu (copy-on-write), Thin Provisioning (chỉ dùng dung lượng THỰC TẾ đang chứa, không cấp phát trước toàn bộ), SnapMirror để replicate dữ liệu — phù hợp khi migrate workload NetApp on-premises muốn giữ nguyên các tính năng quen thuộc này.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
         }
       ]
     },
@@ -2546,6 +2616,20 @@
           "content": "✅ One-time Job: quét 1 LẦN toàn bộ bucket đã chọn — dùng khi cần đánh giá nhanh 1 lần (vd trước khi công bố bucket public).\n✅ Scheduled Job: quét ĐỊNH KỲ (theo lịch) — dùng cho bucket liên tục có dữ liệu mới, đảm bảo phát hiện sớm dữ liệu nhạy cảm mới phát sinh.",
           "createdAt": "2026-09-14T04:05:17.515826Z",
           "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "38be72a5bf12",
+          "title": "MACIE: SEVERITY & SAMPLE OCCURRENCES",
+          "content": "✅ Finding có mức Severity (Low/Medium/High) dựa trên loại dữ liệu nhạy cảm phát hiện được (vd số thẻ tín dụng thường nghiêm trọng hơn địa chỉ email).\n✅ Sample Occurrences: Macie hiển thị VÍ DỤ CỤ THỂ (đã che một phần) về vị trí/nội dung phát hiện được trong file, giúp xác minh nhanh finding có đúng là dữ liệu nhạy cảm thật hay false positive mà không cần tự mở file gốc.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "18f21548ea8a",
+          "title": "MACIE: TÍCH HỢP EVENTBRIDGE ĐỂ QUARANTINE TỰ ĐỘNG",
+          "content": "📌 Tình huống: Khi Macie phát hiện file chứa dữ liệu nhạy cảm bị lưu NHẦM vào bucket public, cần tự động cách ly ngay (chặn truy cập) mà không chờ người xử lý thủ công.\n✅ Đáp án đúng: Macie finding → EventBridge rule → Lambda tự động thêm Block Public Access lên bucket đó hoặc di chuyển object sang bucket cách ly (quarantine bucket) ngay lập tức.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
         }
       ]
     },
@@ -2598,6 +2682,20 @@
           "content": "✅ Rule trong Web ACL được đánh giá theo PRIORITY (số nhỏ xử lý trước), dừng ngay khi gặp rule TERMINATING action (Block/Allow) đầu tiên khớp — action Count không dừng, dùng để TEST rule trước khi chuyển sang Block thật.\n✅ Label: gắn nhãn cho request khi khớp 1 rule, RULE SAU có thể dùng label này làm điều kiện — cho phép xây logic RULE CHAIN phức tạp (vd chỉ Block nếu vừa khớp rule A VÀ rule B).",
           "createdAt": "2026-09-14T04:05:17.515826Z",
           "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "80718cf653e7",
+          "title": "WAF: SIZE CONSTRAINT & GEO MATCH RULE STATEMENT CHI TIẾT",
+          "content": "✅ Size Constraint: chặn request có phần body/header/URI vượt quá kích thước quy định — chống tấn công gửi payload cực lớn (buffer overflow attempt, DoS layer 7 kiểu request khổng lồ).\n✅ Geo Match: có thể kết hợp NHIỀU quốc gia trong 1 rule, hoặc dùng NOT (phủ định) để chỉ CHO PHÉP 1 số quốc gia cụ thể và chặn phần còn lại (thay vì chỉ chặn 1 vài nước).",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "846985f4232d",
+          "title": "WAF: BOT CONTROL",
+          "content": "📌 Tình huống: Website bị bot tự động (scraper, credential stuffing, bot mua vé số lượng lớn) tấn công, cần phân biệt bot với người dùng thật mà không chỉ dựa vào rate limit đơn thuần.\n✅ Đáp án đúng: AWS WAF Bot Control (Managed Rule Group trả phí thêm) — tự động phân loại traffic là bot HỢP LỆ (Googlebot, Bingbot...) hay bot ĐỘC HẠI, cho phép chặn/CAPTCHA riêng theo từng loại bot mà không ảnh hưởng người dùng thật hay bot tìm kiếm hợp lệ (SEO).",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
         }
       ]
     },
@@ -2657,6 +2755,20 @@
           "content": "✅ DeletionPolicy: Retain (giữ lại resource dù xóa stack — dùng cho resource quan trọng như S3 bucket/RDS không muốn mất khi lỡ xóa stack), Snapshot (tạo snapshot trước khi xóa, áp dụng cho RDS/EBS/ElastiCache/Redshift), Delete (mặc định, xóa hẳn resource theo stack).\n✅ UpdateReplacePolicy: tương tự DeletionPolicy nhưng áp dụng khi UPDATE khiến resource bị THAY THẾ (replace) thay vì sửa tại chỗ.",
           "createdAt": "2026-09-14T04:05:17.515826Z",
           "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "64d6f8f16e1a",
+          "title": "CLOUDFORMATION: CUSTOM RESOURCES",
+          "content": "📌 Tình huống: Cần CloudFormation quản lý 1 tài nguyên KHÔNG được AWS hỗ trợ sẵn (vd gọi API bên thứ 3, hoặc logic tùy chỉnh phức tạp lúc tạo/xóa resource).\n✅ Đáp án đúng: Custom Resource — định nghĩa 1 resource TRỎ TỚI Lambda function tự viết, CloudFormation gọi Lambda đó ở các bước Create/Update/Delete, cho phép \"nhúng\" logic BẤT KỲ vào vòng đời quản lý của stack như một resource CloudFormation thật sự.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "77174e9c3fb6",
+          "title": "CLOUDFORMATION: TEMPLATE MACROS & TRANSFORM (SAM)",
+          "content": "✅ Transform: xử lý TIỀN BIÊN DỊCH (preprocessing) template TRƯỚC KHI CloudFormation thực thi — AWS::Serverless-2016-10-31 (SAM) là ví dụ phổ biến nhất, cho phép viết cú pháp NGẮN GỌN hơn cho ứng dụng serverless (Lambda + API Gateway + DynamoDB), tự động expand thành CloudFormation resource đầy đủ khi deploy.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
         }
       ]
     },
@@ -2709,6 +2821,20 @@
           "content": "✅ Tag Policies: chuẩn hóa quy tắc đặt TAG (tên, giá trị hợp lệ) áp dụng nhất quán trên toàn Organization, giúp báo cáo chi phí/quản trị theo tag chính xác hơn.\n✅ Backup Policies (qua AWS Backup): định nghĩa lịch backup TẬP TRUNG áp dụng tự động cho resource ở NHIỀU account trong Organization, không cần cấu hình backup riêng lẻ từng account.",
           "createdAt": "2026-09-14T03:23:39.666692Z",
           "updatedAt": "2026-09-14T03:23:39.666692Z"
+        },
+        {
+          "id": "0bcf6deb62d1",
+          "title": "ORGANIZATIONS: DELEGATED ADMINISTRATOR",
+          "content": "✅ Delegated Administrator: cho phép 1 account THÀNH VIÊN (không phải Management Account) được quyền quản lý MỘT SERVICE CỤ THỂ (vd GuardDuty, Security Hub, Backup) cho TOÀN BỘ Organization — giảm rủi ro bảo mật khi phải dùng Management Account (quyền lực nhất) cho công việc vận hành hàng ngày.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "c8d8c7837bf5",
+          "title": "ORGANIZATIONS: ALL FEATURES vs CONSOLIDATED BILLING ONLY",
+          "content": "✅ Consolidated Billing only (kiểu cũ): chỉ gộp hóa đơn, KHÔNG dùng được SCP, Tag Policy, hay các tính năng quản trị nâng cao khác.\n✅ All Features (mặc định khi tạo Organization mới, khuyến nghị): mở khóa TOÀN BỘ tính năng quản trị (SCP, Tag Policy, StackSets, Backup Policy...) — cần account thành viên CHẤP NHẬN lời mời (hoặc account do chính Organization TẠO MỚI thì tự động ở chế độ này).",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
         }
       ]
     },
@@ -3119,6 +3245,27 @@
           "content": "✅ Mã hóa EBS dùng KMS, bao gồm cả data at-rest, data in-transit GIỮA instance và volume, và snapshot tạo từ volume đã mã hóa cũng TỰ ĐỘNG mã hóa theo.\n✅ Có thể đặt \"Encryption by default\" ở cấp Region — mọi volume/snapshot MỚI tạo trong Region đó tự động mã hóa mà không cần chọn thủ công mỗi lần.\n⚠️ Volume KHÔNG mã hóa từ trước không thể \"bật mã hóa\" trực tiếp — phải tạo snapshot từ volume đó, copy snapshot với tùy chọn encryption, rồi tạo volume mới từ snapshot đã mã hóa (giống RDS).",
           "createdAt": "2026-09-14T03:21:35.599417Z",
           "updatedAt": "2026-09-14T03:21:35.599417Z"
+        },
+        {
+          "id": "447ce56905a1",
+          "title": "EBS: SNAPSHOT LIFECYCLE (AMAZON DATA LIFECYCLE MANAGER)",
+          "content": "📌 Tình huống: Cần tự động tạo snapshot EBS ĐỊNH KỲ (hàng ngày) và tự động XÓA snapshot cũ theo retention policy mà không cần tự viết Lambda/cron thủ công.\n✅ Đáp án đúng: Amazon Data Lifecycle Manager (DLM) — tự động hóa toàn bộ vòng đời snapshot EBS: tạo theo lịch, gắn tag, retention (giữ N bản gần nhất hoặc X ngày), tự xóa bản cũ, áp dụng theo Tag để quản lý hàng loạt volume cùng lúc.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "cd92e440350c",
+          "title": "EBS: IO CHARACTERISTICS - IOPS vs THROUGHPUT",
+          "content": "✅ IOPS (Input/Output Operations Per Second): số lượng THAO TÁC đọc/ghi mỗi giây — quan trọng cho workload nhiều thao tác NHỎ, ngẫu nhiên (database OLTP).\n✅ Throughput (MB/s): LƯỢNG DỮ LIỆU truyền mỗi giây — quan trọng cho workload đọc/ghi TUẦN TỰ, khối lượng LỚN (data warehouse, log streaming, big data).\n⚠️ Chọn nhầm volume type tối ưu IOPS cho workload cần throughput lớn (hoặc ngược lại) là lỗi thiết kế phổ biến — cần xác định đúng đặc tính I/O của ứng dụng trước khi chọn gp3/io2 (IOPS-heavy) hay st1 (throughput-heavy).",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "a34d7bb7701b",
+          "title": "EBS: RAID CONFIGURATION",
+          "content": "📌 Tình huống: Cần throughput/IOPS VƯỢT giới hạn của 1 volume EBS đơn lẻ.\n✅ Đáp án đúng: Kết hợp NHIỀU volume EBS thành RAID ở tầng OS — RAID 0 (striping, TĂNG hiệu năng bằng cách gộp IOPS/throughput nhiều volume, nhưng KHÔNG tăng độ bền — mất 1 volume là mất dữ liệu cả dải), RAID 1 (mirroring, tăng độ sẵn sàng đọc nhưng không tăng hiệu năng ghi) — RAID 0 phổ biến hơn cho database cần hiệu năng cao vì EBS đã tự có độ bền riêng (99.999%) nên ít cần RAID 1.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
         }
       ]
     },
@@ -3244,6 +3391,20 @@
           "content": "📌 Tình huống: Cần dự đoán (vd gợi ý kết bạn, phát hiện gian lận qua mạng lưới giao dịch) dựa trên CẤU TRÚC ĐỒ THỊ phức tạp mà thuật toán ML thông thường khó xử lý tốt quan hệ nhiều chiều.\n✅ Đáp án đúng: Neptune ML — tích hợp SageMaker để tự động xây dựng & huấn luyện model Graph Neural Network (GNN) NGAY TRÊN dữ liệu đồ thị hiện có trong Neptune, dùng cho các bài toán dự đoán quan hệ/phân loại node mà graph algorithm truyền thống không làm tốt.",
           "createdAt": "2026-09-14T04:05:17.515826Z",
           "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "29a9060d7871",
+          "title": "NEPTUNE: STREAMS (CDC CHO GRAPH DATABASE)",
+          "content": "✅ Neptune Streams: ghi lại các THAY ĐỔI (thêm/sửa/xóa node, edge) theo thứ tự thời gian — dùng để đồng bộ dữ liệu graph sang hệ thống khác (search index, cache, hoặc trigger xử lý downstream) tương tự khái niệm DynamoDB Streams nhưng cho dữ liệu đồ thị.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "b777607a9512",
+          "title": "NEPTUNE: IAM DATABASE AUTHENTICATION & VPC-ONLY",
+          "content": "✅ Neptune hỗ trợ IAM Database Authentication (dùng IAM Role thay vì user/password cố định để kết nối) — giống RDS.\n✅ Neptune LUÔN nằm trong VPC (không có endpoint public), chỉ truy cập được từ trong VPC/qua peering/VPN — tương tự DocumentDB, tăng bảo mật mặc định cho dữ liệu đồ thị thường mang tính nhạy cảm cao (quan hệ tài chính, social graph).",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
         }
       ]
     },
@@ -3570,6 +3731,20 @@
           "content": "✅ Retry: tự động THỬ LẠI 1 state khi gặp lỗi cụ thể, cấu hình được số lần retry, khoảng cách giữa các lần (backoff rate) — xử lý lỗi TẠM THỜI (transient, vd throttling) mà không cần code thử-lại thủ công.\n✅ Catch: bắt lỗi và CHUYỂN HƯỚNG sang 1 state khác để xử lý (vd gửi thông báo lỗi, rollback) khi Retry đã hết số lần mà vẫn lỗi — đảm bảo workflow luôn có đường xử lý dự phòng thay vì dừng đột ngột.",
           "createdAt": "2026-09-14T04:04:07.265302Z",
           "updatedAt": "2026-09-14T04:04:07.265302Z"
+        },
+        {
+          "id": "d5e409435f73",
+          "title": "STEP FUNCTIONS: EXPRESS SYNC vs ASYNC INVOCATION",
+          "content": "✅ Synchronous Express Workflow: bên gọi (vd API Gateway) CHỜ workflow chạy xong mới nhận kết quả trực tiếp — dùng cho luồng cần phản hồi ngay (API request-response).\n✅ Asynchronous: bên gọi trigger xong là XONG NGAY (không chờ), workflow chạy nền — dùng cho xử lý batch/event không cần phản hồi tức thì.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "837704b0916b",
+          "title": "STEP FUNCTIONS: CHOICE STATE & PARALLEL STATE",
+          "content": "✅ Choice State: rẽ nhánh workflow dựa trên điều kiện (giống if/else) — kiểm tra giá trị field trong input để quyết định đường đi tiếp theo.\n✅ Parallel State: chạy NHIỀU NHÁNH khác nhau ĐỒNG THỜI (khác Map State chạy LẶP LẠI cùng 1 logic trên nhiều item — Parallel chạy các LOGIC KHÁC NHAU song song, vd vừa gửi email vừa cập nhật DB cùng lúc), chỉ tiếp tục khi TẤT CẢ nhánh hoàn tất.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
         }
       ]
     },
@@ -3813,6 +3988,20 @@
           "content": "📌 Tình huống: Nhiều team/account cần TRUY VẤN CHUNG 1 bộ dữ liệu Redshift mà không muốn COPY dữ liệu sang cluster riêng của từng team (tốn storage, dữ liệu bị lệch pha).\n✅ Đáp án đúng: Redshift Data Sharing — chia sẻ dữ liệu LIVE (không copy) giữa nhiều cluster/Workgroup Serverless, kể cả xuyên account/Organization, mỗi bên vẫn tự quản lý compute riêng nhưng đọc chung 1 nguồn dữ liệu luôn cập nhật mới nhất.",
           "createdAt": "2026-09-14T04:05:17.515826Z",
           "updatedAt": "2026-09-14T04:05:17.515826Z"
+        },
+        {
+          "id": "bf95f123e0d1",
+          "title": "REDSHIFT: RESERVED NODES & PAUSE/RESUME",
+          "content": "✅ Reserved Nodes: cam kết 1-3 năm giảm giá đáng kể, giống RDS Reserved Instance, phù hợp cluster chạy ỔN ĐỊNH liên tục.\n✅ Pause/Resume: TẠM DỪNG cluster (không tính phí compute, chỉ tính phí storage) khi không dùng tới (vd ngoài giờ làm việc, cluster dev/test) rồi RESUME lại khi cần — tiết kiệm chi phí đáng kể cho workload không chạy 24/7.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
+        },
+        {
+          "id": "65def09a5002",
+          "title": "REDSHIFT: FEDERATED QUERY (TỚI RDS/AURORA)",
+          "content": "📌 Tình huống: Cần JOIN dữ liệu ĐANG NẰM TRỰC TIẾP trong RDS/Aurora PostgreSQL với dữ liệu đã có sẵn trong Redshift, không muốn ETL đồng bộ dữ liệu sang trước.\n✅ Đáp án đúng: Redshift Federated Query — truy vấn TRỰC TIẾP dữ liệu LIVE từ RDS/Aurora ngay trong câu SQL của Redshift mà không cần copy/ETL trước, tương tự khái niệm Athena Federated Query nhưng dành riêng cho Redshift.",
+          "createdAt": "2026-09-14T06:28:13.873303Z",
+          "updatedAt": "2026-09-14T06:28:13.873303Z"
         }
       ]
     },
@@ -3872,6 +4061,20 @@
           "content": "📌 Tình huống: Data analyst (không rành code) cần làm sạch/chuẩn hóa dữ liệu (loại bỏ giá trị lỗi, đổi định dạng ngày tháng, chuẩn hóa text) trước khi phân tích.\n✅ Đáp án đúng: AWS Glue DataBrew — công cụ VISUAL (không cần viết code) với hơn 250 transformation dựng sẵn để làm sạch/chuẩn hóa dữ liệu, xem trước kết quả ngay trên giao diện trước khi áp dụng thật.",
           "createdAt": "2026-09-14T04:06:12.743851Z",
           "updatedAt": "2026-09-14T04:06:12.743851Z"
+        },
+        {
+          "id": "e8be9aa70af3",
+          "title": "GLUE STREAMING ETL",
+          "content": "📌 Tình huống: Cần xử lý ETL LIÊN TỤC trên dữ liệu streaming (từ Kinesis/Kafka) thay vì chỉ xử lý batch định kỳ.\n✅ Đáp án đúng: Glue Streaming ETL Job — chạy Spark Structured Streaming LIÊN TỤC, đọc dữ liệu từ Kinesis Data Streams/Amazon MSK, transform & ghi ra đích (S3, Redshift) gần real-time, khác Glue Job thường (chạy 1 lần rồi kết thúc, batch).",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "72cd3644c6b2",
+          "title": "ATHENA: WORKGROUP DATA USAGE CONTROL & ENGINE VERSION",
+          "content": "✅ Data Usage Control: đặt giới hạn tổng lượng dữ liệu quét (GB) mỗi Workgroup được phép trong 1 khoảng thời gian — tự động ngăn query \"quét nhầm\" quá nhiều dữ liệu gây chi phí bất ngờ.\n✅ Athena Engine Version: có thể chọn version engine mới (dựa trên Trino) để có hiệu năng/tính năng SQL mới hơn, hoặc giữ version cũ để tương thích ngược nếu cần.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
         }
       ]
     },
@@ -4316,6 +4519,20 @@
           "content": "✅ DocumentDB LUÔN nằm trong VPC (không có endpoint public trực tiếp) — chỉ truy cập được từ trong VPC hoặc qua peering/VPN/Direct Connect, tăng bảo mật mặc định.\n✅ Mã hóa at-rest dùng KMS (bắt buộc chọn lúc tạo cluster, không bật sau được — giống RDS phải snapshot/restore mới đổi được), mã hóa in-transit qua TLS.",
           "createdAt": "2026-09-14T04:01:22.238023Z",
           "updatedAt": "2026-09-14T04:01:22.238023Z"
+        },
+        {
+          "id": "56f359ca7288",
+          "title": "DOCUMENTDB: PERFORMANCE INSIGHTS & PROFILER",
+          "content": "✅ DocumentDB Profiler: ghi lại chi tiết các query CHẬM (slow query) để phân tích tối ưu — tương tự MongoDB Profiler quen thuộc, giúp đội ngũ đã quen làm việc với MongoDB dễ dàng chuyển đổi công cụ debug hiệu năng.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
+        },
+        {
+          "id": "3abb38a3c28f",
+          "title": "DOCUMENTDB: EVENT SUBSCRIPTIONS",
+          "content": "✅ Event Subscriptions: gửi thông báo (qua SNS) khi có sự kiện quan trọng xảy ra với cluster (failover, thay đổi cấu hình, backup hoàn tất, low storage warning) — giống RDS Event Notifications, giúp chủ động theo dõi tình trạng cluster mà không cần liên tục check dashboard.",
+          "createdAt": "2026-09-14T06:29:02.614843Z",
+          "updatedAt": "2026-09-14T06:29:02.614843Z"
         }
       ]
     },
