@@ -70,6 +70,10 @@
         <button id="btnApiKey" title="Cấu hình OpenRouter API key (đọc ghi chú bằng AI)" class="p-2 rounded-lg border border-white/10 hover:bg-white/5 text-slate-300 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
         </button>
+        <button id="btnBookmarks" title="Xem ghi chú đã bookmark" class="relative p-2 rounded-lg border border-white/10 hover:bg-white/5 text-slate-300 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <span id="bookmarkBadge" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-aws-dark text-[10px] font-bold items-center justify-center">0</span>
+        </button>
         <button id="btnAddService" class="inline-flex items-center gap-1.5 bg-aws-orange hover:brightness-110 text-aws-dark font-semibold text-sm px-3.5 py-2 rounded-lg transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
           <span class="hidden sm:inline">Thêm service</span>
@@ -241,6 +245,9 @@
         <button id="viewNoteReadBtn" title="Đánh dấu đã đọc" class="p-2 rounded-lg border border-white/10 hover:bg-white/5 text-slate-300 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
         </button>
+        <button id="viewNoteBookmarkBtn" title="Bookmark ghi chú" class="p-2 rounded-lg border border-white/10 hover:bg-white/5 text-slate-300 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
         <button id="viewNoteAudioBtn" title="Đọc ghi chú bằng AI" class="p-2 rounded-lg border border-white/10 hover:bg-white/5 text-slate-300 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a9 9 0 0 1 0 12"/></svg>
         </button>
@@ -268,6 +275,26 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bookmarks Modal (xem tất cả note đã bookmark xuyên suốt mọi service) -->
+<div id="bookmarksModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 backdrop-fade">
+  <div class="absolute inset-0 bg-black/70" data-close-modal="bookmarksModal"></div>
+  <div class="relative bg-aws-navy2 border border-white/10 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col fade-in shadow-2xl">
+    <div class="flex items-center justify-between gap-3 p-5 border-b border-white/10 shrink-0">
+      <h3 class="text-lg font-bold text-white flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Ghi chú đã bookmark
+      </h3>
+      <button data-close-modal="bookmarksModal" class="p-2 rounded-lg hover:bg-white/10 text-slate-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div id="bookmarksList" class="overflow-y-auto p-3 space-y-2"></div>
+    <div id="bookmarksEmpty" class="hidden text-sm text-slate-500 text-center py-16 px-5">
+      Chưa có ghi chú nào được bookmark.<br />Mở 1 ghi chú và bấm biểu tượng 🔖 để lưu vào đây.
     </div>
   </div>
 </div>
@@ -517,8 +544,9 @@
     const notes = [...(service.notes||[])].sort((a,b) => new Date(b.updatedAt||b.createdAt) - new Date(a.updatedAt||a.createdAt));
     currentNoteIds = notes.map(n => n.id);
     const readCount = notes.filter(n => n.read).length;
+    const bookmarkCount = notes.filter(n => n.bookmarked).length;
     document.getElementById('noteCount').textContent = notes.length
-      ? `(${notes.length})${readCount ? ` · ${readCount} đã đọc` : ''}`
+      ? `(${notes.length})${readCount ? ` · ${readCount} đã đọc` : ''}${bookmarkCount ? ` · ${bookmarkCount} bookmark` : ''}`
       : '';
 
     if(!notes.length){
@@ -529,9 +557,10 @@
     emptyNotes.classList.add('hidden');
 
     grid.innerHTML = notes.map(n => `
-      <div data-view-note="${n.id}" class="note-card bg-white/[0.03] border ${n.read ? 'border-emerald-500/30' : 'border-white/10'} rounded-xl p-4 flex flex-col cursor-pointer">
+      <div data-view-note="${n.id}" class="note-card bg-white/[0.03] border ${n.bookmarked ? 'border-amber-500/30' : (n.read ? 'border-emerald-500/30' : 'border-white/10')} rounded-xl p-4 flex flex-col cursor-pointer">
         <div class="flex items-start justify-between gap-2 mb-1.5">
           <h4 class="text-sm font-semibold ${n.read ? 'text-slate-400' : 'text-slate-100'} leading-snug flex items-center gap-1.5">
+            ${n.bookmarked ? '<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' : ''}
             ${n.read ? '<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>' : ''}
             <span>${esc(n.title)}</span>
           </h4>
@@ -565,7 +594,7 @@
         openConfirm('Xóa ghi chú', 'Bạn có chắc muốn xóa ghi chú này? Hành động không thể hoàn tác.', () => {
           const svc = state.services.find(s => s.id === selectedServiceId);
           svc.notes = svc.notes.filter(n => n.id !== noteId);
-          save(); renderDetail(); renderServiceList();
+          save(); renderDetail(); renderServiceList(); renderBookmarkBadge();
           toast('Đã xóa ghi chú');
         });
       });
@@ -573,7 +602,7 @@
   }
 
   // ---------- Modals ----------
-  const MODAL_IDS = ['serviceModal', 'noteModal', 'confirmModal', 'viewNoteModal', 'tokenModal'];
+  const MODAL_IDS = ['serviceModal', 'noteModal', 'confirmModal', 'viewNoteModal', 'tokenModal', 'bookmarksModal'];
   function anyModalOpen(){
     return MODAL_IDS.some(id => !document.getElementById(id).classList.contains('hidden'));
   }
@@ -593,7 +622,7 @@
   });
   document.addEventListener('keydown', e => {
     if(e.key === 'Escape'){
-      ['serviceModal','noteModal','confirmModal','viewNoteModal','tokenModal'].forEach(id => {
+      ['serviceModal','noteModal','confirmModal','viewNoteModal','tokenModal','bookmarksModal'].forEach(id => {
         const m = document.getElementById(id);
         if(!m.classList.contains('hidden')) closeModal(id);
       });
@@ -657,6 +686,7 @@
     stopAudioPlayback();
     updateAudioBtnIdleTitle(n);
     updateReadBtn(n);
+    updateBookmarkBtn(n);
     openModal('viewNoteModal');
   }
   const ICON_READ_OUTLINE = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>';
@@ -680,6 +710,28 @@
     updateReadBtn(n);
     renderNotes(svc);
     toast(n.read ? 'Đã đánh dấu đọc' : 'Đã bỏ đánh dấu đọc');
+  });
+  const ICON_BOOKMARK_OUTLINE = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+  const ICON_BOOKMARK_DONE = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+  function updateBookmarkBtn(n){
+    const btn = document.getElementById('viewNoteBookmarkBtn');
+    btn.innerHTML = n.bookmarked ? ICON_BOOKMARK_DONE : ICON_BOOKMARK_OUTLINE;
+    btn.title = n.bookmarked ? 'Đã bookmark — bấm để bỏ' : 'Bookmark ghi chú';
+    btn.className = 'p-2 rounded-lg border transition ' + (n.bookmarked
+      ? 'border-amber-500/40 hover:bg-amber-500/10 text-amber-400'
+      : 'border-white/10 hover:bg-white/5 text-slate-300');
+  }
+  document.getElementById('viewNoteBookmarkBtn').addEventListener('click', () => {
+    const svc = state.services.find(s => s.id === selectedServiceId);
+    if(!svc) return;
+    const n = svc.notes.find(x => x.id === currentViewNoteId);
+    if(!n) return;
+    n.bookmarked = !n.bookmarked;
+    save();
+    updateBookmarkBtn(n);
+    renderNotes(svc);
+    renderBookmarkBadge();
+    toast(n.bookmarked ? 'Đã bookmark ghi chú' : 'Đã bỏ bookmark');
   });
   function updateViewNoteNav(){
     const idx = currentNoteIds.indexOf(currentViewNoteId);
@@ -854,6 +906,56 @@
     pendingAudioNoteId = null;
     openTokenModal();
   });
+
+  // ---------- Bookmarks (xuyên suốt mọi service) ----------
+  function allBookmarkedNotes(){
+    const result = [];
+    state.services.forEach(svc => {
+      (svc.notes || []).forEach(n => {
+        if(n.bookmarked) result.push({ note: n, service: svc });
+      });
+    });
+    result.sort((a, b) => new Date(b.note.updatedAt || b.note.createdAt) - new Date(a.note.updatedAt || a.note.createdAt));
+    return result;
+  }
+  function renderBookmarkBadge(){
+    const count = allBookmarkedNotes().length;
+    const badge = document.getElementById('bookmarkBadge');
+    badge.textContent = count > 99 ? '99+' : String(count);
+    badge.classList.toggle('hidden', count === 0);
+    badge.classList.toggle('flex', count > 0);
+  }
+  function openBookmarksModal(){
+    const items = allBookmarkedNotes();
+    const list = document.getElementById('bookmarksList');
+    const empty = document.getElementById('bookmarksEmpty');
+    if(!items.length){
+      list.innerHTML = '';
+      empty.classList.remove('hidden');
+    } else {
+      empty.classList.add('hidden');
+      list.innerHTML = items.map(({note: n, service: svc}) => `
+        <button data-bm-service="${svc.id}" data-bm-note="${n.id}" class="w-full text-left p-3 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-400 whitespace-nowrap">${esc(svc.name)}</span>
+            ${n.read ? '<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>' : ''}
+          </div>
+          <p class="text-sm font-semibold text-slate-100 leading-snug">${esc(n.title)}</p>
+        </button>
+      `).join('');
+      list.querySelectorAll('[data-bm-note]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const serviceId = btn.getAttribute('data-bm-service');
+          const noteId = btn.getAttribute('data-bm-note');
+          closeModal('bookmarksModal');
+          selectService(serviceId);
+          openViewNoteModal(noteId);
+        });
+      });
+    }
+    openModal('bookmarksModal');
+  }
+  document.getElementById('btnBookmarks').addEventListener('click', openBookmarksModal);
   document.getElementById('tokenClearBtn').addEventListener('click', () => {
     clearApiKey();
     document.getElementById('tokenInput').value = '';
@@ -966,6 +1068,7 @@
       renderCategoryFilter();
       renderServiceList();
       renderDetail();
+      renderBookmarkBadge();
       toast('Đã xóa service');
     });
   });
@@ -982,6 +1085,7 @@
     renderCategoryFilter();
     renderServiceList();
     renderDetail();
+    renderBookmarkBadge();
   }
 
   document.getElementById('btnExport').addEventListener('click', () => {
@@ -1037,6 +1141,7 @@
   renderCategoryFilter();
   renderServiceList();
   renderDetail();
+  renderBookmarkBadge();
 })();
 </script>
 </body>
