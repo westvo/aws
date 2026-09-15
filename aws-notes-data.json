@@ -147,6 +147,83 @@
           "content": "Điểm phân biệt: Function model vs container/server workload.\n✅ Lambda => FUNCTION ngắn hạn (tối đa 15 phút), event-driven, trả tiền theo LẦN GỌI, không quản lý runtime/OS.\n✅ Fargate/EC2 => chạy CONTAINER/SERVER dài hạn liên tục, kiểm soát nhiều hơn (OS, runtime, tự scaling qua ASG), phù hợp workload chạy LIÊN TỤC hoặc cần môi trường tùy chỉnh sâu.",
           "createdAt": "2026-09-14T16:18:04.325835Z",
           "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "0e0dd878349f",
+          "title": "LAMBDA: EPHEMERAL STORAGE (/tmp)",
+          "content": "📌 Tình huống: Function cần xử lý file TẠM (giải nén, resize ảnh, convert định dạng) lớn hơn dung lượng /tmp mặc định.\n✅ Đáp án đúng: /tmp mặc định 512MB, có thể TĂNG lên tới 10,240MB (10GB) khi cấu hình function — dữ liệu trong /tmp CHỈ TỒN TẠI trong execution environment đó, có thể được TÁI SỬ DỤNG giữa các lần invoke nếu container được warm (KHÔNG đảm bảo, không nên phụ thuộc vào việc dữ liệu vẫn còn), và bị XÓA HOÀN TOÀN khi container bị thu hồi.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "bf613569d304",
+          "title": "LAMBDA: ENVIRONMENT VARIABLES & MÃ HÓA",
+          "content": "✅ Environment Variables: truyền cấu hình (connection string, feature flag...) vào function KHÔNG cần sửa code — MẶC ĐỊNH đã được mã hóa AT-REST bằng KMS (AWS Managed Key).\n⚠️ Với giá trị NHẠY CẢM (password, API key), nên dùng THÊM Encryption Helper (mã hóa bằng Customer Managed KMS Key ngay trong Console, giải mã lúc runtime) hoặc tốt hơn là KHÔNG lưu trực tiếp mà chỉ lưu REFERENCE tới Secrets Manager/Parameter Store, gọi lấy giá trị thật lúc runtime.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "5a5d3aa8df32",
+          "title": "LAMBDA: EXECUTION ROLE vs RESOURCE-BASED POLICY",
+          "content": "⚠️ Execution Role (IAM Role): quyền của CHÍNH function đó khi NÓ gọi tới các AWS service KHÁC (vd Lambda đọc S3, ghi DynamoDB) — gắn permission policy như IAM Role thông thường.\n⚠️ Resource-based Policy (Lambda Permission): kiểm soát AI/SERVICE NÀO được phép GỌI (invoke) function này (vd cho phép API Gateway, S3 Event, EventBridge invoke) — 2 chiều NGƯỢC NHAU hoàn toàn, cấu hình sai 1 trong 2 sẽ khiến tích hợp không hoạt động dù cái còn lại đúng.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "0282e1fda34f",
+          "title": "LAMBDA: VERSIONS & ALIASES - TRIỂN KHAI AN TOÀN",
+          "content": "📌 Tình huống: Cần deploy version MỚI của function nhưng muốn giảm rủi ro — chuyển traffic DẦN DẦN thay vì chuyển 100% ngay lập tức, và có khả năng ROLLBACK nhanh nếu lỗi.\n✅ Đáp án đúng: Version — mỗi lần publish tạo ra 1 bản snapshot BẤT BIẾN (immutable) của code+config. Alias — 1 con trỏ TRỎ TỚI 1 (hoặc chia trọng số giữa 2) version, ứng dụng gọi qua ALIAS thay vì gọi trực tiếp version — cho phép Canary/Linear Deployment (vd 10% traffic sang version mới, tăng dần), kết hợp CodeDeploy để TỰ ĐỘNG ROLLBACK nếu CloudWatch Alarm phát hiện lỗi tăng đột biến.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "e585634df892",
+          "title": "LAMBDA: MÔ HÌNH GIÁ (PRICING)",
+          "content": "✅ Tính phí theo 2 thành phần: (1) SỐ LẦN GỌI (request) — free tier 1 triệu request/tháng; (2) THỜI GIAN CHẠY × MEMORY CẤP PHÁT (GB-second, làm tròn tới mili-giây) — free tier 400,000 GB-giây/tháng.\n⚠️ TĂNG memory không chỉ tăng phí/ms mà còn TĂNG CPU tương ứng (CPU scale tuyến tính theo memory) — nhiều trường hợp tăng memory giúp function chạy NHANH HƠN đủ để tổng chi phí (memory × thời gian) THẤP HƠN so với để memory nhỏ mà chạy chậm — nên luôn BENCHMARK để tìm điểm tối ưu, không mặc định chọn memory thấp nhất.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "cfe8a22d4b1f",
+          "title": "LAMBDA: 3 KIỂU INVOCATION & HÀNH VI RETRY",
+          "content": "⚠️ Synchronous (vd API Gateway, ALB): caller CHỜ kết quả trực tiếp, lỗi trả về NGAY cho caller, retry (nếu có) do CHÍNH client tự xử lý.\n⚠️ Asynchronous (vd S3 Event, SNS): Lambda TỰ ĐỘNG retry 2 LẦN (có exponential backoff) nếu lỗi, sau đó chuyển sang DLQ/Destination on-failure nếu vẫn thất bại — caller KHÔNG chờ, nhận response ngay khi Lambda nhận event thành công (chưa chắc đã xử lý xong).\n⚠️ Poll-based/Event Source Mapping (vd SQS, Kinesis, DynamoDB Streams): Lambda service TỰ POLL nguồn, gọi Lambda theo batch — retry & checkpoint do Event Source Mapping quản lý (khác 2 kiểu trên).",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "a0a4b8e17475",
+          "title": "LAMBDA: KIẾN TRÚC ARM/GRAVITON2 - TỐI ƯU CHI PHÍ",
+          "content": "📌 Tình huống: Muốn giảm chi phí chạy Lambda mà KHÔNG đổi logic code (với runtime/dependency hỗ trợ đa kiến trúc).\n✅ Đáp án đúng: Chọn kiến trúc arm64 (AWS Graviton2) thay vì x86_64 mặc định — giá RẺ HƠN tới 20% và hiệu năng price-performance TỐT HƠN tới 34% so với x86_64 cho hầu hết workload, chỉ cần đổi 1 tùy chọn cấu hình (không cần sửa code với ngôn ngữ interpreted như Python/Node.js; cần rebuild lại nếu dùng compiled dependency/container image).",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "935c054f02d4",
+          "title": "LAMBDA + RDS: VẤN ĐỀ CONNECTION EXHAUSTION & RDS PROXY",
+          "content": "📌 Tình huống: Lambda kết nối trực tiếp tới RDS, khi traffic tăng đột biến Lambda SCALE ra hàng nghìn execution environment CÙNG LÚC, mỗi cái tự mở 1 connection riêng tới RDS khiến RDS bị QUÁ TẢI/hết connection (max_connections) dù RDS chưa quá tải CPU.\n✅ Đáp án đúng: Đặt RDS Proxy giữa Lambda và RDS — Proxy POOLING & DÙNG LẠI connection hiện có thay vì để mỗi Lambda execution tự mở connection riêng, giảm mạnh số connection thực tế xuống RDS dù Lambda scale rất nhiều concurrent execution.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "fcf145d33f52",
+          "title": "LAMBDA: EXTENSIONS",
+          "content": "✅ Lambda Extensions: cho phép TÍCH HỢP công cụ bên thứ 3 (monitoring, security, observability agent — vd Datadog, New Relic) chạy CÙNG vòng đời với execution environment của function, tách biệt với code chính — 2 loại: Internal Extension (chạy trong cùng process runtime) và External Extension (chạy như process riêng, giao tiếp qua Extensions API), có thể đóng gói qua Lambda Layer.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "64c827ee2164",
+          "title": "LAMBDA: GIỚI HẠN DEPLOYMENT PACKAGE",
+          "content": "⚠️ Deployment package (code + dependency) giới hạn: 50MB nếu upload trực tiếp (zip qua Console/CLI), 250MB nếu upload qua S3 (đã unzip, tính cả Layer đính kèm), lên tới 10GB nếu đóng gói dưới dạng CONTAINER IMAGE (từ ECR) — package CÀNG LỚN càng ẢNH HƯỞNG tới thời gian cold start, nên tách dependency dùng chung ra Lambda Layer thay vì đóng gói lại mỗi function.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
+        },
+        {
+          "id": "21edff4c00c4",
+          "title": "LAMBDA: BEST PRACTICE - TÁI SỬ DỤNG EXECUTION CONTEXT",
+          "content": "📌 Tình huống: Code khởi tạo SDK Client (vd DynamoDB Client, DB connection) BÊN TRONG handler function — mỗi lần invoke đều tạo mới, tốn thời gian & tài nguyên không cần thiết.\n✅ Đáp án đúng: Khởi tạo SDK Client/kết nối database Ở NGOÀI handler (global/module scope) — khi execution environment được TÁI SỬ DỤNG cho lần invoke tiếp theo (warm start), các biến/kết nối này VẪN GIỮ NGUYÊN không cần khởi tạo lại, giúp giảm đáng kể thời gian xử lý cho các lần gọi sau lần đầu tiên.",
+          "createdAt": "2026-09-15T15:18:18.469758Z",
+          "updatedAt": "2026-09-15T15:18:18.469758Z"
         }
       ]
     },
