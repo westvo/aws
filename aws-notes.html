@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark light" />
 <title>AWS Service Notes</title>
 <script>
   // Áp dụng theme (dark/light) ngay lập tức để tránh nháy sai màu (FOUC) trước khi CSS/Tailwind tải xong.
@@ -34,6 +35,11 @@
 </script>
 <style>
   /* ---------- Theme tokens (dark = mặc định, light = data-theme="light") ---------- */
+  /* color-scheme báo cho trình duyệt biết trang TỰ quản lý dark/light, tránh bị trình duyệt
+     (đặc biệt Chrome Android "tự làm tối trang web") cưỡng ép tối input/select/scrollbar gốc
+     khiến chữ gần như vô hình khi xung đột với màu chữ light-theme của mình. */
+  :root { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
   :root {
     --bg-page: #0b1520;
     --bg-header: rgba(15,27,43,0.8);
@@ -161,7 +167,7 @@
       <div class="p-3 border-b border-[var(--border-1)] space-y-2">
         <div class="relative">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-6)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="searchInput" type="text" placeholder="Tìm service hoặc ghi chú..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg pl-9 pr-3 py-2 text-sm placeholder:text-[var(--text-6)] focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
+          <input id="searchInput" type="text" placeholder="Tìm service hoặc ghi chú..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg pl-9 pr-3 py-2 text-sm text-[var(--text-3)] placeholder:text-[var(--text-6)] focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
         </div>
         <select id="categoryFilter" class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-sm text-[var(--text-4)] focus:outline-none focus:ring-2 focus:ring-aws-orange/60">
           <option value="">Tất cả danh mục</option>
@@ -234,7 +240,7 @@
       <input type="hidden" id="serviceId" />
       <div>
         <label class="block text-xs font-medium text-[var(--text-5)] mb-1.5">Tên service *</label>
-        <input id="serviceName" required list="serviceSuggestions" placeholder="VD: Amazon EC2, S3, RDS, Lambda..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
+        <input id="serviceName" required list="serviceSuggestions" placeholder="VD: Amazon EC2, S3, RDS, Lambda..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base text-[var(--text-3)] focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
         <datalist id="serviceSuggestions">
           <option value="Amazon EC2"></option><option value="Amazon S3"></option><option value="Amazon RDS"></option>
           <option value="AWS Lambda"></option><option value="Amazon VPC"></option><option value="Amazon CloudFront"></option>
@@ -247,16 +253,16 @@
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-medium text-[var(--text-5)] mb-1.5">Danh mục</label>
-          <input id="serviceCategory" placeholder="VD: Compute, Storage, DB..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
+          <input id="serviceCategory" placeholder="VD: Compute, Storage, DB..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base text-[var(--text-3)] focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
         </div>
         <div>
           <label class="block text-xs font-medium text-[var(--text-5)] mb-1.5">Region</label>
-          <input id="serviceRegion" placeholder="VD: ap-southeast-1" class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
+          <input id="serviceRegion" placeholder="VD: ap-southeast-1" class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base text-[var(--text-3)] focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
         </div>
       </div>
       <div>
         <label class="block text-xs font-medium text-[var(--text-5)] mb-1.5">Mô tả ngắn</label>
-        <textarea id="serviceDesc" rows="3" placeholder="Mô tả mục đích sử dụng service này..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base resize-none focus:outline-none focus:ring-2 focus:ring-aws-orange/60"></textarea>
+        <textarea id="serviceDesc" rows="3" placeholder="Mô tả mục đích sử dụng service này..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base text-[var(--text-3)] resize-none focus:outline-none focus:ring-2 focus:ring-aws-orange/60"></textarea>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button type="button" data-close-modal="serviceModal" class="px-4 py-2 rounded-lg text-base border border-[var(--border-1)] text-[var(--text-4)] hover:bg-[var(--surface-1)]">Hủy</button>
@@ -280,11 +286,11 @@
       <input type="hidden" id="noteId" />
       <div>
         <label class="block text-xs font-medium text-[var(--text-5)] mb-1.5">Tiêu đề *</label>
-        <input id="noteTitle" required placeholder="VD: Cấu hình instance, Ghi chú backup..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
+        <input id="noteTitle" required placeholder="VD: Cấu hình instance, Ghi chú backup..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base text-[var(--text-3)] focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
       </div>
       <div>
         <label class="block text-xs font-medium text-[var(--text-5)] mb-1.5">Nội dung</label>
-        <textarea id="noteContent" rows="6" placeholder="Chi tiết ghi chú..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base resize-none focus:outline-none focus:ring-2 focus:ring-aws-orange/60"></textarea>
+        <textarea id="noteContent" rows="6" placeholder="Chi tiết ghi chú..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base text-[var(--text-3)] resize-none focus:outline-none focus:ring-2 focus:ring-aws-orange/60"></textarea>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button type="button" data-close-modal="noteModal" class="px-4 py-2 rounded-lg text-base border border-[var(--border-1)] text-[var(--text-4)] hover:bg-[var(--surface-1)]">Hủy</button>
@@ -385,7 +391,7 @@
       Cần API key của <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" class="text-aws-orange hover:underline">OpenRouter</a> để dùng tính năng đọc ghi chú bằng giọng nói AI. Key chỉ được lưu trong trình duyệt của bạn (localStorage) và chỉ gửi trực tiếp tới OpenRouter khi tạo audio.
     </p>
     <form id="tokenForm" class="space-y-3">
-      <input id="tokenInput" type="password" autocomplete="off" required placeholder="sk-or-v1-..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base font-mono focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
+      <input id="tokenInput" type="password" autocomplete="off" required placeholder="sk-or-v1-..." class="w-full bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-3 py-2 text-base text-[var(--text-3)] font-mono focus:outline-none focus:ring-2 focus:ring-aws-orange/60" />
       <div class="flex items-center justify-between gap-2 pt-1">
         <button type="button" id="tokenClearBtn" class="hidden text-xs text-[var(--state-danger)] hover:underline">Xóa key đã lưu</button>
         <div class="flex justify-end gap-2 flex-1">
