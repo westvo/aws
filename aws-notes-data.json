@@ -2505,6 +2505,13 @@
           "content": "Điểm phân biệt: Layer 7 vs Layer 4.\n✅ ALB => xử lý ở TẦNG ỨNG DỤNG (HTTP/HTTPS), routing theo path/host/header, hiểu nội dung request.\n✅ NLB => xử lý ở TẦNG TRANSPORT (TCP/UDP), hiệu năng CỰC CAO (hàng triệu request/giây), static IP, KHÔNG hiểu nội dung HTTP bên trong.",
           "createdAt": "2026-09-14T16:18:04.325835Z",
           "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "b00ec93d1462",
+          "title": "📋 TỔNG HỢP: Elastic Load Balancing",
+          "content": "▸ Chọn loại load balancer\n1. ALB vs NLB vs GWLB — ALB Layer 7 (HTTP/HTTPS, routing path/host); NLB Layer 4 (TCP/UDP/TLS, hiệu năng cực cao, static IP); GWLB Layer 3 (virtual appliance) (gộp 4 note)\n2. NLB static IP & IP whitelisting — NLB có static/Elastic IP mỗi AZ để allowlist; ALB không có IP tĩnh\n3. NLB target routing — chọn target theo flow hash; target type instance hoặc IP; dùng được với Auto Scaling group\n4. Global Accelerator & kiến trúc mạng toàn cầu — Anycast IP tĩnh, tối ưu đường đi, đứng trước ALB/NLB đa Region\n5. Route 53 + NLB — Alias record trỏ NLB, kết hợp cross-zone để phân phối đều (gộp 2 note)\n\n▸ Định tuyến & target\n6. Cross-zone load balancing — ALB bật mặc định, miễn phí; NLB/GWLB tắt mặc định, bật có phí data transfer giữa AZ (gộp 2 note)\n7. Target types — instance, IP, Lambda (ALB)\n8. Listener rules — điều kiện (path, host, header, query string...) + priority, rule thấp đánh giá trước\n9. Multi-value headers & routing theo query string — ALB route/nhận header, query string nhiều giá trị\n10. Sticky sessions — session affinity qua cookie, giữ client về cùng target\n11. Deregistration delay — connection draining, mặc định 300 giây, cho request đang chạy hoàn tất trước khi gỡ target\n\n▸ Health check, TLS & quan sát\n12. Health check — cấu hình path/port/interval/threshold/matcher; target unhealthy bị loại khỏi routing, healthy lại tự thêm vào (gộp 3 note gồm troubleshooting SG)\n13. SSL/TLS termination & security policy — cert từ ACM trên listener, SNI cho nhiều cert, security policy chọn phiên bản TLS/cipher\n14. Request tracing & X-Forwarded headers — X-Amzn-Trace-Id, X-Forwarded-For/Proto/Port để giữ IP client gốc",
+          "createdAt": "2026-09-19T01:24:09.327953Z",
+          "updatedAt": "2026-09-19T01:24:09.327953Z"
         }
       ]
     },
@@ -3039,6 +3046,13 @@
           "content": "Điểm phân biệt: Linux NFS vs Windows SMB.\n✅ EFS => giao thức NFS, dành cho HỆ ĐIỀU HÀNH LINUX, nhiều EC2 Linux mount cùng lúc.\n✅ FSx for Windows File Server => giao thức SMB, dành cho HỆ ĐIỀU HÀNH WINDOWS, tích hợp Active Directory, hỗ trợ tính năng file system của Windows (ACL, DFS) mà EFS không có.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "eb89028d07a1",
+          "title": "📋 TỔNG HỢP: Amazon EFS",
+          "content": "▸ Nền tảng & khi nào dùng\n1. EFS — NFS, Linux, multi-AZ, nhiều EC2 mount cùng lúc, tự scale dung lượng (gộp QUICK)\n2. EFS vs EBS vs FSx Windows — EFS shared/NFS; EBS gắn 1 instance; FSx for Windows dùng SMB + AD (gộp 2 note)\n3. Mount targets & multi-AZ — mỗi AZ 1 mount target; hợp HPC latency thấp\n4. Container storage — ECS/Fargate mount EFS làm shared storage bền vững (gộp 2 note)\n5. DataSync — chuyển dữ liệu on-premises → EFS tự động\n\n▸ Hiệu năng & chi phí\n6. Performance mode & Throughput mode — General Purpose vs Max I/O; Bursting / Provisioned / Elastic (gộp 3 note)\n7. Lifecycle Management & IA — tự chuyển file ít truy cập sang EFS-IA để giảm chi phí\n8. One Zone & NFS mount options — One Zone rẻ hơn nhưng 1 AZ; tùy chọn mount NFS cho client\n\n▸ Bảo mật, bảo vệ dữ liệu & vận hành\n9. Access Points — điểm vào riêng theo ứng dụng (root directory + user POSIX)\n10. File system policy — resource-based policy cho EFS (vd bắt buộc TLS/IAM)\n11. Replication & Failback — replicate cross-region; failback về file system gốc sau khi DR\n12. Backup — tự động qua AWS Backup\n13. Mount helper (efs-utils) — mount có TLS, IAM auth",
+          "createdAt": "2026-09-19T01:24:09.328175Z",
+          "updatedAt": "2026-09-19T01:24:09.328175Z"
         }
       ]
     },
@@ -3649,6 +3663,13 @@
           "content": "Điểm phân biệt: General caching vs DynamoDB cache.\n✅ ElastiCache => cache TỔNG QUÁT cho BẤT KỲ database/nguồn dữ liệu nào (RDS, tự query API...), phải TỰ CODE logic cache-aside.\n✅ DAX => cache CHUYÊN BIỆT CHỈ CHO DynamoDB, TƯƠNG THÍCH API sẵn có (chỉ đổi endpoint), KHÔNG cần sửa logic code.",
           "createdAt": "2026-09-14T16:18:04.325835Z",
           "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "b1d2bf08f718",
+          "title": "📋 TỔNG HỢP: Amazon ElastiCache",
+          "content": "▸ Engine & chiến lược cache\n1. Redis vs Memcached — Redis: persistence, replication, Multi-AZ, pub/sub, data structure; Memcached: đơn giản, multi-thread, không persistence (gộp 2 note)\n2. General caching vs DAX — ElastiCache cache tổng quát tự code; DAX riêng cho DynamoDB (gộp 2 note)\n3. Lazy Loading vs Write-Through — Lazy: cache khi miss (có thể stale); Write-Through: ghi cache cùng lúc ghi DB (luôn mới, tốn ghi)\n4. Use case — leaderboard game, session store, in-memory cache giảm tải DB\n5. Eviction policy — cách xóa key khi đầy bộ nhớ (vd allkeys-lru, volatile-ttl)\n\n▸ Kiến trúc & mở rộng\n6. Redis Cluster Mode Enabled vs Disabled — Enabled: sharding nhiều shard scale ghi; Disabled: 1 shard + replica\n7. ElastiCache Serverless — không quản lý node, tự scale\n8. Global Datastore (Redis) — replicate cross-region cho đọc độ trễ thấp/DR\n9. Data tiering — đẩy dữ liệu ít dùng sang SSD để giảm chi phí\n10. Memcached scale out/in & Auto Discovery — thêm/bớt node, client tự phát hiện\n11. Subnet Group & Parameter Groups — node đặt trong subnet group; tùy chỉnh hành vi engine\n\n▸ Bảo mật & vận hành\n12. Encryption in-transit & at-rest, AUTH — TLS, KMS, Redis AUTH/RBAC\n13. Backup & Restore (Redis) — snapshot tự động/thủ công (Memcached không hỗ trợ)\n14. Reserved Nodes — cam kết để giảm chi phí node chạy ổn định",
+          "createdAt": "2026-09-19T01:24:09.328183Z",
+          "updatedAt": "2026-09-19T01:24:09.328183Z"
         }
       ]
     },
@@ -3914,6 +3935,13 @@
           "content": "Điểm phân biệt: Gắn với identity vs gắn với resource.\n✅ Identity-based Policy => gắn vào USER/GROUP/ROLE, quyết định IDENTITY đó được phép làm gì.\n✅ Resource-based Policy => gắn TRỰC TIẾP vào RESOURCE (S3 Bucket Policy, SQS Queue Policy, KMS Key Policy...), quyết định AI được truy cập resource đó — BẮT BUỘC dùng khi cần CROSS-ACCOUNT access vì identity policy phía người gọi (account khác) không đủ.",
           "createdAt": "2026-09-14T16:18:04.325835Z",
           "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "40b686c635e8",
+          "title": "📋 TỔNG HỢP: AWS IAM",
+          "content": "▸ Identity & vai trò\n1. User / Group / Role — User: credential lâu dài; Group: gán quyền cho nhiều user; Role: credential tạm thời, assume được (gộp 3 note)\n2. IAM Role & Instance Profile — cấp quyền cho EC2/ứng dụng không cần lưu access key\n3. Trust policy vs Permission policy của Role — trust: AI được assume; permission: role làm được GÌ\n4. Service-linked roles — role do AWS service tạo sẵn, quyền định sẵn, không sửa được\n5. Cross-account: STS AssumeRole & External ID — External ID chống confused deputy khi cấp role cho bên thứ 3\n6. IAM Identity Center (SSO) vs IAM users — SSO tập trung nhiều account, credential tạm thời, thay cho tạo user rời rạc\n\n▸ Policy & đánh giá quyền\n7. Policy evaluation — Explicit Deny thắng; sau đó cần Allow; mặc định Deny; quyền hiệu lực = giao của identity policy ∩ boundary ∩ SCP (gộp 2 note)\n8. Identity policy vs Resource policy — gắn vào identity vs gắn vào resource; resource policy cần cho cross-account\n9. Permissions boundary — trần quyền tối đa cho 1 user/role, không tự cấp quyền\n10. SCP (Organizations) — guardrail quyền tối đa cho account/OU, không tự cấp quyền, không ảnh hưởng management account (gộp 2 note)\n11. Permission boundary vs SCP — boundary: theo từng identity; SCP: theo account/OU\n12. NotAction & NotResource — dùng với Allow/Deny theo kiểu loại trừ; cẩn thận Allow + NotAction\n13. Condition keys — aws:SourceIp, aws:MultiFactorAuthPresent, aws:RequestedRegion, aws:PrincipalOrgID...\n\n▸ Bảo mật & vận hành\n14. MFA & bảo vệ Root — bật MFA cho root, không dùng root hằng ngày, không tạo access key cho root\n15. Access Analyzer — phát hiện resource chia sẻ ra ngoài (S3, KMS, IAM role...), validate policy\n16. Access keys rotation & Credential Report — xoay vòng key định kỳ, credential report liệt kê tuổi key/MFA",
+          "createdAt": "2026-09-19T01:24:09.328140Z",
+          "updatedAt": "2026-09-19T01:24:09.328140Z"
         }
       ]
     },
@@ -4043,6 +4071,13 @@
           "content": "Điểm phân biệt: Managed multi-tenant vs dedicated single-tenant HSM.\n✅ KMS => dịch vụ MANAGED, hạ tầng HSM DÙNG CHUNG (multi-tenant) giữa nhiều khách hàng (nhưng cách ly logic hoàn toàn), tích hợp SẴN với hầu hết AWS service, dễ dùng, chi phí thấp.\n✅ CloudHSM => cung cấp HSM VẬT LÝ RIÊNG (dedicated, single-tenant) đạt chuẩn FIPS 140-2 Level 3, TỰ QUẢN LÝ hoàn toàn key (AWS không truy cập được), dùng khi yêu cầu compliance nghiêm ngặt nhất không chấp nhận hạ tầng dùng chung.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "2ce0758a13f4",
+          "title": "📋 TỔNG HỢP: AWS KMS",
+          "content": "▸ Khóa & mã hóa\n1. Key types — AWS Owned (miễn phí, không kiểm soát) / AWS Managed (miễn phí, xem được) / Customer Managed (trả phí, kiểm soát & rotation) (gộp QUICK)\n2. Symmetric vs Asymmetric — Symmetric AES-256 (mặc định, key không rời KMS); Asymmetric RSA/ECC (encrypt/decrypt hoặc sign/verify)\n3. Envelope encryption — dùng data key mã hóa dữ liệu, KMS mã hóa data key; encrypt trực tiếp chỉ tới 4KB (gộp 2 note)\n4. HMAC keys — tạo/verify HMAC bằng KMS\n5. Aliases — tên thân thiện trỏ tới key, đổi key phía sau không sửa code\n\n▸ Kiểm soát truy cập\n6. Key Policy vs Grants — Key Policy là nền tảng bắt buộc; Grants cấp quyền tạm thời/lập trình cho principal\n7. Cross-account key usage — key policy cho account khác + IAM policy phía account đó\n8. Grant tokens — dùng token để dùng grant ngay khi chưa lan truyền (eventual consistency)\n\n▸ Vòng đời & vận hành\n9. Key rotation — automatic (customer managed, định kỳ) vs manual (tạo key mới + đổi alias); AWS Managed tự xoay\n10. Multi-Region Keys — cùng key ID/material ở nhiều Region để mã hóa/giải mã cross-region\n11. Delete key — waiting period 7–30 ngày, có thể hủy; khuyến nghị disable trước\n12. Quota (request/giây) — dùng nhiều SSE-KMS có thể bị throttle; giảm bằng S3 Bucket Key/cache data key\n13. Custom Key Store (CloudHSM) — key material lưu ở CloudHSM cluster của bạn\n14. KMS vs CloudHSM — managed multi-tenant vs HSM dedicated FIPS 140-2 Level 3\n\n▸ Tích hợp S3\n15. S3 default encryption & key rotation compliance — SSE-KMS mặc định, rotation tự động đáp ứng compliance (gộp 2 note)",
+          "createdAt": "2026-09-19T01:24:09.328191Z",
+          "updatedAt": "2026-09-19T01:24:09.328191Z"
         }
       ]
     },
@@ -4179,6 +4214,13 @@
           "content": "Cache response tại API Gateway => giảm số lần gọi backend => TTL tùy chỉnh => giảm độ trễ + chi phí",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "be2739fc9965",
+          "title": "📋 TỔNG HỢP: Amazon API Gateway",
+          "content": "▸ Loại API & tích hợp\n1. REST vs HTTP vs WebSocket API — REST đầy đủ tính năng; HTTP rẻ/nhanh hơn, tính năng ít hơn; WebSocket hai chiều real-time\n2. Serverless microservices & JWT — API Gateway + Lambda; JWT authorizer native (HTTP API) (gộp 2 note)\n3. Private API & VPC Link — API chỉ truy cập từ VPC qua interface endpoint; VPC Link tới backend private\n4. WebSocket — route selection, quản lý connection (connectionId)\n\n▸ Bảo vệ & giới hạn\n5. Throttling, Usage Plans & API Keys — rate + burst bảo vệ backend; usage plan + API key giới hạn theo client, quota (gộp 3 note)\n6. Account-level throttle — giới hạn mặc định theo account/Region (10,000 rps, burst 5,000), xin tăng được\n7. Lambda Authorizer — custom authorizer trả policy IAM cho token/request\n8. mTLS — xác thực 2 chiều bằng client certificate\n9. Request validation — kiểm tra body/tham số ngay tại gateway, từ chối sớm\n\n▸ Hiệu năng & triển khai\n10. Caching — cache response theo stage, TTL tùy chỉnh (mặc định 300s), giảm gọi backend (gộp 3 note)\n11. Mapping template — biến đổi request/response (VTL) không cần sửa backend\n12. Stage variables & Deployment — cấu hình theo stage (dev/prod) trỏ backend/alias khác nhau\n13. Canary deployment — chuyển % traffic sang bản mới trên stage",
+          "createdAt": "2026-09-19T01:24:09.328167Z",
+          "updatedAt": "2026-09-19T01:24:09.328167Z"
         }
       ]
     },
@@ -4904,6 +4946,13 @@
           "content": "Điểm phân biệt: Infrastructure-as-Code vs PaaS.\n✅ CloudFormation => IaC THUẦN TÚY, tự định nghĩa CHI TIẾT từng resource (VPC, EC2, RDS...) bằng template, kiểm soát TỐI ĐA, phù hợp hạ tầng phức tạp/tùy biến sâu.\n✅ Elastic Beanstalk => PaaS, TỰ ĐỘNG provision hạ tầng chuẩn cho web app (EC2+ALB+ASG+RDS), chỉ cần upload code, ít kiểm soát chi tiết hơn nhưng triển khai NHANH HƠN nhiều — thực chất Beanstalk dùng CloudFormation ở bên dưới.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "e98be6285663",
+          "title": "📋 TỔNG HỢP: AWS CloudFormation",
+          "content": "▸ Template & tham chiếu\n1. Intrinsic functions & pseudo parameters — Ref, Fn::GetAtt, Fn::Sub, Fn::Join, AWS::Region, AWS::StackName...\n2. Nested stacks vs Cross-stack reference — Nested: stack con trong stack cha; Cross-stack: Export/Import giá trị\n3. Export name — phải duy nhất trong Region, không xóa được stack đang bị import\n4. Custom Resources — Lambda-backed resource cho logic ngoài CloudFormation\n5. Macros & Transform (SAM) — biến đổi template trước khi deploy\n6. Template size limit — giới hạn kích thước template, dùng S3 reference khi lớn\n\n▸ Triển khai & an toàn\n7. Change Sets — xem trước thay đổi trước khi thực thi update\n8. Rollback Triggers & Monitoring time — rollback tự động khi CloudWatch Alarm kích hoạt\n9. Stack Policy — chặn update/xóa resource nhạy cảm\n10. Capabilities flag — CAPABILITY_IAM/NAMED_IAM/AUTO_EXPAND xác nhận rõ khi tạo IAM resource/macro\n11. cfn-init & cfn-signal — bootstrap EC2 và báo trạng thái về stack (CreationPolicy)\n\n▸ Multi-account & drift\n12. StackSets — triển khai cùng template tới nhiều account/Region (gộp 2 note gồm Deployment options)\n13. Multi-account governance — StackSets + Organizations\n14. Drift Detection & Deletion Policy — phát hiện resource bị sửa ngoài stack; Retain/Snapshot/Delete khi xóa (gộp 2 note)\n15. CloudFormation vs Elastic Beanstalk — IaC kiểm soát chi tiết vs PaaS deploy nhanh (gộp QUICK + compare)",
+          "createdAt": "2026-09-19T01:24:09.328198Z",
+          "updatedAt": "2026-09-19T01:24:09.328198Z"
         }
       ]
     },
@@ -5298,6 +5347,13 @@
           "content": "Điểm phân biệt: Provisioned capacity cố định vs auto-scaling theo traffic.\n✅ Aurora (Provisioned) => chọn TRƯỚC instance class cố định, phù hợp traffic ỔN ĐỊNH/dự đoán được, phải tự scale thủ công khi cần.\n✅ Aurora Serverless => TỰ ĐỘNG scale capacity (ACU) lên/xuống theo traffic THỰC TẾ, trả tiền theo mức dùng, phù hợp traffic KHÔNG dự đoán được/gián đoạn (dev/test, ứng dụng ít dùng).",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "2d64b0a3576a",
+          "title": "📋 TỔNG HỢP: Amazon Aurora",
+          "content": "▸ Kiến trúc & HA\n1. Storage — tự scale 10GB–128TB, 6 bản sao trên 3 AZ, tách compute/storage, tự phục hồi (gộp 2 note)\n2. Replicas & failover tier — tối đa 15 replica, failover theo tier (0 ưu tiên cao nhất)\n3. Custom endpoints — nhóm replica theo workload (vd analytics riêng) qua endpoint tùy chỉnh\n4. Global Database — replicate cross-region độ trễ <1 giây, RPO thấp, failover Region nhanh\n5. Zero-Downtime Patching — vá engine không ngắt kết nối khi có thể\n6. RDS Proxy + Aurora — pooling connection cho Serverless/Lambda\n\n▸ Serverless & chi phí\n7. Serverless v1 vs v2 — v2 scale mịn theo ACU, không pause/cold; v1 scale theo bước, có thể pause (gộp 3 note)\n8. Serverless v2 & I/O-Optimized — I/O-Optimized cho workload I/O nặng, không tính phí I/O riêng\n9. Reserved capacity vs Serverless v2 — Reserved cho tải ổn định; Serverless v2 cho tải biến động\n\n▸ Bản sao, phục hồi & tích hợp\n10. Migration RDS MySQL → Aurora — tạo Aurora Read Replica từ RDS MySQL rồi promote (giảm downtime), theo dõi replication lag\n11. Cloning, Fast Clone & Backtrack — clone copy-on-write nhanh; Backtrack tua ngược không cần restore (MySQL), có window giới hạn (gộp 3 note)\n12. Parallel Query (Aurora MySQL) — đẩy xử lý query phân tích xuống tầng storage\n13. Machine Learning — gọi SageMaker/Comprehend ngay trong SQL\n14. Binlog replication — CDC/tích hợp Kafka\n15. Aurora vs Aurora Serverless — cố định capacity vs tự scale theo traffic",
+          "createdAt": "2026-09-19T01:24:09.328156Z",
+          "updatedAt": "2026-09-19T01:24:09.328156Z"
         }
       ]
     },
