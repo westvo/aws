@@ -3182,6 +3182,13 @@
           "content": "File Gateway => NFS/SMB; Volume Gateway (Cached/Stored) => iSCSI block; Tape Gateway => virtual tape library backup",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "172d0f8eb12a",
+          "title": "📋 TỔNG HỢP: AWS Storage Gateway",
+          "content": "1. Hybrid storage — Storage Gateway nối on-premises với S3/AWS storage, truy cập như file share/ổ đĩa/tape (gộp 2 note)\n2. 3 loại gateway — File (NFS/SMB → S3), Volume (iSCSI), Tape (virtual tape library) (gộp QUICK)\n3. Cached vs Stored Volume — Cached: dữ liệu chính ở S3, cache hot local; Stored: dữ liệu chính local, backup async lên S3 dạng snapshot (gộp 2 note)\n4. Cached volume — cache miss phải kéo từ S3 nên độ trễ lần đầu cao hơn; cần cache đủ lớn cho working set\n5. SMB & Windows compatibility — cần AD/SMB cho môi trường Windows\n6. FSx File Gateway — truy cập FSx for Windows File Server từ on-premises với cache local\n7. Tape Gateway & Virtual Tape Shelf — tape đã eject lưu archive (Glacier) trong VTS\n8. Hardware appliance — thiết bị vật lý cài sẵn gateway cho site không có ảo hóa\n9. Bandwidth throttling & cache sizing — giới hạn băng thông upload; cache/upload buffer đủ lớn\n10. Local disk requirement — cần disk cho cache và upload buffer\n11. Số lượng volume & dung lượng tối đa — có giới hạn mỗi gateway, cần tính khi thiết kế\n12. Snapshot schedule (Volume Gateway) — lịch snapshot → EBS snapshot\n13. High Availability — cluster trên VMware\n14. Audit logging — CloudTrail & CloudWatch",
+          "createdAt": "2026-09-19T01:26:54.063424Z",
+          "updatedAt": "2026-09-19T01:26:54.063424Z"
         }
       ]
     },
@@ -3562,6 +3569,13 @@
           "content": "Simple AD => nhỏ, cơ bản; AD Connector => proxy trỏ về AD on-premises; Managed Microsoft AD => full-feature, hỗ trợ trust relationship",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "ba4baa1a2880",
+          "title": "📋 TỔNG HỢP: AWS Directory Service",
+          "content": "1. Các loại Directory — AWS Managed Microsoft AD (đầy đủ AD, trust) / Simple AD (nhỏ, cơ bản) / AD Connector (proxy tới AD on-premises) (gộp 3 note)\n2. Trust relationship — nối Managed AD với on-premises AD để user dùng credential AD hiện có (gộp 2 note)\n3. Managed AD multi-Region replication — replicate directory sang Region khác\n4. Simple AD — giới hạn tính năng, không trust, hợp use case nhỏ\n5. AD Connector — chỉ proxy, yêu cầu kết nối mạng tới on-premises AD\n6. Edition Standard vs Enterprise — khác quy mô số object\n7. Schema extension — mở rộng schema AD\n8. RADIUS MFA — tích hợp MFA cho directory\n9. Tích hợp — IAM Identity Center, WorkSpaces, QuickSight, FSx for Windows/ONTAP\n10. SSO với Office 365/Azure AD\n11. Monitoring — CloudWatch\n12. Delete protection & Deregister — gỡ các service đang dùng directory trước khi xóa",
+          "createdAt": "2026-09-19T01:26:54.063574Z",
+          "updatedAt": "2026-09-19T01:26:54.063574Z"
         }
       ]
     },
@@ -3820,6 +3834,13 @@
           "content": "Target Tracking => giữ metric ở mức target (đơn giản nhất); Step Scaling => scale theo bậc dựa mức vượt ngưỡng; Scheduled => scale theo lịch cố định biết trước",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "288b61c8347b",
+          "title": "📋 TỔNG HỢP: Amazon EC2 Auto Scaling",
+          "content": "1. ASG & Launch Template — nhóm instance với min/max/desired, tenancy theo template (gộp 3 note gồm traffic surge)\n2. Scaling policies — Target Tracking (giữ metric tại target) / Step / Simple (gộp 2 note)\n3. Scale theo độ dài SQS queue — dùng custom metric backlog per instance\n4. Scheduled actions — scale theo lịch biết trước\n5. Predictive scaling — dự đoán tải từ lịch sử\n6. Cooldown period — chờ sau mỗi scaling để tránh dao động\n7. Warm pools — instance khởi tạo sẵn để scale-out nhanh\n8. Lifecycle hooks — chèn logic khi Launching/Terminating (vd cài đặt, drain)\n9. Instance refresh — thay instance theo lượt khi đổi launch template\n10. Termination policies — chọn instance bị terminate khi scale-in\n11. Mixed instances policy — trộn On-Demand + Spot, nhiều instance type\n12. Suspend & Resume processes — tạm dừng các tiến trình ASG\n13. NLB + static EIP + ASG — IP whitelisting qua NLB",
+          "createdAt": "2026-09-19T01:26:54.063586Z",
+          "updatedAt": "2026-09-19T01:26:54.063586Z"
         }
       ]
     },
@@ -4371,6 +4392,13 @@
           "content": "Điểm phân biệt: Data transfer vs hybrid storage integration.\n✅ DataSync => di chuyển dữ liệu MỘT LẦN hoặc ĐỊNH KỲ giữa on-premises và AWS storage (S3/EFS/FSx), tối ưu TỐC ĐỘ TRANSFER (song song, nén).\n✅ Storage Gateway => tích hợp HYBRID LIÊN TỤC, cho phép on-premises MOUNT & TRUY CẬP storage AWS NHƯ Ổ ĐĨA/FILE SHARE hàng ngày (không chỉ transfer 1 lần rồi thôi).",
           "createdAt": "2026-09-14T16:18:04.325835Z",
           "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "85e46353b4b1",
+          "title": "📋 TỔNG HỢP: AWS DataSync",
+          "content": "1. DataSync — chuyển dữ liệu online on-premises ↔ AWS tự động, nhanh (gộp 2 note gồm QUICK)\n2. DataSync vs Storage Gateway vs Snowball — transfer/migrate vs hybrid mount liên tục vs offline (gộp 2 note)\n3. Agent & Task — Agent cài on-premises; Task định nghĩa source/destination\n4. Location types — NFS, SMB, HDFS, S3, EFS, FSx, S3-compatible object storage\n5. Băng thông & mã hóa — TLS in-transit, có thể throttle băng thông\n6. Data validation & Filter — kiểm tra toàn vẹn; lọc theo include/exclude\n7. Discovery — phân tích storage on-premises để lập kế hoạch migrate\n8. Object tags & metadata preservation\n9. Task history & Reporting\n10. Schedule expression & Manual start — lịch chạy hoặc kích hoạt thủ công\n11. Network requirement — các port cần mở\n12. Task queueing — 1 agent chạy 1 task tại 1 thời điểm, task khác xếp hàng; muốn song song cần nhiều agent (gộp 2 note)",
+          "createdAt": "2026-09-19T01:26:54.063594Z",
+          "updatedAt": "2026-09-19T01:26:54.063594Z"
         }
       ]
     },
@@ -4486,6 +4514,13 @@
           "content": "FSx for Windows => SMB, tích hợp AD; FSx for Lustre => HPC, high performance compute; FSx for NetApp ONTAP/OpenZFS => tương thích filer on-premises",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "c018d209ea55",
+          "title": "📋 TỔNG HỢP: Amazon FSx",
+          "content": "1. 4 loại FSx — Windows File Server / Lustre / NetApp ONTAP / OpenZFS và use case (gộp QUICK)\n2. FSx for Windows — SMB, Windows ACL, tích hợp AD (gộp 3 note)\n3. FSx for Windows Multi-AZ & self-managed AD\n4. Shadow copies (VSS) — khôi phục phiên bản file trước\n5. FSx for Lustre — HPC, import data từ S3\n6. Lustre link với S3 (Data Repository Association)\n7. Lustre Scratch vs Persistent — Scratch tạm thời/nhanh/rẻ; Persistent bền, có replication\n8. FSx for ONTAP — NFS/SMB/iSCSI, tiering tự động\n9. ONTAP Snapshot & thin provisioning\n10. ONTAP SVM & multi-protocol\n11. Backup tự động & copy cross-region\n12. DataSync — di chuyển dữ liệu tới FSx",
+          "createdAt": "2026-09-19T01:26:54.063601Z",
+          "updatedAt": "2026-09-19T01:26:54.063601Z"
         }
       ]
     },
@@ -4608,6 +4643,13 @@
           "content": "Điểm phân biệt: Threat detection vs vulnerability scan vs sensitive data discovery.\n✅ GuardDuty => phát hiện HÀNH VI BẤT THƯỜNG/tấn công đang diễn ra (phân tích log VPC Flow/CloudTrail/DNS bằng ML), KHÔNG cần agent.\n✅ Inspector => quét LỖ HỔNG BẢO MẬT (CVE) trên EC2/ECR image/Lambda, đánh giá RỦI RO TIỀM ẨN trước khi bị khai thác.\n✅ Macie => phát hiện DỮ LIỆU NHẠY CẢM (PII) đang lưu trong S3, phục vụ compliance data privacy.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "6a6f82e59723",
+          "title": "📋 TỔNG HỢP: Amazon GuardDuty",
+          "content": "1. GuardDuty — threat detection bằng ML trên CloudTrail/VPC Flow Logs/DNS logs, không cần agent (gộp QUICK)\n2. Nguồn dữ liệu phân tích — CloudTrail, VPC Flow Logs, DNS logs, S3 data events, EKS audit...\n3. S3 security & phát hiện hoạt động độc hại — GuardDuty S3 Protection; Macie cho dữ liệu nhạy cảm\n4. GuardDuty vs Inspector vs Macie — hành vi tấn công vs lỗ hổng vs dữ liệu nhạy cảm\n5. EventBridge + auto-isolate — tự động cô lập threat\n6. SSM auto-remediation\n7. Multi-account — Delegated Administrator\n8. Suppression rules & Trusted IP list; Threat list — ưu tiên & khác nhau\n9. Custom threat intelligence sets\n10. Finding severity & frequency; Archive findings\n11. Extended Threat Detection — attack sequence\n12. Runtime Monitoring — EKS/ECS/EC2\n13. Finding types theo nhóm tài nguyên\n14. Chi phí & 30-day free trial",
+          "createdAt": "2026-09-19T01:26:54.063608Z",
+          "updatedAt": "2026-09-19T01:26:54.063608Z"
         }
       ]
     },
@@ -4723,6 +4765,13 @@
           "content": "Phát hiện dữ liệu nhạy cảm (PII) => trong S3 => machine learning + pattern matching => báo cáo phục vụ compliance",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "059346142f34",
+          "title": "📋 TỔNG HỢP: Amazon Macie",
+          "content": "1. Macie — phát hiện dữ liệu nhạy cảm (PII) trong S3 bằng ML + pattern matching (gộp 3 note)\n2. Managed vs Custom data identifiers — regex, keywords, ignore words, severity tùy chỉnh (gộp 3 note)\n3. Automated sensitive data discovery\n4. Job one-time vs scheduled\n5. Severity & sample occurrences\n6. EventBridge & Security Hub — quarantine tự động (gộp 2 note)\n7. Summary dashboard & bucket inventory\n8. Coverage statistics theo dõi chi phí\n9. Tag-based scoping\n10. False positives — suppression/revised findings",
+          "createdAt": "2026-09-19T01:26:54.063614Z",
+          "updatedAt": "2026-09-19T01:26:54.063614Z"
         }
       ]
     },
@@ -4845,6 +4894,13 @@
           "content": "Điểm phân biệt: Layer 7 app rules vs Layer 3/4 network-wide firewall.\n✅ WAF => hoạt động Layer 7, lọc HTTP/HTTPS request (SQL injection, XSS, rate limit, bot control), gắn vào CloudFront/ALB/API Gateway/AppSync — bảo vệ ỨNG DỤNG WEB cụ thể.\n✅ AWS Network Firewall => hoạt động Layer 3/4/7, kiểm soát TOÀN BỘ traffic RA/VÀO VPC (không riêng HTTP), dùng stateful rule engine (Suricata-compatible) — bảo vệ ở CẤP MẠNG cho cả VPC, không chỉ 1 ứng dụng web.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "12065e4a1027",
+          "title": "📋 TỔNG HỢP: AWS WAF",
+          "content": "1. WAF vs Shield vs Network Firewall — Layer 7 web vs DDoS L3/4 vs firewall mạng toàn VPC (gộp 2 note)\n2. CloudFront + WAF & S3 OAI — giới hạn IP, bảo vệ origin\n3. Web ACL & Managed Rule Groups\n4. Rule types — rate-based, geo-match, IP set; size constraint; XSS/SQLi (gộp 3 note)\n5. Scope — Regional (ALB, API Gateway, AppSync, Cognito) vs CloudFront (global, tạo ở us-east-1)\n6. Rule priority & Labels\n7. Web ACL Capacity Units (WCU)\n8. Bot Control; JA3/TLS fingerprint\n9. CAPTCHA/Challenge action\n10. Testing với Count mode trước khi Block\n11. Logging — S3 / CloudWatch Logs / Firehose (gộp 2 note)\n12. Association nhiều resource & chia sẻ",
+          "createdAt": "2026-09-19T01:26:54.063621Z",
+          "updatedAt": "2026-09-19T01:26:54.063621Z"
         }
       ]
     },
@@ -5239,6 +5295,13 @@
           "content": "Điểm phân biệt: Internet tunnel vs dedicated connection.\n✅ Site-to-Site VPN => IPSec đi qua INTERNET công khai, triển khai NHANH (phút-giờ), băng thông/độ trễ KHÔNG ỔN ĐỊNH (phụ thuộc Internet).\n✅ Direct Connect => kết nối VẬT LÝ RIÊNG tới AWS, băng thông ỔN ĐỊNH & độ trễ THẤP, triển khai LÂU HƠN (tuần-tháng do cần kéo cáp vật lý).",
           "createdAt": "2026-09-14T16:18:04.325835Z",
           "updatedAt": "2026-09-14T16:18:04.325835Z"
+        },
+        {
+          "id": "c9fb2a0b173a",
+          "title": "📋 TỔNG HỢP: AWS Site-to-Site VPN",
+          "content": "1. Site-to-Site VPN — IPSec qua Internet, 2 tunnel redundant, triển khai nhanh (gộp QUICK)\n2. VGW & Customer Gateway (gộp 2 note)\n3. VPN + Direct Connect failover — VPN dự phòng cho DX (gộp 2 note)\n4. VPN vs Direct Connect — Internet tunnel vs kết nối riêng\n5. VPN CloudHub — nối nhiều văn phòng qua AWS\n6. Accelerated VPN — qua Global Accelerator\n7. Route-based vs Policy-based\n8. Static vs Dynamic routing (BGP)\n9. DPD & tunnel monitoring; CloudWatch metrics (gộp 2 note)\n10. NAT-T & Pre-shared key\n11. ECMP với Transit Gateway; TGW attachment vs VGW attachment (gộp 2 note)\n12. Inside IP CIDR tùy chỉnh",
+          "createdAt": "2026-09-19T01:26:54.063627Z",
+          "updatedAt": "2026-09-19T01:26:54.063627Z"
         }
       ]
     },
@@ -5504,6 +5567,13 @@
           "content": "Theo dõi metric => vượt ngưỡng cấu hình => trigger action (SNS/Auto Scaling) => 3 trạng thái: OK / ALARM / INSUFFICIENT_DATA",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "99f797a88225",
+          "title": "📋 TỔNG HỢP: Amazon CloudWatch",
+          "content": "1. Alarm — theo dõi metric, ngưỡng, hành động (SNS/Auto Scaling/EC2 action); OK/ALARM/INSUFFICIENT_DATA (gộp QUICK)\n2. EC2 auto recovery — alarm StatusCheckFailed_System → recover (gộp 2 note)\n3. Composite alarm & alarm actions — kết hợp nhiều alarm (gộp 2 note)\n4. Logs — Metric Filter, Subscription Filter, Logs Insights query (gộp 3 note)\n5. Custom metrics & EMF — Embedded Metric Format\n6. Metric resolution — Standard (1 phút) vs High-resolution (tới 1 giây)\n7. Metric Math\n8. Anomaly Detection\n9. Dashboards\n10. Synthetics (Canaries) — giám sát endpoint/luồng người dùng theo lịch\n11. Contributor Insights\n12. Cross-account observability",
+          "createdAt": "2026-09-19T01:26:54.063633Z",
+          "updatedAt": "2026-09-19T01:26:54.063633Z"
         }
       ]
     },
@@ -5619,6 +5689,13 @@
           "content": "Truy cập EC2 => không cần SSH/bastion host => không cần mở port 22 => mọi hành động được audit qua CloudTrail",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "f6fe01f16bb5",
+          "title": "📋 TỔNG HỢP: AWS Systems Manager",
+          "content": "1. Session Manager — truy cập EC2 không cần SSH/bastion, audit qua CloudTrail (gộp QUICK)\n2. Parameter Store vs Secrets Manager — config vs secret có rotation (gộp 2 note)\n3. Parameter Store — Standard vs Advanced; hierarchy & path-based access (gộp 2 note)\n4. Patch Manager & State Manager; Default Host Management Configuration (gộp 2 note)\n5. Run Command & Automation documents\n6. Inventory & Compliance\n7. Fleet Manager & Document automation at scale\n8. Maintenance Windows\n9. Distributor\n10. Application Manager & OpsCenter\n11. Change Manager\n12. Explorer — dữ liệu vận hành toàn organization\n13. Hybrid Activations — quản lý server on-premises",
+          "createdAt": "2026-09-19T01:26:54.063640Z",
+          "updatedAt": "2026-09-19T01:26:54.063640Z"
         }
       ]
     },
@@ -5741,6 +5818,13 @@
           "content": "Điểm phân biệt: Streaming (nhiều consumer, replay) vs Queue (1 consumer, xóa sau đọc).\n✅ Kinesis Data Streams => NHIỀU consumer cùng đọc ĐỘC LẬP 1 stream, dữ liệu vẫn GIỮ NGUYÊN trong retention window (replay lại được), thứ tự đảm bảo trong 1 shard.\n✅ SQS => message bị XÓA sau khi 1 consumer xử lý xong (trừ khi dùng nhiều queue song song), không replay được, mô hình pull đơn giản hơn cho xử lý bất đồng bộ 1-1.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "5d8048bfac5e",
+          "title": "📋 TỔNG HỢP: Amazon Kinesis",
+          "content": "1. Data Streams vs Firehose vs Data Analytics — real-time custom vs load tự động vào S3/Redshift vs phân tích (gộp 3 note gồm QUICK)\n2. Streaming analytics & decoupling — Data Streams + Lambda/Analytics, tách producer/consumer (gộp 3 note)\n3. Shards & scaling — mỗi shard giới hạn throughput; Resharding (split/merge) (gộp 2 note)\n4. Record key & shard assignment — partition key → shard\n5. Enhanced Fan-Out — mỗi consumer băng thông riêng\n6. On-demand vs Provisioned mode\n7. Firehose — buffer size/interval, format conversion (Parquet/ORC), dynamic partitioning (gộp 2 note)\n8. Agent & KPL\n9. SSE & VPC Endpoint\n10. Video Streams\n11. Kinesis Data Streams vs SQS — nhiều consumer/replay vs 1 consumer",
+          "createdAt": "2026-09-19T01:26:54.063646Z",
+          "updatedAt": "2026-09-19T01:26:54.063646Z"
         }
       ]
     },
@@ -5992,6 +6076,13 @@
           "content": "Event bus => định tuyến event theo rule => nhiều source (AWS service, SaaS partner, custom app) => decoupling kiến trúc serverless",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "32fd0a3143a2",
+          "title": "📋 TỔNG HỢP: Amazon EventBridge",
+          "content": "1. EventBridge — event bus route event theo rule từ nhiều nguồn (AWS/SaaS/custom), decoupling serverless (gộp 3 note gồm QUICK)\n2. Event bus, Rule & Pattern matching\n3. Cron job serverless — EventBridge schedule → Lambda\n4. Scheduler — lịch quy mô lớn\n5. Pipes — nối source → filter/enrich → target\n6. Schema Registry & Schema Discovery (gộp 2 note)\n7. Cross-account & cross-region event bus\n8. Archive & Replay\n9. Input Transformer\n10. API Destinations\n11. DLQ cho target; Retry policy & max event age (gộp 2 note)\n12. Global Endpoints — DR cho event bus",
+          "createdAt": "2026-09-19T01:26:54.063653Z",
+          "updatedAt": "2026-09-19T01:26:54.063653Z"
         }
       ]
     },
@@ -6107,6 +6198,13 @@
           "content": "Graph database => quan hệ phức tạp giữa entity => Gremlin/SPARQL => social network, fraud detection, recommendation engine",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "ee63af5159d0",
+          "title": "📋 TỔNG HỢP: Amazon Neptune",
+          "content": "1. Graph database — quan hệ phức tạp (social, fraud, recommendation) (gộp 3 note gồm QUICK)\n2. Query languages — Gremlin, openCypher, SPARQL; RDF triple store (gộp 2 note)\n3. HA & Global Database\n4. Serverless\n5. Neptune ML\n6. Streams (CDC)\n7. IAM auth & VPC-only\n8. Bulk Loader\n9. Notebooks\n10. Audit logging\n11. Fast Reset\n12. Workload management — query timeout & concurrency",
+          "createdAt": "2026-09-19T01:26:54.063659Z",
+          "updatedAt": "2026-09-19T01:26:54.063659Z"
         }
       ]
     },
