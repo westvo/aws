@@ -573,6 +573,13 @@
           "content": "Route table riêng của TGW => kiểm soát traffic giữa các attachment => propagation tự động hoặc static route",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "3bc9415bf6f1",
+          "title": "📋 TỔNG HỢP: AWS Transit Gateway",
+          "content": "▸ Kiến trúc & kết nối\n1. Hub-and-spoke — 1 attachment mỗi VPC, transitive, thay full-mesh peering (gộp 4 note gồm QUICK và hybrid)\n2. Transit VIF & multi-VPC routing — Direct Connect nối TGW qua Transit VIF\n3. Site-to-Site VPN & ECMP — ECMP gộp băng thông nhiều tunnel VPN vượt giới hạn 1 tunnel\n4. TGW Peering — nối TGW giữa các Region\n5. Connect attachment — GRE + BGP cho SD-WAN/appliance\n6. Appliance mode — giữ symmetric routing qua stateful appliance\n7. Multicast — hỗ trợ multicast trong VPC\n8. Chia sẻ qua AWS RAM — dùng TGW xuyên account\n\n▸ Định tuyến & vận hành\n9. Route table & attachment — association + propagation quyết định traffic (gộp QUICK)\n10. Static vs Propagated routes — static ưu tiên hơn propagated\n11. Blackhole route — chủ động drop traffic\n12. Network Manager — dashboard/quan sát mạng toàn cầu\n13. Quota — giới hạn số attachment & route (soft limit)",
+          "createdAt": "2026-09-19T01:25:31.401117Z",
+          "updatedAt": "2026-09-19T01:25:31.401117Z"
         }
       ]
     },
@@ -2917,6 +2924,13 @@
           "content": "Blueprint cho container => CPU/memory => network mode => IAM task role => container definition",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "ebcc3e060563",
+          "title": "📋 TỔNG HỢP: Amazon ECS",
+          "content": "▸ Nền tảng\n1. Launch type EC2 vs Fargate — EC2 tự quản lý server; Fargate serverless, trả theo task (gộp 2 note)\n2. Task Definition & Service — blueprint container (CPU/memory/network/role); Service duy trì số task\n3. Task Role vs Task Execution Role — Task Role: quyền ứng dụng; Execution Role: pull ECR/ghi log/lấy secret\n4. Task networking modes — awsvpc (Fargate bắt buộc), bridge, host\n5. Container storage — ECS Fargate + EFS làm shared storage bền vững\n6. Environment files & secrets — lấy từ SSM Parameter Store/Secrets Manager\n\n▸ Scale, triển khai & vận hành\n7. Service Auto Scaling & Capacity Provider — scale task; capacity provider quản lý capacity EC2/Spot\n8. Task placement — binpack/spread/random + constraints (chỉ EC2 launch type)\n9. Deployment Circuit Breaker — tự rollback khi deploy lỗi\n10. Blue/Green với CodeDeploy\n11. Service Connect — service discovery + kết nối giữa service\n12. ECS Exec — mở shell debug vào container\n13. Container Insights — metric/log theo cluster/service/task\n14. Spot interruption handling — draining, xử lý SIGTERM khi bị thu hồi",
+          "createdAt": "2026-09-19T01:25:31.401124Z",
+          "updatedAt": "2026-09-19T01:25:31.401124Z"
         }
       ]
     },
@@ -3290,6 +3304,13 @@
           "content": "Global Accelerator => Anycast IP tĩnh, Layer 4, non-HTTP (TCP/UDP); CloudFront => cache nội dung, Layer 7, HTTP/HTTPS",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "cb56f29341a2",
+          "title": "📋 TỔNG HỢP: AWS Global Accelerator",
+          "content": "▸ Nền tảng\n1. Global Accelerator — 2 Anycast static IP, đi vào backbone AWS gần nhất, giảm độ trễ (gộp 3 note gồm kiến trúc mạng toàn cầu)\n2. TCP/UDP listener & port ranges — hỗ trợ cả UDP (game, VoIP), dải port\n3. Health check failover — tự chuyển endpoint/Region khi unhealthy\n4. Supported endpoints — ALB, NLB, EC2, Elastic IP\n5. GA vs CloudFront — non-HTTP/IP tĩnh vs cache HTTP (gộp 2 note)\n\n▸ Điều phối traffic & vận hành\n6. Traffic Dial & Endpoint Weight — điều % traffic tới Region/endpoint (blue-green, canary)\n7. Client affinity — giữ client về cùng endpoint (source IP)\n8. Custom Routing Accelerator — map user tới đúng instance/port (game session)\n9. Port override — đổi port listener ↔ endpoint\n10. BYOIP — mang dải IP của bạn vào GA\n11. Flow logs — ghi log traffic qua accelerator\n12. Deny/Allow list — kiểm soát destination cho custom routing\n13. Pricing — phí cố định theo giờ + Data Transfer-Premium",
+          "createdAt": "2026-09-19T01:25:31.401131Z",
+          "updatedAt": "2026-09-19T01:25:31.401131Z"
         }
       ]
     },
@@ -3412,6 +3433,13 @@
           "content": "Migrate database => nguồn sang đích => Schema Conversion Tool cho heterogeneous migration => Continuous Replication (CDC) cho đồng bộ liên tục",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "521f2805ac81",
+          "title": "📋 TỔNG HỢP: AWS Database Migration Service (DMS)",
+          "content": "▸ Loại migration & công cụ\n1. Database migration & schema conversion — DMS di chuyển dữ liệu; SCT chuyển schema khi khác engine (gộp 2 note)\n2. Homogeneous vs Heterogeneous — cùng engine vs khác engine (cần SCT)\n3. DMS SC vs SCT — chuyển schema trên cloud vs công cụ cài đặt cục bộ\n4. Homogeneous Data Migrations — dịch vụ mới cho migrate cùng engine, không dùng task DMS\n5. Fleet Advisor — khám phá & đánh giá fleet database\n6. Pre-migration Assessment — kiểm tra rủi ro trước khi chạy\n\n▸ Task & cấu hình\n7. Full load / CDC / Full load + CDC — di chuyển 1 lần, đồng bộ liên tục, hoặc cả hai\n8. Replication instance sizing & Multi-AZ — chọn cỡ theo tải; Multi-AZ tăng HA (gộp 2 note)\n9. Multi-AZ vs Serverless replication — instance quản lý vs tự scale\n10. Target table preparation mode — Do nothing / Drop and create / Truncate\n11. LOB handling mode — Limited / Full / Inline LOB\n12. Parallel load — tải song song nhiều phần bảng\n13. Data validation — so sánh source/target\n14. Endpoint testing — Test Connection trước khi chạy task",
+          "createdAt": "2026-09-19T01:25:31.401138Z",
+          "updatedAt": "2026-09-19T01:25:31.401138Z"
         }
       ]
     },
@@ -5082,6 +5110,13 @@
           "content": "Điểm phân biệt: Giới hạn quyền tối đa (guardrail) vs cấp quyền thực tế.\n✅ SCP (Service Control Policy) => đặt TRẦN GIỚI HẠN quyền tối đa cho cả account/OU, KHÔNG TỰ CẤP quyền gì (dù SCP Allow s3:*, user vẫn cần IAM Policy riêng mới thực sự dùng được).\n✅ IAM Policy => CẤP QUYỀN THỰC TẾ cho user/role, quyền hiệu lực cuối cùng = GIAO (intersection) giữa SCP cho phép VÀ IAM Policy cho phép.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "21a81da0c6fc",
+          "title": "📋 TỔNG HỢP: AWS Organizations",
+          "content": "▸ Cấu trúc & chính sách\n1. Multi-account governance — Organizations + CloudFormation StackSets triển khai chuẩn cho nhiều account\n2. SCP — guardrail quyền tối đa, không tự cấp quyền (gộp 3 note gồm QUICK và so sánh với IAM Policy)\n3. Quy tắc kế thừa SCP — quyền hiệu lực = giao các SCP từ root → OU → account; Deny ở tầng nào cũng chặn xuống dưới\n4. Resource Control Policy (RCP) — giới hạn quyền tối đa trên RESOURCE của account thành viên (khác SCP giới hạn principal)\n5. Effective policy — tổng hợp SCP + RCP thực tế áp lên 1 account\n6. Tag Policies & Backup Policies — chuẩn hóa tag; áp backup plan cho cả org\n7. AI services opt-out policy — từ chối AWS dùng dữ liệu để cải thiện dịch vụ AI\n8. Max OU depth & account limit — OU tối đa 5 tầng từ root; giới hạn số account (xin tăng được)\n\n▸ Account & quản trị\n9. All features vs Consolidated Billing only — All features mới dùng được SCP và các policy\n10. Consolidated Billing & RI sharing — gộp hóa đơn, volume discount, chia sẻ Reserved Instance/Savings Plans giữa account\n11. Invite vs Create account — mời account có sẵn (Handshake) hoặc tạo mới trong org\n12. Handshake — quy trình mời/chấp nhận giữa các account\n13. Delegated Administrator — ủy quyền quản trị 1 service cho member account, giảm dùng management account\n14. Close account & Suspended state — đóng account chuyển Suspended, xóa hẳn sau ~90 ngày\n15. VPC Sharing — chia sẻ subnet trong org qua RAM",
+          "createdAt": "2026-09-19T01:25:31.400894Z",
+          "updatedAt": "2026-09-19T01:25:31.400894Z"
         }
       ]
     },
@@ -5835,6 +5870,13 @@
           "content": "Điểm phân biệt: Backup 1 volume vs backup toàn bộ instance.\n✅ EBS Snapshot => backup POINT-IN-TIME của 1 VOLUME cụ thể (ổ đĩa), dùng để tạo volume mới hoặc khôi phục dữ liệu.\n✅ AMI (Amazon Machine Image) => backup TOÀN BỘ CẤU HÌNH INSTANCE (OS, volume root + các volume khác đính kèm, launch permission), dùng để LAUNCH INSTANCE MỚI giống hệt — về bản chất AMI được xây dựng dựa trên các EBS Snapshot bên dưới.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "a62d161a3e03",
+          "title": "📋 TỔNG HỢP: Amazon EBS",
+          "content": "▸ Loại volume & hiệu năng\n1. Volume types — gp3/gp2 (SSD đa dụng), io1/io2 (IOPS cao, NoSQL/DB nặng), st1 (HDD throughput), sc1 (HDD lạnh) (gộp 3 note)\n2. gp3 — IOPS/throughput độc lập với dung lượng (baseline 3,000 IOPS/125 MiB/s), thường rẻ hơn gp2\n3. IOPS vs throughput — IOPS cho random nhỏ (DB); throughput cho sequential lớn (big data)\n4. Multi-Attach — io1/io2 gắn 1 volume vào nhiều instance cùng AZ\n5. RAID — RAID 0 tăng hiệu năng; RAID 1 dự phòng\n6. Elastic Volumes — đổi size/type/IOPS không downtime\n7. CloudWatch metrics & tối ưu chi phí io1 vs gp2/gp3\n\n▸ Snapshot & bảo vệ\n8. Snapshot — incremental, lưu trên S3; Fast Snapshot Restore giảm độ trễ khởi tạo (gộp 2 note)\n9. Snapshot Lifecycle (DLM) — tự động tạo/xóa snapshot theo lịch\n10. Snapshot Archive tier — lưu rẻ hơn cho snapshot ít dùng, restore mất nhiều giờ\n11. Copy snapshot cross-region + re-encrypt — chọn KMS key khi copy\n12. EBS Direct APIs — đọc block/so sánh snapshot không cần tạo volume\n13. Encryption — KMS, snapshot/volume/traffic đều mã hóa, bật mặc định theo Region\n14. EBS vs EFS vs S3 — block vs file vs object\n15. Snapshot vs AMI — backup 1 volume vs backup cấu hình cả instance",
+          "createdAt": "2026-09-19T01:25:31.401061Z",
+          "updatedAt": "2026-09-19T01:25:31.401061Z"
         }
       ]
     },
@@ -6316,6 +6358,13 @@
           "content": "Điểm phân biệt: Global DX aggregation vs regional VPC hub.\n✅ Direct Connect Gateway => kết nối 1 Direct Connect với NHIỀU VPC ở NHIỀU REGION khác nhau (global reach) qua Private Virtual Interface.\n✅ Transit Gateway => hub ĐIỀU PHỐI routing giữa nhiều VPC/VPN TRONG 1 REGION (hoặc peering liên Region), thường dùng KẾT HỢP với Direct Connect Gateway khi cần vừa aggregate DX vừa quản lý routing tập trung nhiều VPC.",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "2d2d1d51be6a",
+          "title": "📋 TỔNG HỢP: AWS Direct Connect",
+          "content": "▸ Kiến trúc & kết nối\n1. DX + Site-to-Site VPN failover — DX làm chính, VPN backup qua Internet (hybrid failover)\n2. Direct Connect Gateway & resiliency — nối 1 DX tới nhiều VPC/Region; mô hình HA nhiều location (gộp 3 note gồm DXGW vs VGW, DXGW vs TGW)\n3. VIF types — Private (VPC), Public (dịch vụ public AWS), Transit (Transit Gateway)\n4. Hosted vs Dedicated connection — Dedicated cổng riêng 1/10/100 Gbps; Hosted qua partner, băng thông nhỏ hơn\n5. LAG — gộp nhiều kết nối thành 1 để tăng băng thông\n6. SiteLink — đi thẳng giữa các DX location, không qua Region AWS\n\n▸ Định tuyến, bảo mật & triển khai\n7. BGP & route filtering — trao đổi route, lọc bằng community/prefix\n8. MACsec — mã hóa layer 2 trên đường vật lý\n9. VLAN 802.1Q — mỗi VIF 1 VLAN\n10. Jumbo frames — MTU 9001 cho Private/Transit VIF\n11. BFD — phát hiện lỗi link nhanh để failover sớm\n12. Provisioning & lead time — cross-connect thường mất tuần–tháng\n13. Chọn Location — gần trung tâm dữ liệu; Cross-connect vs Partner patch panel",
+          "createdAt": "2026-09-19T01:25:31.401076Z",
+          "updatedAt": "2026-09-19T01:25:31.401076Z"
         }
       ]
     },
@@ -6957,6 +7006,13 @@
           "content": "Điểm phân biệt: Ai làm gì (audit API) vs hiệu năng/metric (monitoring).\n✅ CloudTrail => ghi lại AI gọi API GÌ, KHI NÀO, TỪ ĐÂU — phục vụ AUDIT & COMPLIANCE, trả lời câu hỏi \"who did what\".\n✅ CloudWatch => thu thập METRIC hiệu năng (CPU, latency, request count...) + LOGS ứng dụng + ALARM — phục vụ MONITORING & vận hành real-time, trả lời câu hỏi \"hệ thống đang chạy thế nào\".",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "8b3a60ad8f70",
+          "title": "📋 TỔNG HỢP: AWS CloudTrail",
+          "content": "▸ Ghi log & trail\n1. Management vs Data events — Management (mặc định, tạo/xóa resource) vs Data (mức object/item, tính phí)\n2. Trail multi-region/multi-account — 1 trail ghi mọi Region, gửi về S3 tập trung (gộp 2 note)\n3. Event History 90 ngày vs Trail — Event History chỉ 90 ngày; cần lưu lâu dài → tạo Trail\n4. Advanced event selectors — lọc chi tiết event ghi lại để giảm chi phí\n5. Chi phí & giới hạn — event quản lý bản sao đầu miễn phí; data events tính phí\n6. SourceIdentity — truy vết ai thực sự đứng sau AssumeRole\n\n▸ Bảo mật & phân tích\n7. Log file integrity validation — digest file ký SHA-256 chứng minh log không bị sửa\n8. KMS encryption cho log — SSE-KMS trên file log\n9. VPC endpoint — gọi CloudTrail riêng tư\n10. CloudTrail + EventBridge — phát hiện hành động nguy hiểm gần real-time\n11. CloudTrail Insights — phát hiện bất thường (API call rate / API error rate) (gộp 2 note)\n12. CloudTrail Lake — event data store truy vấn SQL, có retention (gộp 2 note)\n13. CloudTrail vs CloudWatch — audit 'ai làm gì' vs monitoring hiệu năng (gộp QUICK + compare)",
+          "createdAt": "2026-09-19T01:25:31.401087Z",
+          "updatedAt": "2026-09-19T01:25:31.401087Z"
         }
       ]
     },
@@ -7905,6 +7961,13 @@
           "content": "Điểm phân biệt: Thời gian phục hồi vs lượng dữ liệu chấp nhận mất.\n✅ RTO (Recovery Time Objective) => THỜI GIAN TỐI ĐA chấp nhận được để hệ thống HOẠT ĐỘNG TRỞ LẠI sau sự cố (vd RTO=1h nghĩa là phải khôi phục xong trong 1 giờ).\n✅ RPO (Recovery Point Objective) => LƯỢNG DỮ LIỆU TỐI ĐA chấp nhận MẤT tính theo thời gian kể từ lần backup gần nhất (vd RPO=15 phút nghĩa là chấp nhận mất tối đa 15 phút dữ liệu) — RTO/RPO càng THẤP thì kiến trúc DR càng PHỨC TẠP & TỐN KÉM (Pilot Light < Warm Standby < Multi-Site Active-Active).",
           "createdAt": "2026-09-14T16:21:20.949026Z",
           "updatedAt": "2026-09-14T16:21:20.949026Z"
+        },
+        {
+          "id": "c57eaf29afb4",
+          "title": "📋 TỔNG HỢP: AWS Backup",
+          "content": "▸ Kế hoạch & phạm vi\n1. Backup Plan — quản lý backup tập trung, policy-based (gộp QUICK)\n2. Tag-based assignment — gán resource vào plan theo tag\n3. Supported resource types — EBS, RDS, DynamoDB, EFS, FSx, S3, EC2...\n4. On-demand vs Scheduled backup — chi phí & use case\n5. Continuous backup (PITR) — khôi phục điểm bất kỳ (RDS, S3...)\n6. Transition to cold storage — chuyển sang cold sau thời gian nhất định (tối thiểu 90 ngày lưu cold)\n7. VMware & hybrid backup — backup VM on-premises\n8. Backup Gateway — backup on-premises qua gateway\n\n▸ Bảo vệ & tuân thủ\n9. Cross-region & cross-account copy — bản sao sang Region/account khác\n10. Cross-partition backup — sao lưu giữa partition AWS\n11. Vault Lock — WORM cho backup vault (Governance/Compliance)\n12. Legal Hold — giữ backup ngoài retention khi có yêu cầu pháp lý\n13. Restore Testing — tự kiểm thử khôi phục định kỳ\n14. Audit Manager & Compliance framework — báo cáo tuân thủ backup; tích hợp Control Tower\n15. RTO vs RPO — thời gian phục hồi vs lượng dữ liệu chấp nhận mất",
+          "createdAt": "2026-09-19T01:25:31.401097Z",
+          "updatedAt": "2026-09-19T01:25:31.401097Z"
         }
       ]
     },
@@ -8508,6 +8571,13 @@
           "content": "Quản lý WAF/Security Group tập trung => áp dụng cho nhiều account => qua AWS Organizations => policy tự động enforce",
           "createdAt": "2026-09-14T16:15:46.495515Z",
           "updatedAt": "2026-09-14T16:15:46.495515Z"
+        },
+        {
+          "id": "b6a443b55514",
+          "title": "📋 TỔNG HỢP: AWS Security Hub, Detective & Firewall Manager",
+          "content": "▸ Security Hub\n1. Tổng hợp finding — gom từ GuardDuty/Inspector/Macie... vào 1 dashboard (định dạng ASFF)\n2. Security Score & Standards — điểm và kiểm tra theo chuẩn (CIS, AWS Foundational Best Practices, PCI DSS)\n3. Insights — saved search nhóm finding theo tiêu chí\n4. Custom actions & Automation rules — đẩy finding tới EventBridge; tự động cập nhật/ẩn finding\n5. Automated Response & Remediation — tự khắc phục qua EventBridge/Lambda/SSM\n6. Cross-region aggregation — gom finding nhiều Region về 1 Region\n7. Ticketing integration — Jira/ServiceNow\n8. Pricing — theo số security check và finding ingested\n\n▸ Detective\n9. Detective — điều tra root cause dựa trên behavior graph (CloudTrail, VPC Flow Logs, GuardDuty)\n10. Behavior graph & Finding groups — gom finding liên quan để điều tra\n11. Scope time — chỉnh khoảng thời gian phân tích\n\n▸ Firewall Manager\n12. Firewall Manager — quản lý WAF/SG/Network Firewall tập trung nhiều account qua Organizations (gộp QUICK)\n13. Network Firewall policy tập trung\n14. DNS Firewall policy & third-party firewall\n15. Security Group audit & usage policy — kiểm tra rule quá rộng, SG không dùng",
+          "createdAt": "2026-09-19T01:25:31.401108Z",
+          "updatedAt": "2026-09-19T01:25:31.401108Z"
         }
       ]
     }
